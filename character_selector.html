@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Character Selection</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-title">Lucid Dreams (18+)</div>
+            <div class="header-actions">
+                <span class="icon-button" id="more-options-btn">⋮</span>
+                <span class="icon-button" id="close-btn">✕</span>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <h1 class="characters-title">Characters</h1>
+            
+            <div class="gem-bar">
+                <span class="gem-icon">💎</span>
+                <span class="gem-count">0</span>
+                <span class="energy-icon">⚡️</span>
+                <span class="energy-status">100/100</span>
+                <button class="plus-btn">➕</button>
+            </div>
+
+            <div class="character-grid" id="character-grid">
+                <!-- Character cards will be injected here by script.js -->
+            </div>
+        </div>
+
+        <footer class="app-footer">
+            @luciddreams
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
