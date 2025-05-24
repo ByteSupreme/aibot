@@ -1,144 +1,43 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Character Selection</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-title">Lucid Dreams (18+)</div>
+            <div class="header-actions">
+                <span class="icon-button" id="more-options-btn">⋮</span>
+                <span class="icon-button" id="close-btn">✕</span>
+            </div>
+        </header>
 
-    let charactersData = []; // This will be populated from URL
+        <div class="main-content">
+            <h1 class="characters-title">Characters</h1>
+            
+            <div class="gem-bar">
+                <span class="gem-icon">💎</span>
+                <span class="gem-count">0</span>
+                <span class="energy-icon">⚡️</span>
+                <span class="energy-status">100/100</span>
+                <button class="plus-btn">➕</button>
+            </div>
 
-    // Function to parse URL query parameters
-    function getQueryParam(param) {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(param);
-    }
+            <div class="character-grid" id="character-grid">
+                <!-- Character cards will be injected here by script.js -->
+            </div>
+        </div>
 
-    // Attempt to get character data from URL parameter 'd' (base64 encoded JSON)
-    const encodedData = getQueryParam('d');
-    if (encodedData) {
-        try {
-            const decodedJsonStr = atob(decodeURIComponent(encodedData)); // Decode base64 then URI component
-            charactersData = JSON.parse(decodedJsonStr);
-        } catch (e) {
-            console.error("Error parsing character data from URL:", e);
-            tg.showAlert("Could not load character data. Please try reopening from Telegram.");
-            // Optionally, display an error message in the HTML
-            document.getElementById('character-grid').innerHTML = '<p style="color:red; text-align:center;">Error loading characters.</p>';
-        }
-    } else {
-        console.warn("No character data found in URL.");
-        tg.showAlert("Character data not found. Please try reopening from Telegram.");
-        document.getElementById('character-grid').innerHTML = '<p style="color:orange; text-align:center;">No characters to display. Reopen from bot.</p>';
-    }
+        <footer class="app-footer">
+            @luciddreams
+        </footer>
+    </div>
 
-
-    const characterGrid = document.getElementById('character-grid');
-    let selectedCharacterCard = null;
-
-    if (charactersData && charactersData.length > 0) {
-        charactersData.forEach(charData => {
-            const card = document.createElement('div');
-            card.classList.add('character-card');
-            card.dataset.personaId = charData.id_to_send;
-            card.dataset.displayName = charData.display_name;
-
-            const imageContainer = document.createElement('div');
-            imageContainer.classList.add('character-image-container');
-
-            const img = document.createElement('img');
-            img.classList.add('character-image');
-            img.src = charData.image_url; // Uses the URL from personas.py
-            img.alt = charData.display_name;
-            img.onerror = function() { // Fallback if an image fails to load
-                this.src = 'https://placehold.co/300x400/CCCCCC/777777?text=Image+Error';
-                console.warn(`Failed to load image for ${charData.display_name} from ${charData.image_url}`);
-            };
-            imageContainer.appendChild(img);
-
-            if (charData.special_decoration === "paws") {
-                const pawOverlay = document.createElement('div');
-                pawOverlay.classList.add('paw-print-overlay');
-                 const pawPositions = [
-                    { top: '8%', left: '10%', transform: 'rotate(-20deg)', class: 'p1' },
-                    { top: '15%', right: '8%', transform: 'rotate(25deg)', class: 'p2' },
-                    { top: '60%', left: '15%', transform: 'rotate(10deg)', class: 'p3' },
-                    { top: '70%', right: '20%', transform: 'rotate(-10deg)', class: 'p4' }
-                ];
-                pawPositions.forEach(pos => {
-                    const paw = document.createElement('span');
-                    paw.classList.add('paw-print', pos.class);
-                    paw.style.top = pos.top;
-                    if(pos.left) paw.style.left = pos.left;
-                    if(pos.right) paw.style.right = pos.right;
-                    paw.style.transform = pos.transform;
-                    paw.textContent = '🐾';
-                    pawOverlay.appendChild(paw);
-                });
-                imageContainer.appendChild(pawOverlay);
-            }
-
-            card.appendChild(imageContainer);
-
-            const info = document.createElement('div');
-            info.classList.add('character-info');
-
-            const nameHeader = document.createElement('h3');
-            nameHeader.classList.add('character-name');
-            nameHeader.textContent = charData.display_name;
-
-            if (charData.icon) {
-                const iconSpan = document.createElement('span');
-                iconSpan.classList.add('card-icon');
-                iconSpan.textContent = charData.icon;
-                nameHeader.appendChild(iconSpan);
-            }
-
-            const desc = document.createElement('p');
-            desc.classList.add('character-description');
-            desc.textContent = charData.description;
-
-            info.appendChild(nameHeader);
-            info.appendChild(desc);
-            card.appendChild(info);
-
-            if (charData.selected) { // Check for "selected" flag from persona data
-                card.classList.add('selected');
-                selectedCharacterCard = card;
-            }
-
-            card.addEventListener('click', function () {
-                if (selectedCharacterCard) {
-                    selectedCharacterCard.classList.remove('selected');
-                }
-                this.classList.add('selected');
-                selectedCharacterCard = this;
-
-                const personaIdToSend = this.dataset.personaId;
-                tg.sendData(JSON.stringify({ selected_persona_id: personaIdToSend }));
-                // tg.close(); // Optional
-            });
-
-            characterGrid.appendChild(card);
-        });
-    }
-
-
-    const closeButton = document.getElementById('close-btn');
-    if (closeButton) {
-        closeButton.addEventListener('click', function () {
-            tg.close();
-        });
-    }
-
-    const moreOptionsButton = document.getElementById('more-options-btn');
-    if (moreOptionsButton) {
-        moreOptionsButton.addEventListener('click', function () {
-            tg.showAlert("More options for Lucid Dreams (18+) will be available soon!");
-        });
-    }
-
-    const plusButton = document.querySelector('.gem-bar .plus-btn');
-    if(plusButton) {
-        plusButton.addEventListener('click', function() {
-            tg.showAlert("Feature to add gems/energy coming soon!");
-        });
-    }
-});
+    <script src="script.js"></script>
+</body>
+</html>
