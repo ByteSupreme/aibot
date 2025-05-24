@@ -1,0 +1,249 @@
+:root {
+    /* Dark theme based on screenshot */
+    --app-bg-color: #0e0f1a; /* Very dark blue/purple, main app background */
+    --header-footer-bg-color: #141726; /* Slightly lighter for header/footer if distinct */
+    --content-area-bg-color: #121422; /* Background for the area containing characters list */
+    
+    --card-bg-color: #262a3f; /* Background color for character cards */
+    --card-text-primary: #ffffff;
+    --card-text-secondary: #a8b2c0; /* For descriptions */
+    
+    --gem-bar-bg: #1e2236; /* Background for the gem/energy bar */
+    --gem-bar-plus-btn-bg: #ab47bc; /* Magenta/Purple for plus button */
+    --gem-bar-plus-btn-text: #ffffff;
+
+    --selected-glow-color: #d32fdb; /* Vibrant magenta for selection glow & paws */
+    --icon-color: #c0c8d1; /* General icon color */
+    
+    /* Inheriting Telegram Web App theme colors as fallback or for elements not explicitly styled */
+    --tg-theme-bg-color: var(--app-bg-color);
+    --tg-theme-text-color: var(--card-text-primary);
+    --tg-theme-hint-color: var(--card-text-secondary);
+    --tg-theme-button-color: var(--gem-bar-plus-btn-bg); /* Using accent for main button if any */
+    --tg-theme-button-text-color: var(--gem-bar-plus-btn-text);
+}
+
+/* General body styles */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--app-bg-color);
+    color: var(--card-text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior-y: none; /* Prevent pull-to-refresh effects */
+    line-height: 1.4;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; 
+    padding: 15px 15px 5px 15px; /* Reduced bottom padding */
+    box-sizing: border-box;
+    background-color: var(--content-area-bg-color); /* Background for the scrollable characters area */
+}
+
+/* Header Styles */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0px; /* Top/bottom padding, no side padding (handled by app-container) */
+    margin-bottom: 10px;
+    background-color: var(--app-bg-color); /* Header has the deepest dark bg */
+    position: sticky; /* Optional: Make header sticky */
+    top: 0;
+    z-index: 10;
+}
+
+.header-title {
+    font-size: 1.1em; /* Adjusted size from screenshot */
+    font-weight: 600;
+}
+
+.header-actions .icon-button {
+    font-size: 1.4em;
+    margin-left: 18px;
+    cursor: pointer;
+    color: var(--icon-color);
+}
+.header-actions .icon-button:hover {
+    color: var(--card-text-primary);
+}
+
+.main-content {
+    flex-grow: 1;
+}
+
+.characters-title {
+    font-size: 2.2em; /* Large and bold */
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: var(--card-text-primary);
+}
+
+/* Gem Bar Styles */
+.gem-bar {
+    display: flex;
+    align-items: center;
+    background-color: var(--gem-bar-bg); 
+    border-radius: 30px; /* More rounded for pill shape */
+    padding: 6px 12px;
+    margin-bottom: 20px;
+    font-size: 0.95em;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.gem-bar span {
+    margin-right: 6px;
+    display: flex;
+    align-items: center;
+}
+.gem-bar .gem-count {
+    font-weight: 600;
+    margin-left: -2px; /* Fine-tune spacing */
+    margin-right: 10px;
+}
+.gem-icon { font-size: 1.1em; color: #6cdaff; } /* Blue diamond */
+.energy-icon { font-size: 1.1em; color: #ffd700; } /* Yellow lightning */
+.energy-status {
+    margin-right: 10px;
+    font-weight: 600;
+}
+.plus-btn {
+    background-color: var(--gem-bar-plus-btn-bg); 
+    color: var(--gem-bar-plus-btn-text);
+    border: none;
+    border-radius: 50%;
+    width: 26px; /* Slightly smaller to fit */
+    height: 26px;
+    font-size: 1.3em;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: auto; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.plus-btn:hover {
+    filter: brightness(1.1);
+}
+
+/* Character Grid & Card Styles */
+.character-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 12px; /* Slightly reduced gap */
+}
+
+.character-card {
+    background-color: var(--card-bg-color);
+    border-radius: 10px; /* Subtler rounding */
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    border: 2px solid transparent; 
+    position: relative;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+.character-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0,0,0,0.2);
+}
+
+.character-card.selected {
+    border-color: var(--selected-glow-color);
+    box-shadow: 0 0 12px var(--selected-glow-color), 0 0 18px var(--selected-glow-color) inset;
+}
+
+.character-image-container {
+    width: 100%;
+    padding-top: 125%; /* For portrait images like 4:5. Adjust if images are 3:4 (133%) */
+    position: relative;
+    background-color: #3a3f58; /* Placeholder bg for image loading */
+}
+
+.character-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+    object-position: center top; /* Often good for character portraits */
+}
+
+.character-info {
+    padding: 12px 10px;
+}
+
+.character-name {
+    font-size: 1.05em; /* Slightly adjusted */
+    font-weight: 600;
+    margin-bottom: 3px;
+    display: flex; 
+    align-items: center;
+    color: var(--card-text-primary);
+}
+.character-name .card-icon {
+    font-size: 0.85em; /* Relative to parent */
+    margin-left: 6px;
+    color: var(--selected-glow-color); /* Heart icon color to match glow */
+}
+
+.character-description {
+    font-size: 0.8em; /* Slightly smaller for compactness */
+    color: var(--card-text-secondary); 
+    line-height: 1.3;
+}
+
+/* Paw Print Overlay (for Nya or other characters) */
+.paw-print-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; 
+    overflow: hidden; 
+}
+
+.paw-print {
+    position: absolute;
+    font-size: 1.5em;  /* Made paws a bit larger for visibility */
+    opacity: 0.5;   /* Adjusted opacity */
+    color: var(--selected-glow-color); 
+    filter: brightness(1.1);
+    /* Default state - will be shown by characterData config in script.js */
+}
+.paw-print.p1 { top: 8%; left: 10%; transform: rotate(-20deg); } /* Positions adjusted */
+.paw-print.p2 { top: 15%; right: 8%; transform: rotate(25deg); }
+
+/* Ensure the following isn't strictly needed if JS adds them selectively */
+/* But keep for now if script adds generic paw-print class to container */
+/* .character-card[data-display-name="Nya"] .paw-print.p1,
+.character-card[data-display-name="Nya"] .paw-print.p2 {
+    display: block;
+} */
+
+
+/* Footer Styles */
+.app-footer {
+    text-align: center;
+    padding: 15px 0 5px; /* Top, horizontal, bottom */
+    font-size: 0.85em;
+    color: #656d84; /* Lighter footer text color */
+    margin-top: auto; 
+    background-color: var(--app-bg-color); /* Footer has the deepest dark bg */
+}
+
+/* Full height for HTML and Body for layout */
+html, body {
+    height: 100%;
+}
+#telegram-web-app { 
+    height: 100%;
+}
