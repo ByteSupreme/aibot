@@ -2,9 +2,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
+    
     try {
         tg.setHeaderColor('#0E0F1A'); 
-        tg.setBackgroundColor('#0E0F1A');
+        tg.setBackgroundColor('#0E0F1A'); 
     } catch (e) {
         console.error("Error setting Telegram theme colors:", e);
     }
@@ -19,29 +20,16 @@ document.addEventListener('DOMContentLoaded', function () {
         paymentGems: document.getElementById('payment-gems-view')
     };
 
-    const headerTitleTextEl = document.getElementById('header-title-text');
-    const gemBarContainer = document.getElementById('header-gem-bar-container');
+    const gemBarContainerOuter = document.getElementById('gem-bar-container-outer'); // Updated Gem Bar container
     const bottomNavBar = document.getElementById('bottom-nav-bar');
-    // Footer element is removed, no need for mainFooter variable
 
     let viewHistory = [];
     let currentViewId = 'characters'; 
-    let selectedPlanData = { // To store data from selected plan for subscription payment
-        name: "1 Year", // Default, will be updated
-        gemsBonus: 210, // Default
-        priceStars: 2250 // Default
-    }; 
-    let selectedGemPackData = { // To store data for selected gem pack
-        gems: "5000",
-        priceStars: "8750",
-        imageSrc: "https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsL&font=roboto"
-    };
-
 
     tg.BackButton.onClick(() => {
         if (viewHistory.length > 0) {
             const previousViewId = viewHistory.pop();
-            showView(previousViewId, true);
+            showView(previousViewId, true); 
         }
     });
 
@@ -53,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function showView(viewId, isBack = false) {
+    function showView(viewId, isBack = false, params = {}) {
         const oldViewId = currentViewId;
         if (!isBack && oldViewId && oldViewId !== viewId) { 
             viewHistory.push(oldViewId);
@@ -66,65 +54,58 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
         currentViewId = viewId;
-        updateHeaderContent(viewId); 
+        updateStickyHeaderAndNav(viewId, params); // Updated function name
         updateTelegramBackButton(); 
         
         tg.expand();
         window.scrollTo(0, 0);
-
-        // Update specific views if they are being shown
-        if (viewId === 'payment-subscription-view') {
-            updatePaymentSubscriptionView();
-        }
-        if (viewId === 'payment-gems-view') {
-            updatePaymentGemsView();
-        }
     }
 
-    function updateHeaderContent(viewId) {
-        gemBarContainer.innerHTML = ''; // Clear by default
-        bottomNavBar.style.display = 'none'; // Hide by default
-        // mainFooter.style.display = 'none'; // Footer removed
+    function updateStickyHeaderAndNav(viewId, params = {}) { // Renamed and simplified
+        gemBarContainerOuter.innerHTML = ''; // Clear gem bar container
+        bottomNavBar.style.display = 'none';
 
         const commonGemBarHTML = `
             <div class="gem-bar">
                 <span class="gem-icon">💎</span>
-                <span class="gem-count" id="user-gem-count">0</span> 
+                <span class="gem-count">0</span>
                 <span class="energy-icon">⚡️</span>
-                <span class="energy-status" id="user-energy-status">100/100</span>
+                <span class="energy-status">100/100</span>
                 <button class="plus-btn" id="gem-bar-plus-btn">➕</button>
             </div>`;
-        
-        // Set the title in your custom header bar
-        let titleForWebAppHeader = "Characters"; // Default
-        const currentScreenTitleEl = document.querySelector(`#${viewId} > .screen-main-title`);
-        if (currentScreenTitleEl) {
-            titleForWebAppHeader = currentScreenTitleEl.textContent;
-        }
-        headerTitleTextEl.textContent = titleForWebAppHeader;
 
-
+        // Logic for showing Gem Bar in the sticky header
         if (viewId === 'characters' || viewId === 'settings' || viewId === 'store') {
-            gemBarContainer.innerHTML = commonGemBarHTML;
-             // Add event listener for the dynamically added plus button
+            gemBarContainerOuter.innerHTML = commonGemBarHTML;
             const plusButton = document.getElementById('gem-bar-plus-btn');
             if(plusButton) {
                 plusButton.onclick = () => showView('store');
             }
         }
 
-        if (viewId === 'characters') {
-            // No specific footer, it was removed
-        } else if (viewId === 'settings') {
+        // Logic for bottom navigation
+        if (viewId === 'settings') { // Only show bottom nav on settings, can be expanded
             bottomNavBar.style.display = 'flex';
             document.querySelectorAll('.bottom-nav-item').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.view === viewId);
             });
-        } 
-        // Other views like plan, payment, language don't have the gem bar in the header
+        }
+        
+        // Update payment screens with dynamic data if params are passed
+        if (viewId === 'paymentGems' && params.gems && params.stars) {
+            document.getElementById('payment-gems-pack-details').textContent = `${params.gems} Gems`;
+            document.getElementById('payment-gems-total-stars').innerHTML = 
+                `${params.stars} <span class="telegram-star">⭐</span>`;
+        }
+        if (viewId === 'paymentSubscription' && params.planDetails && params.stars) {
+            document.getElementById('payment-sub-plan-details').textContent = params.planDetails;
+            document.getElementById('payment-sub-total-stars').innerHTML =
+                `${params.stars} <span class="telegram-star">⭐</span>`;
+        }
     }
     
-    const charactersData = [ /* ... as before ... */ ]; // Truncated for brevity, use your full data
+    // --- CHARACTER DATA AND RENDERING ---
+    const charactersData = [
         { id_to_send: "jane", display_name: "Jane", description: "Flirtatious traditional girl.", image_url: "https://placehold.co/300x400/332E45/E0E0E0/png?text=Jane&font=roboto" },
         { id_to_send: "mrsgrace", display_name: "Mrs. Grace", description: "Caring and charming MILF.", image_url: "https://placehold.co/300x400/2A203C/E0E0E0/png?text=Mrs.+Grace&font=roboto" },
         { id_to_send: "sakura", display_name: "Sakura", description: "Japanese secret agent.", image_url: "https://placehold.co/300x400/3A2F4B/E0E0E0/png?text=Sakura&font=roboto", icon: "❤️" },
@@ -133,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const characterGrid = document.getElementById('character-grid');
     let selectedCharacterCard = null;
 
-    function populateCharacters() { /* ... as before ... */
+    function populateCharacters() {
         characterGrid.innerHTML = ''; 
         charactersData.forEach(charData => {
             const card = document.createElement('div');
@@ -150,8 +131,22 @@ document.addEventListener('DOMContentLoaded', function () {
             if (charData.special_decoration === "paws") {
                 const pawOverlay = document.createElement('div');
                 pawOverlay.classList.add('paw-print-overlay');
-                const pawPositions = [ { top: '8%', left: '10%', transform: 'rotate(-20deg)', class: 'p1' }, { top: '15%', right: '8%', transform: 'rotate(25deg)', class: 'p2' }, { top: '60%', left: '15%', transform: 'rotate(10deg)', class: 'p3' }, { top: '70%', right: '20%', transform: 'rotate(-10deg)', class: 'p4' } ];
-                pawPositions.forEach(pos => { const paw = document.createElement('span'); paw.classList.add('paw-print', pos.class); paw.style.top = pos.top; if(pos.left) paw.style.left = pos.left; if(pos.right) paw.style.right = pos.right; paw.style.transform = pos.transform; paw.textContent = '🐾'; pawOverlay.appendChild(paw); });
+                const pawPositions = [
+                    { top: '8%', left: '10%', transform: 'rotate(-20deg)', class: 'p1' },
+                    { top: '15%', right: '8%', transform: 'rotate(25deg)', class: 'p2' },
+                    { top: '60%', left: '15%', transform: 'rotate(10deg)', class: 'p3' },
+                    { top: '70%', right: '20%', transform: 'rotate(-10deg)', class: 'p4' }
+                ];
+                pawPositions.forEach(pos => {
+                    const paw = document.createElement('span');
+                    paw.classList.add('paw-print', pos.class);
+                    paw.style.top = pos.top;
+                    if(pos.left) paw.style.left = pos.left;
+                    if(pos.right) paw.style.right = pos.right;
+                    paw.style.transform = pos.transform;
+                    paw.textContent = '🐾';
+                    pawOverlay.appendChild(paw);
+                });
                 imageContainer.appendChild(pawOverlay);
             }
             card.appendChild(imageContainer);
@@ -160,27 +155,66 @@ document.addEventListener('DOMContentLoaded', function () {
             const nameHeader = document.createElement('h3');
             nameHeader.classList.add('character-name');
             nameHeader.textContent = charData.display_name;
-            if (charData.icon) { const iconSpan = document.createElement('span'); iconSpan.classList.add('card-icon'); iconSpan.textContent = charData.icon; nameHeader.appendChild(iconSpan); }
-            const desc = document.createElement('p'); desc.classList.add('character-description'); desc.textContent = charData.description;
-            info.appendChild(nameHeader); info.appendChild(desc); card.appendChild(info);
-            if (charData.selected) { card.classList.add('selected'); selectedCharacterCard = card; }
+            if (charData.icon) {
+                const iconSpan = document.createElement('span');
+                iconSpan.classList.add('card-icon');
+                iconSpan.textContent = charData.icon;
+                nameHeader.appendChild(iconSpan);
+            }
+            const desc = document.createElement('p');
+            desc.classList.add('character-description');
+            desc.textContent = charData.description;
+            info.appendChild(nameHeader);
+            info.appendChild(desc);
+            card.appendChild(info);
+            if (charData.selected) {
+                card.classList.add('selected');
+                selectedCharacterCard = card;
+            }
             card.addEventListener('click', function () {
-                if (selectedCharacterCard) { selectedCharacterCard.classList.remove('selected'); }
-                this.classList.add('selected'); selectedCharacterCard = this;
-                // const personaIdToSend = this.dataset.personaId; console.log("Selected Persona ID:", personaIdToSend);
+                if (selectedCharacterCard) {
+                    selectedCharacterCard.classList.remove('selected');
+                }
+                this.classList.add('selected');
+                selectedCharacterCard = this;
+                console.log("Selected Persona ID:", this.dataset.personaId);
             });
             characterGrid.appendChild(card);
         });
     }
     
+    // --- EVENT LISTENERS FOR NAVIGATION AND INTERACTIONS ---
     document.getElementById('settings-upgrade-plan-btn').addEventListener('click', () => showView('plan'));
     document.getElementById('settings-language-btn').addEventListener('click', () => showView('language'));
     
     const styleLabels = document.querySelectorAll('.style-label');
-    const styleImages = { /* ... as before ... */ }; // Truncated
-    styleLabels.forEach(label => { /* ... as before ... */ }); // Truncated
+    const styleImages = {
+        realistic: document.getElementById('style-realistic'),
+        anime: document.getElementById('style-anime')
+    };
+    styleLabels.forEach(label => {
+        label.addEventListener('click', () => {
+            styleLabels.forEach(lbl => lbl.classList.remove('active'));
+            label.classList.add('active');
+            styleLabels.forEach(lbl => lbl.querySelector('.checkbox-custom').classList.remove('checked'));
+            label.querySelector('.checkbox-custom').classList.add('checked');
+            styleImages.realistic.classList.toggle('active', label.classList.contains('realistic'));
+            styleImages.anime.classList.toggle('active', label.classList.contains('anime'));
+        });
+    });
 
     const planOptions = document.querySelectorAll('.plan-option');
+    const planFeatureGemsEl = document.getElementById('plan-feature-gems');
+    const paymentSubPlanDetailsEl = document.getElementById('payment-sub-plan-details');
+    const paymentSubTotalStarsEl = document.getElementById('payment-sub-total-stars');
+
+    // Dummy Star conversion (replace with actual logic or API if Telegram provides it for Stars)
+    const planStarPrices = {
+        "1month": 375, // Example: $7.50
+        "3months": 750, // Example: $15.00
+        "1year": 2250  // Example: $45.00
+    };
+
     planOptions.forEach(option => {
         option.addEventListener('click', () => {
             planOptions.forEach(opt => {
@@ -190,49 +224,28 @@ document.addEventListener('DOMContentLoaded', function () {
             option.classList.add('selected');
             option.querySelector('.radio-custom').classList.add('checked');
             
-            // Update selectedPlanData
-            selectedPlanData.name = option.querySelector('.plan-title').childNodes[0].nodeValue.trim(); // Gets "1 Month", "3 Months" etc.
-            selectedPlanData.gemsBonus = parseInt(option.dataset.gemsBonus);
-            
-            // Example prices for subscription, replace with actual logic
-            if (option.dataset.plan === "1month") selectedPlanData.priceStars = 2250/3; // Example logic
-            else if (option.dataset.plan === "3months") selectedPlanData.priceStars = 2250*2/3; // Example logic
-            else if (option.dataset.plan === "1year") selectedPlanData.priceStars = 2250; // Example logic
-            
-            const planFeatureGemsEl = document.getElementById('plan-feature-gems');
+            const planGemsText = option.querySelector('.plan-gems').textContent; // e.g., "+30 💎"
+            const planType = option.dataset.plan;
             if (planFeatureGemsEl) {
-                planFeatureGemsEl.innerHTML = `💎 ${selectedPlanData.gemsBonus} gems for shopping`;
+                 planFeatureGemsEl.innerHTML = `💎 ${planGemsText.split(' ')[0].replace('+','')} gems for shopping`;
             }
         });
     });
-     // Set initial selected plan data based on default HTML selection
-    const initialSelectedPlan = document.querySelector('.plan-option.selected');
-    if (initialSelectedPlan) {
-        selectedPlanData.name = initialSelectedPlan.querySelector('.plan-title').childNodes[0].nodeValue.trim();
-        selectedPlanData.gemsBonus = parseInt(initialSelectedPlan.dataset.gemsBonus);
-         // Set default price (example based on 1 year)
-        if (initialSelectedPlan.dataset.plan === "1year") selectedPlanData.priceStars = 2250;
-        else if (initialSelectedPlan.dataset.plan === "3months") selectedPlanData.priceStars = 1500; // example
-        else if (initialSelectedPlan.dataset.plan === "1month") selectedPlanData.priceStars = 750; // example
-
-        const planFeatureGemsEl = document.getElementById('plan-feature-gems');
-            if (planFeatureGemsEl) {
-                planFeatureGemsEl.innerHTML = `💎 ${selectedPlanData.gemsBonus} gems for shopping`;
-            }
-    }
 
     document.getElementById('plan-upgrade-btn').addEventListener('click', () => {
-        showView('payment-subscription-view');
+        const selectedPlan = document.querySelector('.plan-option.selected');
+        if (selectedPlan) {
+            const planTitle = selectedPlan.querySelector('.plan-title').textContent;
+            const planType = selectedPlan.dataset.plan;
+            const stars = planStarPrices[planType] || 0; // Get stars for the selected plan
+            showView('paymentSubscription', false, { planDetails: planTitle, stars: stars });
+        } else {
+            tg.showAlert("Please select a plan first.");
+        }
     });
 
-    function updatePaymentSubscriptionView() {
-        document.getElementById('payment-sub-plan-details').innerHTML = `${selectedPlanData.name} + ${selectedPlanData.gemsBonus} 💎`;
-        document.getElementById('payment-sub-total').innerHTML = `${selectedPlanData.priceStars} <span class="telegram-star">⭐</span>`;
-    }
-
-
     document.getElementById('payment-sub-confirm-btn').addEventListener('click', () => {
-        tg.showAlert(`Subscription for ${selectedPlanData.name} initiated (simulated)!`);
+        tg.showAlert("Subscription upgrade initiated (simulated)!");
         viewHistory = []; 
         showView('characters'); 
     });
@@ -240,10 +253,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const languageOptions = document.querySelectorAll('.language-option');
     const currentLangDisplayEl = document.getElementById('current-language-display');
     
-    const initialSelectedLang = document.querySelector('#language-view .language-option.selected');
-    if(initialSelectedLang && currentLangDisplayEl) {
-        currentLangDisplayEl.textContent = initialSelectedLang.childNodes[0].nodeValue.trim();
-    }
+    // Set initial language state (example: English selected by default)
+    const defaultLang = 'en';
+    languageOptions.forEach(opt => {
+        const isSelected = opt.dataset.lang === defaultLang;
+        opt.classList.toggle('selected', isSelected);
+        opt.querySelector('.radio-custom').classList.toggle('checked', isSelected);
+        if (isSelected && currentLangDisplayEl) {
+            currentLangDisplayEl.textContent = opt.childNodes[0].nodeValue.trim();
+        }
+    });
 
     languageOptions.forEach(option => {
         option.addEventListener('click', () => {
@@ -253,12 +272,15 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             option.classList.add('selected');
             option.querySelector('.radio-custom').classList.add('checked');
-            currentLangDisplayEl.textContent = option.childNodes[0].nodeValue.trim();
+            if (currentLangDisplayEl) {
+                currentLangDisplayEl.textContent = option.childNodes[0].nodeValue.trim();
+            }
+            console.log("Language selected:", option.dataset.lang);
             
-            if (viewHistory.length > 0) {
-                 tg.BackButton.onClick();
+            if (viewHistory.length > 0) { // Go back if history exists
+                 tg.BackButton.onClick(); 
             } else {
-                showView('settings', true);
+                showView('settings', true); 
             }
         });
     });
@@ -266,32 +288,26 @@ document.addEventListener('DOMContentLoaded', function () {
     const storeGemPacks = document.querySelectorAll('.store-gem-pack');
     storeGemPacks.forEach(pack => {
         pack.addEventListener('click', () => {
-            selectedGemPackData.gems = pack.dataset.gems;
-            selectedGemPackData.priceStars = pack.dataset.priceStars;
-            selectedGemPackData.imageSrc = pack.querySelector('img').src; 
-            showView('payment-gems-view');
+            const gems = pack.dataset.gems;
+            const stars = pack.dataset.stars;
+            showView('paymentGems', false, { gems, stars });
         });
     });
-
-    function updatePaymentGemsView() {
-        document.getElementById('payment-gem-pack-image').src = selectedGemPackData.imageSrc;
-        document.getElementById('payment-gem-pack-details').textContent = `${selectedGemPackData.gems} Gems`;
-        document.getElementById('payment-gem-pack-total').innerHTML = `${selectedGemPackData.priceStars} <span class="telegram-star">⭐</span>`;
-    }
-
      document.querySelector('.recharge-button').addEventListener('click', () => {
         tg.showAlert("Energy recharge initiated (simulated)!");
     });
 
     document.getElementById('payment-gems-confirm-btn').addEventListener('click', () => {
-        tg.showAlert(`${selectedGemPackData.gems} Gems purchase initiated (simulated)!`);
-        viewHistory = viewHistory.filter(v => v !== 'paymentGems'); 
-        if (viewHistory.length > 0 && viewHistory.includes('store')) {
-            const storeIndex = viewHistory.lastIndexOf('store');
-            viewHistory = viewHistory.slice(0, storeIndex + 1); // Go back to the last store instance
-            tg.BackButton.onClick(); 
+        tg.showAlert("Gem purchase initiated (simulated)!");
+        // Navigate back smartly
+        if (viewHistory.includes('store')) {
+            while(viewHistory.length > 0 && viewHistory[viewHistory.length-1] !== 'store') {
+                viewHistory.pop(); // Remove intermediate screens if any
+            }
+            tg.BackButton.onClick(); // This will take to 'store' if it's the last one
         } else {
-            showView('store', true); 
+             viewHistory = []; // Reset history
+            showView('characters'); // Fallback to characters
         }
     });
 
@@ -299,7 +315,10 @@ document.addEventListener('DOMContentLoaded', function () {
     bottomNavItems.forEach(item => {
         item.addEventListener('click', () => {
             const targetView = item.dataset.view;
-            if (targetView === 'stories-view') { tg.showAlert("Stories coming soon!"); return; }
+            if (targetView === 'stories-view') {
+                tg.showAlert("Stories coming soon!");
+                return;
+            }
             if (views[targetView] && currentViewId !== targetView) {
                 if (targetView === 'characters' || targetView === 'settings') { 
                     viewHistory = []; 
@@ -309,6 +328,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // --- INITIAL APP STARTUP ---
     populateCharacters();
     showView('characters'); 
+
 });
