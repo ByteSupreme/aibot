@@ -2,6 +2,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
+    // Set Telegram UI colors to match the app's dark theme
+    try {
+        tg.setHeaderColor('#0E0F1A'); // Matches your app-header-bg
+        tg.setBackgroundColor('#0E0F1A'); // Matches your app-bg-main
+    } catch (e) {
+        console.error("Error setting Telegram theme colors:", e);
+        // This might fail if tg is not fully initialized or in non-TG environment
+    }
+
 
     // --- Global State & View Management ---
     const views = {
@@ -15,17 +24,33 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     const headerTitleTextEl = document.getElementById('header-title-text');
-    const backBtn = document.getElementById('back-btn');
     const gemBarContainer = document.getElementById('header-gem-bar-container');
-    const mainHeaderActions = document.getElementById('header-actions-main');
     const mainFooter = document.getElementById('app-main-footer');
     const bottomNavBar = document.getElementById('bottom-nav-bar');
 
-    let viewHistory = []; // For back button functionality
+    let viewHistory = [];
+    let currentViewId = 'characters'; // Initial view, root of navigation
+
+    // Telegram Back Button Handler
+    tg.BackButton.onClick(() => {
+        if (viewHistory.length > 0) {
+            const previousViewId = viewHistory.pop();
+            showView(previousViewId, true); // true indicates it's a 'back' navigation
+        }
+    });
+
+    function updateTelegramBackButton() {
+        if (viewHistory.length > 0) {
+            tg.BackButton.show();
+        } else {
+            tg.BackButton.hide();
+        }
+    }
 
     function showView(viewId, isBack = false) {
-        if (!isBack && currentViewId) {
-            viewHistory.push(currentViewId);
+        const oldViewId = currentViewId;
+        if (!isBack && oldViewId && oldViewId !== viewId) { 
+            viewHistory.push(oldViewId);
         }
 
         for (const id in views) {
@@ -35,83 +60,71 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
         currentViewId = viewId;
-        updateHeaderAndFooter(viewId);
-        tg.expand();
+        updateHeaderContent(viewId); 
+        updateTelegramBackButton(); 
+        
+        tg.expand(); // Ensure full height on view change
         window.scrollTo(0, 0); // Scroll to top on view change
     }
 
-    let currentViewId = 'characters'; // Initial view
-
-    function updateHeaderAndFooter(viewId) {
-        // Default states
-        backBtn.style.display = 'none';
-        mainHeaderActions.innerHTML = ''; // Clear actions
-        gemBarContainer.innerHTML = ''; // Clear gem bar
+    function updateHeaderContent(viewId) {
+        gemBarContainer.innerHTML = '';
+        mainFooter.style.display = 'none';
         bottomNavBar.style.display = 'none';
-        mainFooter.style.display = 'none'; // Hide main @luciddreams footer by default
 
-        // Common Gem Bar HTML (can be refilled if needed)
         const commonGemBarHTML = `
             <div class="gem-bar">
                 <span class="gem-icon">💎</span>
-                <span class="gem-count">0</span>
+                <span class="gem-count">0</span> <!-- This would be dynamic -->
                 <span class="energy-icon">⚡️</span>
-                <span class="energy-status">100/100</span>
+                <span class="energy-status">100/100</span> <!-- This would be dynamic -->
                 <button class="plus-btn" id="gem-bar-plus-btn">➕</button>
             </div>`;
 
+        // Set the main screen title in your HTML view, not in the header.
+        // headerTitleTextEl.textContent = document.querySelector(`#${viewId} .screen-main-title`).textContent;
+
+        // Update the title displayed in Telegram's Mini App header bar (if supported by version)
+        // This is a good practice as it makes the native back button more contextual
+        let titleForTelegramHeader = "Lucid Dreams"; // Default
+        const currentScreenTitleEl = document.querySelector(`#${viewId} > .screen-main-title`);
+        if (currentScreenTitleEl) {
+            titleForTelegramHeader = currentScreenTitleEl.textContent;
+        }
+        tg.MainButton.setText(titleForTelegramHeader); // Not for title, but shows how MainButton can be used
+                                                    // There isn't a direct API to set Telegram's header title *text* via JS.
+                                                    // The title often reflects the bot's name or Mini App name.
+                                                    // The WebApp's internal <title> tag is what you control.
+
+        // Update your own header title:
+        headerTitleTextEl.textContent = titleForTelegramHeader;
+
+
         if (viewId === 'characters') {
-            headerTitleTextEl.textContent = 'Characters';
-            mainHeaderActions.innerHTML = `
-                <span class="icon-button" id="more-options-btn">⋮</span>
-                <span class="icon-button" id="close-main-btn">✕</span>`;
             gemBarContainer.innerHTML = commonGemBarHTML;
-            mainFooter.style.display = 'block'; // Show @luciddreams footer
-            addCharacterScreenEventListeners();
+            mainFooter.style.display = 'block';
         } else if (viewId === 'settings') {
-            headerTitleTextEl.textContent = 'Settings';
-            backBtn.style.display = viewHistory.length > 0 ? 'inline-block' : 'none';
             gemBarContainer.innerHTML = commonGemBarHTML;
             bottomNavBar.style.display = 'flex';
-             // Ensure correct nav item is active
             document.querySelectorAll('.bottom-nav-item').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.view === viewId);
             });
         } else if (viewId === 'plan') {
-            headerTitleTextEl.textContent = 'Plan';
-            backBtn.style.display = 'inline-block';
+            // No gem bar in header for plan screen as per design
         } else if (viewId === 'paymentSubscription' || viewId === 'paymentGems') {
-            headerTitleTextEl.textContent = 'Payment Method';
-            backBtn.style.display = 'inline-block';
+            // No gem bar in header
         } else if (viewId === 'language') {
-            headerTitleTextEl.textContent = 'Language';
-            backBtn.style.display = 'inline-block';
+            // No gem bar in header
         } else if (viewId === 'store') {
-            headerTitleTextEl.textContent = 'Store';
-            backBtn.style.display = 'inline-block';
             gemBarContainer.innerHTML = commonGemBarHTML;
         }
 
-        // Add event listener for dynamically added plus button
         const plusButton = document.getElementById('gem-bar-plus-btn');
         if(plusButton) {
-            plusButton.addEventListener('click', () => showView('store'));
+            plusButton.onclick = () => showView('store');
         }
     }
-
-    backBtn.addEventListener('click', () => {
-        if (viewHistory.length > 0) {
-            const previousViewId = viewHistory.pop();
-            showView(previousViewId, true);
-        } else {
-            // If no history, maybe go to a default view or close
-            // For now, character screen if back from settings is common
-            if(currentViewId === 'settings') showView('characters', true);
-            else tg.close(); // Or showView('characters');
-        }
-    });
     
-    // --- Character Screen Logic (from user's original script) ---
     const charactersData = [
         { id_to_send: "jane", display_name: "Jane", description: "Flirtatious traditional girl.", image_url: "https://placehold.co/300x400/332E45/E0E0E0/png?text=Jane&font=roboto" },
         { id_to_send: "mrsgrace", display_name: "Mrs. Grace", description: "Caring and charming MILF.", image_url: "https://placehold.co/300x400/2A203C/E0E0E0/png?text=Mrs.+Grace&font=roboto" },
@@ -122,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let selectedCharacterCard = null;
 
     function populateCharacters() {
-        characterGrid.innerHTML = ''; // Clear existing
+        characterGrid.innerHTML = ''; 
         charactersData.forEach(charData => {
             const card = document.createElement('div');
             card.classList.add('character-card');
@@ -190,26 +203,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.classList.add('selected');
                 selectedCharacterCard = this;
                 const personaIdToSend = this.dataset.personaId;
+                console.log("Selected Persona ID:", personaIdToSend);
                 // tg.sendData(JSON.stringify({ selected_persona_id: personaIdToSend }));
-                console.log("Selected Persona ID:", personaIdToSend); // For testing
-                 // tg.close(); // Optional: close after selection
+                // Consider if tg.close() is desired after selection
             });
             characterGrid.appendChild(card);
         });
     }
     
-    function addCharacterScreenEventListeners() {
-        const moreOptionsBtn = document.getElementById('more-options-btn');
-        if (moreOptionsBtn) {
-            moreOptionsBtn.onclick = () => tg.showAlert("More options coming soon!");
-        }
-        const closeMainBtn = document.getElementById('close-main-btn');
-        if (closeMainBtn) {
-            closeMainBtn.onclick = () => tg.close();
-        }
-    }
-
-    // --- Settings Screen Logic ---
     document.getElementById('settings-upgrade-plan-btn').addEventListener('click', () => showView('plan'));
     document.getElementById('settings-language-btn').addEventListener('click', () => showView('language'));
     
@@ -237,8 +238,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-
-    // --- Plan Screen Logic ---
     const planOptions = document.querySelectorAll('.plan-option');
     planOptions.forEach(option => {
         option.addEventListener('click', () => {
@@ -248,9 +247,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             option.classList.add('selected');
             option.querySelector('.radio-custom').classList.add('checked');
-            // Update feature list based on selected plan if necessary
-            // For now, the list is static. If it changes, update it here.
-            // E.g., the "+30 gems" detail for features list can be dynamic
             const selectedPlanGems = option.querySelector('.plan-gems').textContent;
             const featuresList = document.querySelector('#plan-view .plan-features');
             if(featuresList && featuresList.children[1]) {
@@ -260,15 +256,26 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     document.getElementById('plan-upgrade-btn').addEventListener('click', () => showView('paymentSubscription'));
 
-    // --- Payment Subscription Logic ---
     document.getElementById('payment-sub-confirm-btn').addEventListener('click', () => {
         tg.showAlert("Subscription upgrade initiated (simulated)!");
-        // Potentially navigate to characters or a success screen
+        // Navigate to a suitable view, perhaps clear history to this point
+        viewHistory = []; // Reset history if this is a "final" action for a flow
         showView('characters'); 
     });
 
-    // --- Language Screen Logic ---
     const languageOptions = document.querySelectorAll('.language-option');
+    // Set initial selected language (e.g., English) if needed for display
+    const currentLangSettingEl = document.querySelector('#settings-language-btn span:first-child');
+    const initiallySelectedLang = Array.from(languageOptions).find(opt => opt.classList.contains('selected'));
+    if (initiallySelectedLang && currentLangSettingEl) {
+         currentLangSettingEl.textContent = initiallySelectedLang.childNodes[0].nodeValue.trim();
+    } else if (languageOptions.length > 0 && currentLangSettingEl) { // Default to first if none selected
+        languageOptions[0].classList.add('selected');
+        languageOptions[0].querySelector('.radio-custom').classList.add('checked');
+        currentLangSettingEl.textContent = languageOptions[0].childNodes[0].nodeValue.trim();
+    }
+
+
     languageOptions.forEach(option => {
         option.addEventListener('click', () => {
             languageOptions.forEach(opt => {
@@ -279,24 +286,22 @@ document.addEventListener('DOMContentLoaded', function () {
             option.querySelector('.radio-custom').classList.add('checked');
             const selectedLang = option.dataset.lang;
             console.log("Language selected:", selectedLang);
-            // Update settings screen text after selection
-            document.querySelector('#settings-language-btn span:first-child').textContent = option.childNodes[0].nodeValue.trim();
-            // Go back to settings after selection
+            currentLangSettingEl.textContent = option.childNodes[0].nodeValue.trim();
+            
             if (viewHistory.length > 0) {
-                 const previousViewId = viewHistory.pop();
-                 showView(previousViewId, true);
+                 tg.BackButton.onClick(); // Simulate a back button press
             } else {
-                showView('settings', true);
+                showView('settings', true); // Fallback
             }
         });
     });
 
-    // --- Store Screen Logic ---
     const storeGemPacks = document.querySelectorAll('.store-gem-pack');
     storeGemPacks.forEach(pack => {
         pack.addEventListener('click', () => {
-            // TODO: Pass data about which pack was clicked to payment-gems-view
-            // For now, just show the generic paymentGems view
+            // Here you could store which pack was clicked to show details on paymentGems view
+            // For now, it just navigates.
+            // Example: document.querySelector('#payment-gems-view .payment-plan-details').textContent = pack.querySelector('h4').textContent;
             showView('paymentGems');
         });
     });
@@ -304,31 +309,35 @@ document.addEventListener('DOMContentLoaded', function () {
         tg.showAlert("Energy recharge initiated (simulated)!");
     });
 
-    // --- Payment Gems Logic ---
     document.getElementById('payment-gems-confirm-btn').addEventListener('click', () => {
         tg.showAlert("Gem purchase initiated (simulated)!");
-        showView('store'); // Go back to store or characters
+        viewHistory = viewHistory.filter(v => v !== 'paymentGems'); // Remove current view from history before going back
+        if (viewHistory.length > 0 && viewHistory.includes('store')) { // Prefer going back to store
+            tg.BackButton.onClick();
+        } else {
+            showView('store', true); // Fallback if store is not in history
+        }
     });
 
-    // --- Bottom Nav Bar Logic ---
     const bottomNavItems = document.querySelectorAll('.bottom-nav-item');
     bottomNavItems.forEach(item => {
         item.addEventListener('click', () => {
             const targetView = item.dataset.view;
-            if (targetView === 'stories-view') { // Handle dummy view
+            if (targetView === 'stories-view') {
                 tg.showAlert("Stories coming soon!");
                 return;
             }
-            if (views[targetView]) {
-                bottomNavItems.forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
+            if (views[targetView] && currentViewId !== targetView) {
+                // If switching main tabs, reset history to that tab as new root
+                if (targetView === 'characters' || targetView === 'settings') { // Assuming these are "root" tabs
+                    viewHistory = []; 
+                }
                 showView(targetView);
             }
         });
     });
 
-    // --- Initial Setup ---
-    populateCharacters(); // Populate character grid on load
-    showView('characters'); // Show initial view and setup header
+    populateCharacters();
+    showView('characters'); 
 
 });
