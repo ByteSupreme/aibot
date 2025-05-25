@@ -325,46 +325,46 @@ img,video {
 }
 
 :root {
-    --stroke: linear-gradient( 20deg, rgba(48, 48, 48, 1), rgba(255, 255, 255, .13), rgba(255, 255, 255, .29) );
-    --stroke-to-bottom: linear-gradient( to bottom, rgba(48, 48, 48, 1), rgba(255, 255, 255, .1), rgba(255, 255, 255, .27) );
-    --accent-stroke: linear-gradient( to bottom left, rgba(117, 100, 223, 1), rgba(45, 39, 86, .2) );
-    --accent-stroke-to-right: linear-gradient( to right, rgba(59, 51, 112, .2), rgba(112, 95, 222, .8) );
-    --gray-50: rgba(0, 0, 0, .05);
-    --gray-100: #010101;
-    --black-100: #222222;
-    --milk-100: #f3f7fa;
-    --white-100: #fff;
-    --purple-100: #7564df; /* Lavender */
-    --purple-200: #bea0ff;
-    --purple-300: #a881ff;
-    --shadow-dark-100: 0px 0px 9px rgba(0, 0, 0, .07);
-    --shadow-dark-200: 0px 1px 4px rgba(0, 0, 0, .25);
-    --shadow-dark-300: 0px 0px 4px rgba(0, 0, 0, .18);
-    --shadow-accent: 0px 0px 2.5vw var(--purple-100); 
-    --menu-surface-bg: linear-gradient( to bottom, rgba(171, 171, 171, .1), rgba(143, 143, 143, .1) ), rgba(0, 0, 0, .6);
-    --dark-surface-gradient: linear-gradient( to bottom, rgba(84, 84, 84, .1), rgba(143, 143, 143, .1) );
-
-    /* Custom variables from screenshots */
-    --app-bg-main: #0E0F1A; /* Overall app background if not set by body.dark */
-    --app-bg-content: #121422; /* Background for content areas of views */
-    --app-header-bg: #0E0F1A; /* Background for the top header bar */
-    --app-footer-text: #656D84;
-    --app-primary-text: #FFFFFF;
-    --app-secondary-text: #A8B2C0;
-    --app-placeholder-text: #A8B2C0;
-    --app-icon-color: #C0C8D1;
-    --app-card-bg: #262A3F; /* Used for character cards, plan options, settings items etc. */
-    --app-section-bg: #1A1D30; /* slightly lighter bg for some grouped sections */
-    --app-gem-bar-bg: #1E2236; /* Background for the gem/energy bar in header */
-    --app-accent-magenta: #D32FDB; /* Screenshot's magenta for buttons, highlights */
-    --app-accent-purple: #7C5CFF; /* Screenshot's purple for some checkmarks */
-    --app-gem-icon-color: #6CDAFF;
-    --app-energy-icon-color: #FFD700;
-    --app-border-color: #3A3F58; /* subtle borders for items */
+    /* Base Colors from Screenshots */
+    --app-bg-main: #0E0F1A;
+    --app-bg-content: #121422;
+    --app-header-bg: #0E0F1A;
+    --app-card-bg: #262A3F;
+    --app-section-bg: #1A1D30;
+    --app-gem-bar-bg: #1E2236;
     --app-input-bg: #1E2236;
+
+    /* Text Colors */
+    --app-primary-text: #FFFFFF;
+    --app-secondary-text: #A8B2C0; /* Lighter gray for descriptions */
+    --app-placeholder-text: #8A92A1; /* Slightly darker for less emphasis */
+    --app-footer-text: #656D84;
+
+    /* Accent Colors (Primary Accents from Screenshot) */
+    --app-accent-magenta: #D32FDB;
+    --app-accent-purple: #7C5CFF; /* A vibrant purple */
+    --app-gem-icon-color: #6CDAFF; /* Bright cyan for gems */
+    --app-energy-icon-color: #FFD700; /* Bright gold for energy */
+    --app-icon-color: #C0C8D1; /* General UI icons */
+
+    /* Derived/Enhanced Accent Colors for "Colourful" Feel */
+    --app-accent-magenta-darker: #B31FAF; /* For gradients */
+    --app-accent-magenta-glow: rgba(211, 47, 219, 0.6); /* For box-shadow glow */
+    --app-accent-purple-darker: #5C3DFF; /* For gradients */
+    --app-accent-purple-glow: rgba(124, 92, 255, 0.5);
+
+    /* Border & Shadow Colors */
+    --app-border-color: #3A3F58; /* Subtle borders */
+    --app-border-highlight: rgba(255, 255, 255, 0.1); /* Subtle highlight for cards top border */
+    --app-shadow-color-soft: rgba(0, 0, 0, 0.2);
+    --app-shadow-color-strong: rgba(0, 0, 0, 0.35);
+
+    /* Transition speed */
+    --app-transition-fast: 0.15s ease-out;
+    --app-transition-medium: 0.25s ease-out;
 }
 
-html.dark {
+html.dark { /* Setting default to dark via body class later */
     --current-app-bg: var(--app-bg-main);
     --current-content-bg: var(--app-bg-content);
     --current-text-color: var(--app-primary-text);
@@ -375,7 +375,6 @@ html.dark {
     background-color: var(--current-app-bg);
     color: var(--current-text-color);
 }
-/* ... other html.dark settings from original user CSS ... */
 
 html,body { 
     display: flex;
@@ -388,7 +387,7 @@ html,body {
     font-family: 'Roboto', SF Pro, sans-serif;
     color: var(--current-text-color);
     line-height: 1.4;
-    overflow-x: hidden; /* Prevent horizontal scroll */
+    overflow-x: hidden;
 }
 /* === PROVIDED BASE/FRAMEWORK CSS END === */
 
@@ -399,10 +398,10 @@ html,body {
     flex-direction: column;
     min-height: 100vh; 
     width: 100%;
-    max-width: 100vw; /* Telegram WebApp max width */
+    max-width: 100vw; 
     box-sizing: border-box;
     margin: 0 auto;
-    padding: 0; /* Padding managed by inner elements */
+    padding: 0;
 }
 
 .app-header {
@@ -415,83 +414,83 @@ html,body {
     top: 0;
     z-index: 100;
     min-height: 50px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 5px var(--app-shadow-color-soft); /* Softer header shadow */
+    border-bottom: 1px solid var(--app-accent-magenta-glow); /* Subtle accent line */
 }
-.app-header .header-left {
-    display: flex;
-    align-items: center;
-}
+.app-header .header-left { display: flex; align-items: center; }
 .app-header .header-title-main {
-    font-size: 1.15em;
-    font-weight: 600;
+    font-size: 1.2em; /* Slightly larger title */
+    font-weight: 700; /* Bolder */
     color: var(--current-text-color);
+    text-shadow: 0 0 5px rgba(255,255,255,0.1);
 }
 .app-header .icon-button {
-    font-size: 1.4em;
+    font-size: 1.5em; /* Slightly larger icons */
     cursor: pointer;
     color: var(--app-icon-color);
     background: none;
     border: none;
     padding: 5px;
+    transition: color var(--app-transition-fast);
 }
+.app-header .icon-button:hover { color: var(--app-accent-magenta); }
 .app-header #back-btn {
     margin-right: 10px;
-    font-size: 1.6em;
+    font-size: 1.7em;
     font-weight: bold;
 }
-.app-header .header-right {
-    display: flex;
-    align-items: center;
-}
-.app-header .header-actions-main .icon-button {
-     margin-left: 15px;
-}
+.app-header .header-right { display: flex; align-items: center; }
+.app-header .header-actions-main .icon-button { margin-left: 15px; }
 
 
 .view-container {
-    display: none; /* Hidden by default, JS will show active view */
+    display: none;
     flex-direction: column;
     flex-grow: 1;
-    padding: 15px;
+    padding: 20px; /* Increased padding */
     background-color: var(--current-content-bg);
     overflow-y: auto;
+    animation: fadeIn 0.3s ease-out;
 }
-.view-container.active-view {
-    display: flex;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
+.view-container.active-view { display: flex; }
 
-.screen-main-title { /* For "Characters", "Settings" etc. headings */
-    font-size: 2.2em;
+.screen-main-title {
+    font-size: 2.4em; /* Larger title */
     font-weight: 700;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     color: var(--current-text-color);
+    text-shadow: 1px 1px 3px var(--app-shadow-color-soft);
 }
 
-/* === GEM BAR (as seen in Characters, Settings, Store) === */
-.gem-bar { /* This class styles the actual bar elements */
+/* === GEM BAR (Enhanced) === */
+.gem-bar {
     display: flex;
     align-items: center;
     background-color: var(--app-gem-bar-bg); 
     border-radius: 30px;
-    padding: 6px 10px;
-    font-size: 0.9em;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 7px 12px; /* Slightly more padding */
+    font-size: 0.95em; /* Slightly larger */
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.1);
     color: var(--current-text-color);
-    min-width: 150px; /* Ensure it doesn't get too squished */
+    min-width: 160px;
 }
-.gem-bar span { margin-right: 5px; display: flex; align-items: center; }
-.gem-bar .gem-count { font-weight: 600; margin-left: -2px; margin-right: 8px; }
-.gem-icon { font-size: 1.1em; color: var(--app-gem-icon-color); }
-.energy-icon { font-size: 1.1em; color: var(--app-energy-icon-color); }
-.energy-status { margin-right: 8px; font-weight: 600; }
+.gem-bar span { margin-right: 6px; display: flex; align-items: center; }
+.gem-bar .gem-count { font-weight: 700; margin-left: 0px; margin-right: 10px; }
+.gem-icon { font-size: 1.2em; color: var(--app-gem-icon-color); filter: drop-shadow(0 0 3px var(--app-gem-icon-color)); }
+.energy-icon { font-size: 1.2em; color: var(--app-energy-icon-color); filter: drop-shadow(0 0 3px var(--app-energy-icon-color)); }
+.energy-status { margin-right: 10px; font-weight: 700; }
 .plus-btn {
-    background-color: var(--app-accent-magenta); 
+    background-image: linear-gradient(135deg, var(--app-accent-magenta), var(--app-accent-magenta-darker));
     color: var(--current-text-color);
     border: none;
     border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    font-size: 1.2em;
+    width: 28px; /* Larger */
+    height: 28px;
+    font-size: 1.4em;
     font-weight: bold;
     cursor: pointer;
     margin-left: auto; 
@@ -499,429 +498,409 @@ html,body {
     align-items: center;
     justify-content: center;
     line-height: 1;
+    box-shadow: 0 2px 5px var(--app-shadow-color-strong), 0 0 8px var(--app-accent-magenta-glow);
+    transition: transform var(--app-transition-fast), box-shadow var(--app-transition-fast);
 }
-.plus-btn:hover { filter: brightness(1.1); }
+.plus-btn:hover { transform: scale(1.05); box-shadow: 0 3px 7px var(--app-shadow-color-strong), 0 0 12px var(--app-accent-magenta-glow); }
+.plus-btn:active { transform: scale(0.95); }
 
 
-/* === CHARACTER VIEW STYLES (largely from user's provided CSS, adapted) === */
-#characters-view .screen-main-title { /* Specifically the "Characters" text from 1st screenshot */
-     /* style inherited */
-}
+/* === CHARACTER VIEW STYLES (Enhanced) === */
 .character-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 15px; /* Increased gap */
 }
 .character-card {
     background-color: var(--current-card-bg);
-    border-radius: 12px; /* Consistent radius for cards */
+    border-radius: 16px; /* More rounded */
     overflow: hidden;
     cursor: pointer;
-    transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     border: 2px solid transparent;
     position: relative;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 5px 15px var(--app-shadow-color-soft);
+    transition: transform var(--app-transition-medium), box-shadow var(--app-transition-medium), border-color var(--app-transition-medium);
 }
 .character-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 12px rgba(0,0,0,0.2);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 8px 20px var(--app-shadow-color-strong);
+    border-color: var(--app-accent-magenta-glow);
 }
 .character-card.selected {
     border-color: var(--app-accent-magenta);
-    box-shadow: 0 0 10px var(--app-accent-magenta), 
-                0 0 15px var(--app-accent-magenta),
-                0 0 5px var(--app-accent-magenta) inset; /* Softer inset glow */
+    box-shadow: 0 0 15px var(--app-accent-magenta-glow), 
+                0 0 25px var(--app-accent-magenta-glow),
+                0 0 8px var(--app-accent-magenta) inset;
+    transform: scale(1.03); /* Slightly larger when selected */
 }
 .character-image-container {
     width: 100%;
-    padding-top: 125%; /* Aspect ratio like screenshots */
+    padding-top: 125%;
     position: relative;
     background-color: #3a3f58; 
 }
 .character-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover; 
-    object-position: center top; 
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: center top; 
+    transition: transform 0.3s ease-out;
 }
-.character-info { padding: 10px; } /* Adjusted padding */
+.character-card:hover .character-image { transform: scale(1.05); }
+.character-info { padding: 12px; }
 .character-name {
-    font-size: 1em; /* Slightly smaller than title */
-    font-weight: 600; 
-    margin-bottom: 3px;
-    display: flex; 
-    align-items: center;
+    font-size: 1.05em; font-weight: 700; 
+    margin-bottom: 4px; display: flex; align-items: center;
     color: var(--current-text-color);
 }
 .character-name .card-icon {
-    font-size: 0.85em;
-    margin-left: 6px;
+    font-size: 1em; /* Make heart same size as text */
+    margin-left: 8px;
     color: var(--app-accent-magenta);
+    filter: drop-shadow(0 0 3px var(--app-accent-magenta));
 }
 .character-description {
-    font-size: 0.75em; /* Smaller description */
-    color: var(--current-secondary-text-color); 
-    line-height: 1.3;
+    font-size: 0.8em; color: var(--current-secondary-text-color); 
+    line-height: 1.35;
 }
-.paw-print-overlay {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; overflow: hidden; 
-}
+.paw-print-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
 .paw-print {
-    position: absolute; font-size: 1.3em; opacity: 0.6;  
+    position: absolute; font-size: 1.5em; opacity: 0.7;  
     color: var(--app-accent-magenta); 
+    filter: drop-shadow(0 0 4px var(--app-accent-magenta));
 }
 .paw-print.p1 { top: 8%; left: 10%; transform: rotate(-20deg); }
 .paw-print.p2 { top: 15%; right: 8%; transform: rotate(25deg); }
 .paw-print.p3 { top: 60%; left: 15%; transform: rotate(10deg); }
 .paw-print.p4 { top: 70%; right: 20%; transform: rotate(-10deg); }
 
-/* === SETTINGS VIEW STYLES === */
+/* === SETTINGS VIEW STYLES (Enhanced) === */
 .settings-section {
-    background-color: var(--current-card-bg); /* Similar to card background for grouping */
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 15px;
+    background-color: var(--current-card-bg);
+    border-radius: 16px;
+    padding: 18px; /* Increased padding */
+    margin-bottom: 18px;
+    box-shadow: 0 3px 10px var(--app-shadow-color-soft);
+    border-top: 1px solid var(--app-border-highlight);
 }
 .settings-item-header {
-    font-size: 0.9em;
+    font-size: 0.95em; /* Slightly larger */
     color: var(--current-secondary-text-color);
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     text-transform: capitalize;
+    font-weight: 500;
 }
 .settings-plan-card {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 1.1em;
-    font-weight: 500;
+    font-size: 1.15em; /* Larger */
+    font-weight: 600; /* Bolder */
 }
-.upgrade-button.small-button {
-    background-color: var(--app-accent-magenta);
+/* General Button Style Enhancement - Small buttons */
+.upgrade-button.small-button, .recharge-button {
+    background-image: linear-gradient(135deg, var(--app-accent-magenta), var(--app-accent-magenta-darker));
     color: var(--app-primary-text);
     border: none;
-    border-radius: 20px;
-    padding: 8px 18px;
-    font-size: 0.9em;
-    font-weight: 600;
+    border-radius: 25px; /* More rounded */
+    padding: 10px 22px; /* More padding */
+    font-size: 0.95em;
+    font-weight: 700; /* Bolder */
     cursor: pointer;
+    box-shadow: 0 2px 6px var(--app-shadow-color-strong), 0 0 8px var(--app-accent-magenta-glow);
+    transition: transform var(--app-transition-fast), box-shadow var(--app-transition-fast);
 }
-.upgrade-button.small-button:hover { filter: brightness(1.1); }
+.upgrade-button.small-button:hover, .recharge-button:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 4px 10px var(--app-shadow-color-strong), 0 0 12px var(--app-accent-magenta-glow);
+}
+.upgrade-button.small-button:active, .recharge-button:active { transform: scale(0.97); }
+
 
 .style-toggle-container {
     position: relative;
     width: 100%;
-    aspect-ratio: 2 / 1; /* Approximation of screenshot */
-    border-radius: 10px;
+    aspect-ratio: 2 / 1;
+    border-radius: 12px; /* Consistent with other cards */
     overflow: hidden;
-    margin-bottom: 10px; /* Space for labels below */
+    margin-bottom: 15px; /* Increased space */
     cursor: pointer;
+    box-shadow: 0 2px 8px var(--app-shadow-color-soft);
+    border: 2px solid transparent;
+    transition: border-color var(--app-transition-medium);
 }
-.style-image {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    object-fit: cover;
-    display: none; /* Hidden by default, JS shows active */
-}
-.style-image.active { display: block; }
+.style-toggle-container:hover { border-color: var(--app-accent-purple-glow); }
+.style-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: none; }
+.style-image.active { display: block; animation: fadeIn 0.3s; }
 
-.style-toggle-labels {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 10px;
-}
+.style-toggle-labels { display: flex; justify-content: space-around; margin-top: 12px; }
 .style-label {
-    display: flex;
-    align-items: center;
-    font-size: 0.95em;
-    cursor: pointer;
+    display: flex; align-items: center; font-size: 1em; cursor: pointer;
     color: var(--current-secondary-text-color);
+    padding: 5px;
+    transition: color var(--app-transition-fast);
 }
-.style-label.active { color: var(--current-text-color); font-weight: 500; }
+.style-label:hover { color: var(--app-accent-purple); }
+.style-label.active { color: var(--app-accent-purple); font-weight: 600; }
 
-.checkbox-custom { /* General purpose custom checkbox/radio look */
+.checkbox-custom { /* Enhanced custom checkbox/radio */
     display: inline-block;
-    width: 18px;
-    height: 18px;
-    border: 2px solid var(--current-secondary-text-color);
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--app-secondary-text);
     border-radius: 50%;
-    margin-right: 8px;
+    margin-right: 10px;
     position: relative;
+    transition: border-color var(--app-transition-fast), background-color var(--app-transition-fast);
 }
-.style-label.active .checkbox-custom {
+.style-label.active .checkbox-custom { /* Purple for style toggle */
     border-color: var(--app-accent-purple);
     background-color: var(--app-accent-purple);
+    box-shadow: 0 0 8px var(--app-accent-purple-glow);
 }
-.checkbox-custom.checked::before { /* Checkmark */
+.checkbox-custom.checked::before {
     content: '✔';
     color: var(--app-primary-text);
-    font-size: 10px;
-    position: absolute;
-    top: 50%; left: 50%;
+    font-size: 11px; font-weight: bold;
+    position: absolute; top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     line-height: 1;
 }
 .settings-item-action {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 1.05em;
-    padding: 10px 0; /* Clickable area */
-    cursor: pointer;
-    font-weight: 500;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 1.1em; padding: 12px 5px; cursor: pointer;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: background-color var(--app-transition-fast);
 }
-.settings-item-action span:last-child { color: var(--current-secondary-text-color); }
-.settings-spacer { flex-grow: 1; } /* Pushes bottom nav down if content is short */
+.settings-item-action:hover { background-color: rgba(255,255,255,0.05); }
+.settings-item-action span:last-child { color: var(--app-secondary-text); font-weight: bold; font-size: 1.2em;}
+.settings-spacer { flex-grow: 1; }
 
-/* === BOTTOM NAVIGATION BAR (for Settings) === */
+/* === BOTTOM NAVIGATION BAR (Enhanced) === */
 .bottom-nav {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    background-color: var(--app-section-bg); /* slightly different bg from screenshots */
-    padding: 8px 0;
-    border-top: 1px solid var(--current-border-color);
-    position: sticky;
-    bottom: 0;
-    z-index: 100;
+    display: flex; justify-content: space-around; align-items: center;
+    background-color: var(--app-section-bg);
+    padding: 10px 0;
+    border-top: 1px solid var(--app-border-highlight); /* Softer top border */
+    position: sticky; bottom: 0; z-index: 100;
+    box-shadow: 0 -2px 8px var(--app-shadow-color-soft);
 }
 .bottom-nav-item {
-    background: none;
-    border: none;
-    color: var(--current-secondary-text-color);
-    font-size: 1.8em; /* Icon size */
-    padding: 5px 15px;
-    cursor: pointer;
+    background: none; border: none; color: var(--current-secondary-text-color);
+    font-size: 1.9em; padding: 5px 15px; cursor: pointer;
+    transition: color var(--app-transition-medium), transform var(--app-transition-medium);
 }
-.bottom-nav-item.active { color: var(--app-accent-magenta); }
+.bottom-nav-item:hover { color: var(--app-accent-magenta); transform: translateY(-2px); }
+.bottom-nav-item.active { color: var(--app-accent-magenta); transform: scale(1.1); filter: drop-shadow(0 0 5px var(--app-accent-magenta-glow));}
 
-/* === PLAN VIEW STYLES === */
+/* === PLAN VIEW STYLES (Enhanced) === */
 .plan-option {
     background-color: var(--current-card-bg);
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    border-radius: 16px;
+    padding: 18px; margin-bottom: 15px;
+    display: flex; justify-content: space-between; align-items: center;
     cursor: pointer;
-    border: 2px solid transparent;
-    transition: border-color 0.2s;
+    border: 2px solid var(--current-card-bg); /* Start with card bg color */
+    box-shadow: 0 3px 10px var(--app-shadow-color-soft);
+    transition: border-color var(--app-transition-medium), transform var(--app-transition-medium), box-shadow var(--app-transition-medium);
 }
-.plan-option.selected { border-color: var(--app-accent-purple); }
-.plan-title { font-size: 1.1em; font-weight: 600; margin-bottom: 3px; }
-.plan-gems { color: var(--app-gem-icon-color); font-weight: 500; }
-.plan-price { font-size: 1em; color: var(--current-text-color); }
-.plan-period { font-size: 0.85em; color: var(--current-secondary-text-color); }
+.plan-option:hover {
+    border-color: var(--app-accent-purple-glow);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px var(--app-shadow-color-soft);
+}
+.plan-option.selected {
+    border-color: var(--app-accent-purple);
+    box-shadow: 0 0 12px var(--app-accent-purple-glow), 0 3px 10px var(--app-shadow-color-soft);
+    transform: scale(1.02);
+}
+.plan-title { font-size: 1.15em; font-weight: 700; margin-bottom: 4px; }
+.plan-gems { color: var(--app-gem-icon-color); font-weight: 600; filter: drop-shadow(0 0 2px var(--app-gem-icon-color));}
+.plan-price { font-size: 1.05em; color: var(--current-text-color); font-weight: 500;}
+.plan-period { font-size: 0.9em; color: var(--current-secondary-text-color); }
 
-.radio-custom { /* For Plan, Language, Payment Method options */
-    display: inline-block;
-    width: 22px;
-    height: 22px;
-    border: 2px solid var(--current-secondary-text-color);
-    border-radius: 50%;
-    position: relative;
-    flex-shrink: 0;
+.radio-custom { /* Shared style for radio buttons - base */
+    display: inline-block; width: 24px; height: 24px;
+    border: 2.5px solid var(--app-secondary-text); /* Thicker border */
+    border-radius: 50%; position: relative; flex-shrink: 0;
+    transition: border-color var(--app-transition-fast), background-color var(--app-transition-fast), box-shadow var(--app-transition-fast);
 }
+/* Purple Accent Radio (Plan, Language, Payment) */
 .plan-option.selected .radio-custom,
 .language-option.selected .radio-custom,
-.payment-method-option.selected .radio-custom.purple {
+.payment-method-option.selected .radio-custom.purple { /* Ensure .purple if it has specific styling apart from just color */
     border-color: var(--app-accent-purple);
     background-color: var(--app-accent-purple);
+    box-shadow: 0 0 10px var(--app-accent-purple-glow);
 }
-.radio-custom.checked::before {
-    content: '✔';
-    color: white; /* Checkmark color */
-    font-size: 12px;
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    line-height: 1;
+.radio-custom.checked::before { /* Shared checkmark */
+    content: '✔'; color: white; font-size: 13px; font-weight: bold;
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%); line-height: 1;
 }
 .plan-features {
-    list-style: none;
-    padding: 10px 0 20px 5px;
-    font-size: 0.95em;
-    color: var(--current-secondary-text-color);
+    list-style: none; padding: 10px 0 25px 5px;
+    font-size: 1em; color: var(--current-secondary-text-color);
 }
-.plan-features li { margin-bottom: 8px; }
-.plan-features li:before { /* Custom bullet */
-    content: '';
-    display: inline-block;
-    width: 1em; /* Space for icon */
-    height: 1em;
-    margin-right: 8px;
-    font-weight: bold;
+.plan-features li { margin-bottom: 10px; display: flex; align-items: center; }
+.plan-features li::before {
+    content: ''; display: inline-block; width: 1.5em; /* Space for icon */
+    font-size: 1.2em; margin-right: 10px; font-weight: bold;
     vertical-align: middle;
+    text-align: center;
 }
-.plan-features li:nth-child(1):before { content: '⚡'; color: var(--app-energy-icon-color);}
-.plan-features li:nth-child(2):before { content: '💎'; color: var(--app-gem-icon-color); }
-.plan-features li:nth-child(3):before { content: '🧠'; } /* Placeholder, find better unicode */
+.plan-features li:nth-child(1):before { content: '⚡'; color: var(--app-energy-icon-color); filter: drop-shadow(0 0 3px var(--app-energy-icon-color));}
+.plan-features li:nth-child(2):before { content: '💎'; color: var(--app-gem-icon-color); filter: drop-shadow(0 0 3px var(--app-gem-icon-color));}
+.plan-features li:nth-child(3):before { content: '🧠'; }
 .plan-features li:nth-child(4):before { content: '📸'; }
 .plan-features li:nth-child(5):before { content: '💬'; }
 
+/* General Button Style Enhancement - Large Buttons */
 .upgrade-button-large {
-    background-color: var(--app-accent-magenta);
+    background-image: linear-gradient(135deg, var(--app-accent-magenta), var(--app-accent-magenta-darker));
     color: var(--app-primary-text);
     border: none;
-    border-radius: 10px;
-    padding: 15px;
+    border-radius: 12px; /* Less rounded than small for solid feel */
+    padding: 16px; /* More padding */
     width: 100%;
-    font-size: 1.1em;
-    font-weight: 600;
+    font-size: 1.15em;
+    font-weight: 700; /* Bolder */
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 15px;
+    box-shadow: 0 3px 8px var(--app-shadow-color-strong), 0 0 12px var(--app-accent-magenta-glow);
+    transition: transform var(--app-transition-fast), box-shadow var(--app-transition-fast), filter var(--app-transition-fast);
 }
-.upgrade-button-large:hover { filter: brightness(1.1); }
+.upgrade-button-large:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px var(--app-shadow-color-strong), 0 0 18px var(--app-accent-magenta-glow);
+    filter: brightness(1.1);
+}
+.upgrade-button-large:active { transform: scale(0.98); filter: brightness(0.9); }
 
-/* === PAYMENT METHOD VIEW STYLES === */
+/* === PAYMENT METHOD VIEW STYLES (Enhanced) === */
 .payment-summary-card {
     background-color: var(--current-card-bg);
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
+    border-radius: 16px; padding: 18px; margin-bottom: 25px;
+    display: flex; align-items: center;
+    box-shadow: 0 3px 10px var(--app-shadow-color-soft);
+    border-top: 1px solid var(--app-border-highlight);
 }
 .payment-avatar {
-    width: 60px; /* Adjust from screenshot */
-    height: 60px;
-    border-radius: 8px;
-    margin-right: 15px;
+    width: 65px; height: 65px;
+    border-radius: 10px; margin-right: 18px;
     object-fit: cover;
+    box-shadow: 0 2px 5px var(--app-shadow-color-soft);
 }
 .payment-description { flex-grow: 1; }
-.payment-description div:first-child { font-size: 1em; font-weight: 500; margin-bottom: 2px; }
-.payment-plan-details { font-size: 0.9em; color: var(--current-secondary-text-color); margin-bottom: 4px; }
-.payment-bot-name { font-size: 0.8em; color: var(--current-secondary-text-color); }
-.payment-total {
-    font-size: 1.1em;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-}
+.payment-description div:first-child { font-size: 1.05em; font-weight: 600; margin-bottom: 3px; }
+.payment-plan-details { font-size: 0.95em; color: var(--current-secondary-text-color); margin-bottom: 5px; }
+.payment-bot-name { font-size: 0.85em; color: var(--current-secondary-text-color); }
+.payment-total { font-size: 1.15em; font-weight: 700; display: flex; align-items: center; }
 .telegram-star {
-    color: #FFC107; /* Gold color for star */
-    font-size: 1.2em;
-    margin-left: 3px;
+    color: #FFC107; font-size: 1.3em; margin-left: 4px;
+    filter: drop-shadow(0 0 3px #FFC107);
 }
-.telegram-star.blue { color: #2196F3; font-size: 1.3em; margin-right: 8px; } /* For Telegram Stars text */
+.telegram-star.blue { color: #2196F3; font-size: 1.4em; margin-right: 10px; filter: drop-shadow(0 0 3px #2196F3);}
 
 .payment-method-option {
     background-color: var(--current-card-bg);
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    font-size: 1.05em;
-    font-weight: 500;
+    border-radius: 16px; padding: 18px; margin-bottom: 25px;
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; font-size: 1.1em; font-weight: 600;
+    border: 2px solid transparent; /* For selection highlight */
+    box-shadow: 0 2px 8px var(--app-shadow-color-soft);
+    transition: border-color var(--app-transition-medium), transform var(--app-transition-medium);
+}
+.payment-method-option:hover {
+     border-color: var(--app-accent-purple-glow); transform: translateY(-2px);
+}
+.payment-method-option.selected {
+    border-color: var(--app-accent-purple);
+    box-shadow: 0 0 10px var(--app-accent-purple-glow), 0 2px 8px var(--app-shadow-color-soft);
 }
 .payment-secure-note {
-    display: flex;
-    align-items: center;
-    font-size: 0.85em;
-    color: var(--current-secondary-text-color);
-    margin-bottom: 25px;
+    display: flex; align-items: center; font-size: 0.9em;
+    color: var(--current-secondary-text-color); margin-bottom: 30px;
     padding-left: 5px;
 }
 .info-icon {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    border: 1.5px solid var(--current-secondary-text-color);
-    border-radius: 50%;
-    text-align: center;
-    line-height: 14px;
-    font-size: 0.7em;
-    font-weight: bold;
-    margin-right: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px;
+    border: 2px solid var(--current-secondary-text-color);
+    border-radius: 50%; text-align: center;
+    font-size: 0.75em; font-weight: bold; margin-right: 10px;
 }
 
-/* === LANGUAGE VIEW STYLES === */
+/* === LANGUAGE VIEW STYLES (Enhanced) === */
 .language-option {
     background-color: var(--current-card-bg);
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: 500;
+    border-radius: 16px; padding: 16px; margin-bottom: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; font-size: 1.05em; font-weight: 600;
+    border: 2px solid transparent;
+    box-shadow: 0 2px 8px var(--app-shadow-color-soft);
+    transition: border-color var(--app-transition-medium), transform var(--app-transition-medium);
 }
-.language-option.selected .radio-custom { /* Uses purple check defined before */
+.language-option:hover {
+    border-color: var(--app-accent-purple-glow); transform: translateY(-2px);
+}
+.language-option.selected {
     border-color: var(--app-accent-purple);
-    background-color: var(--app-accent-purple);
+    box-shadow: 0 0 10px var(--app-accent-purple-glow), 0 2px 8px var(--app-shadow-color-soft);
 }
 .language-native {
-    font-size: 0.9em;
-    color: var(--current-secondary-text-color);
-    margin-left: auto; /* Pushes it to the right before radio */
-    margin-right: 15px;
+    font-size: 0.9em; color: var(--current-secondary-text-color);
+    margin-left: auto; margin-right: 18px;
 }
 
-/* === STORE VIEW STYLES === */
+/* === STORE VIEW STYLES (Enhanced) === */
 .store-unlimited-energy {
-    background-color: var(--current-card-bg);
-    border-radius: 12px;
-    padding: 15px;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
+    background-image: linear-gradient(45deg, var(--app-section-bg), var(--current-card-bg));
+    border-radius: 16px; padding: 20px; margin-bottom: 25px;
+    display: flex; align-items: center;
+    box-shadow: 0 5px 15px var(--app-shadow-color-soft);
+    border-top: 1px solid var(--app-border-highlight);
 }
 .store-energy-chest {
-    width: 70px; /* Adjust */
-    height: 70px;
-    margin-right: 15px;
+    width: 75px; height: 75px; margin-right: 20px;
+    filter: drop-shadow(0 0 10px var(--app-energy-icon-color));
 }
 .store-energy-info { flex-grow: 1; }
-.store-energy-info h3 { font-size: 1.15em; font-weight: 600; margin-bottom: 5px; }
-.store-energy-info p { font-size: 0.9em; color: var(--current-secondary-text-color); }
-.recharge-button {
-    background-color: var(--app-accent-magenta);
-    color: white;
-    border: none;
-    border-radius: 20px;
-    padding: 10px 20px;
-    font-size: 0.95em;
-    font-weight: 600;
-    cursor: pointer;
-}
-.recharge-button:hover { filter: brightness(1.1); }
+.store-energy-info h3 { font-size: 1.25em; font-weight: 700; margin-bottom: 6px; color: var(--app-energy-icon-color); text-shadow: 0 0 5px var(--app-energy-icon-color); }
+.store-energy-info p { font-size: 0.95em; color: var(--current-secondary-text-color); }
+/* .recharge-button already styled by .upgrade-button.small-button */
 
 .store-gem-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Responsive columns */
-    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Slightly wider min for gem packs */
+    gap: 15px;
 }
 .store-gem-pack {
     background-color: var(--current-card-bg);
-    border-radius: 12px;
-    padding: 15px;
-    text-align: center;
+    border-radius: 16px; padding: 18px; text-align: center;
     cursor: pointer;
+    box-shadow: 0 3px 10px var(--app-shadow-color-soft);
+    border: 2px solid transparent;
+    transition: transform var(--app-transition-medium), box-shadow var(--app-transition-medium), border-color var(--app-transition-medium);
+}
+.store-gem-pack:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 6px 15px var(--app-shadow-color-strong);
+    border-color: var(--app-gem-icon-color);
 }
 .store-gem-pack img {
-    width: 60px; /* Gem icon size */
-    height: 60px;
-    margin: 0 auto 10px auto;
+    width: 65px; height: 65px; margin: 0 auto 12px auto;
     object-fit: contain;
+    filter: drop-shadow(0 0 5px var(--app-gem-icon-color));
+    transition: transform var(--app-transition-medium);
 }
-.store-gem-pack h4 { font-size: 1em; font-weight: 600; margin-bottom: 5px; }
-.store-gem-pack p { font-size: 0.9em; color: var(--current-secondary-text-color); }
+.store-gem-pack:hover img { transform: scale(1.1); }
+.store-gem-pack h4 { font-size: 1.05em; font-weight: 700; margin-bottom: 6px; }
+.store-gem-pack p { font-size: 0.95em; color: var(--app-gem-icon-color); font-weight: 500; } /* Price in accent */
 
 /* === FOOTER (Main character screen) === */
 .app-footer {
-    text-align: center;
-    padding: 15px 0 10px;
-    font-size: 0.85em;
-    color: var(--app-footer-text);
-    background-color: var(--app-header-bg); /* Matching header */
+    text-align: center; padding: 18px 0 12px;
+    font-size: 0.9em; color: var(--app-footer-text);
+    background-color: var(--app-header-bg);
+    border-top: 1px solid var(--app-border-color); /* Match header bottom border */
 }
