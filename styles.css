@@ -307,11 +307,7 @@ img,video {
     --tw-contain-paint: ;
     --tw-contain-style:
 }
-/* Utility classes like .container, .fixed, etc. go here ...
-   [... ALL THE UTILITY CLASSES YOU PROVIDED ...]
-   I am truncating this part for brevity in the response,
-   but you should PASTE THE ENTIRE SET OF UTILITY CLASSES HERE
-*/
+
 .active\:scale-\[0\.98\]:active {
     --tw-scale-x: .98 !important;
     --tw-scale-y: .98 !important;
@@ -319,7 +315,6 @@ img,video {
 }
 
 
-/* Global variable definitions from framework */
 * {
     -webkit-hyphens: auto;
     hyphens: auto;
@@ -339,276 +334,210 @@ img,video {
     --black-100: #222222;
     --milk-100: #f3f7fa;
     --white-100: #fff;
-    --purple-100: #7564df; /* This is a lavender-purple, not the screenshot's magenta */
+    --purple-100: #7564df; /* Lavender */
     --purple-200: #bea0ff;
     --purple-300: #a881ff;
     --shadow-dark-100: 0px 0px 9px rgba(0, 0, 0, .07);
     --shadow-dark-200: 0px 1px 4px rgba(0, 0, 0, .25);
     --shadow-dark-300: 0px 0px 4px rgba(0, 0, 0, .18);
-    --shadow-accent: 0px 0px 2.5vw var(--purple-100); /* Uses the lavender-purple */
+    --shadow-accent: 0px 0px 2.5vw var(--purple-100); 
     --menu-surface-bg: linear-gradient( to bottom, rgba(171, 171, 171, .1), rgba(143, 143, 143, .1) ), rgba(0, 0, 0, .6);
     --dark-surface-gradient: linear-gradient( to bottom, rgba(84, 84, 84, .1), rgba(143, 143, 143, .1) );
 
-    /* Custom variables for screenshot-specific styling */
-    --app-screenshot-main-bg: #0E0F1A;
-    --app-screenshot-content-bg: #121422;
-    --app-screenshot-header-bg: #0E0F1A;
-    --app-screenshot-footer-text: #656D84;
-    --app-screenshot-primary-text: #FFFFFF;
-    --app-screenshot-secondary-text: #A8B2C0;
-    --app-screenshot-icon-color: #C0C8D1;
-    --app-screenshot-card-bg: #262A3F;
-    --app-screenshot-gem-bar-bg: #1E2236;
-    --app-screenshot-accent-magenta: #D32FDB; /* Screenshot's magenta */
-    --app-screenshot-gem-icon: #6CDAFF;
-    --app-screenshot-energy-icon: #FFD700;
+    /* Custom variables from screenshots */
+    --app-bg-main: #0E0F1A; /* Overall app background if not set by body.dark */
+    --app-bg-content: #121422; /* Background for content areas of views */
+    --app-header-bg: #0E0F1A; /* Background for the top header bar */
+    --app-footer-text: #656D84;
+    --app-primary-text: #FFFFFF;
+    --app-secondary-text: #A8B2C0;
+    --app-placeholder-text: #A8B2C0;
+    --app-icon-color: #C0C8D1;
+    --app-card-bg: #262A3F; /* Used for character cards, plan options, settings items etc. */
+    --app-section-bg: #1A1D30; /* slightly lighter bg for some grouped sections */
+    --app-gem-bar-bg: #1E2236; /* Background for the gem/energy bar in header */
+    --app-accent-magenta: #D32FDB; /* Screenshot's magenta for buttons, highlights */
+    --app-accent-purple: #7C5CFF; /* Screenshot's purple for some checkmarks */
+    --app-gem-icon-color: #6CDAFF;
+    --app-energy-icon-color: #FFD700;
+    --app-border-color: #3A3F58; /* subtle borders for items */
+    --app-input-bg: #1E2236;
 }
 
 html.dark {
-    --app-bg-color: var(--gray-100); /* Framework: #010101 */
-    /* Overriding with screenshot specific for main layout areas not covered by utility classes */
-    /* Let utility classes like bg-black handle elements that use them directly. */
-    --app-text-color: var(--white-100);
-    --text-on-dark-bg-color: var(--white-100);
-    --surface-gradient: linear-gradient( to bottom, rgba(171, 171, 171, .1), rgba(143, 143, 143, .1) );
-    --accent-gradient: linear-gradient( to right bottom, rgba(133, 107, 255, 1), rgba(123, 100, 231, 1) );
-    --accent-gradient-plus-button: radial-gradient( 90% 100% at center left, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0) 58.666% , rgba(133, 107, 255, .75) 58.777% , rgb(91, 73, 174, 1) );
-    --stroke-plus-button: linear-gradient( to right, rgba(48, 48, 48, 0), rgba(48, 48, 48, 0) 33%, rgba(255, 255, 255, .1), rgba(255, 255, 255, .17) );
-    --shadow: var(--shadow-dark-200);
-    --shadow-sm: var(--shadow-dark-100);
-    --sub-menu-separator-fill: var(--stroke-to-bottom);
-
+    --current-app-bg: var(--app-bg-main);
+    --current-content-bg: var(--app-bg-content);
+    --current-text-color: var(--app-primary-text);
+    --current-secondary-text-color: var(--app-secondary-text);
+    --current-card-bg: var(--app-card-bg);
+    --current-header-bg: var(--app-header-bg);
+    --current-border-color: var(--app-border-color);
+    background-color: var(--current-app-bg);
+    color: var(--current-text-color);
 }
+/* ... other html.dark settings from original user CSS ... */
 
-/* Styles for surface-border if used (from framework) */
-html.dark .surface-border {
-    --current-border-width: .2544529262086514vw;
-    --current-background: var(--stroke);
-    padding: var(--current-border-width);
-    position: relative;
-    z-index: 0
-}
-
-html.dark .inset-surface-border {
-    --current-border-width: .2544529262086514vw;
-    --current-background: var(--stroke);
-    padding: 0;
-    position: relative;
-    z-index: 0
-}
-
-html.dark .surface-border:before,html.dark .inset-surface-border:before {
-    content: "";
-    position: absolute;
-    z-index: -1;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    padding: var(--current-border-width);
-    border-radius: var(--current-border-radius);
-    background: var(--current-background);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude
-}
-
-/* Light mode from framework - kept for completeness but our UI is dark based on screenshot */
-html.light {
-    --app-bg-color: var(--milk-100);
-    --app-text-color: var(--black-100);
-    --text-on-dark-bg-color: var(--white-100);
-    --surface-gradient: rgba(255, 255, 255, .3);
-    --surface-border-gradient: linear-gradient( to bottom right, rgba(233, 246, 255, 1), rgba(232, 237, 242, .51), rgba(238, 246, 251, .59) );
-    --sub-menu-separator-fill: linear-gradient(var(--gray-50), var(--gray-50));
-    --accent-gradient: linear-gradient( to right bottom, var(--purple-200), var(--purple-300) );
-    --shadow: var(--shadow-dark-100);
-    --shadow-accent: var(--shadow-accent);
-    --shadow-sm: var(--shadow-dark-100)
-}
-html.light .surface-border {
-    border-width: .2544529262086514vw
-}
-html.light .surface-border {
-    --tw-border-opacity: 1;
-    border-color: rgb(233 246 255 / var(--tw-border-opacity))
-}
-
-/* Rounded utilities from framework (mapping vw to radius) */
-.rounded-sm { --current-border-radius: 2.77vw; border-radius: var(--current-border-radius) }
-.rounded { --current-border-radius: 3.33vw; border-radius: var(--current-border-radius) }
-.rounded-lg { --current-border-radius: 10.27vw; border-radius: var(--current-border-radius) }
-.rounded-full { --current-border-radius: 9999px; border-radius: var(--current-border-radius) }
-.rounded-t-lg { --current-border-radius: 10.27vw 10.27vw 0 0; border-radius: var(--current-border-radius) }
-.rounded-t { --current-border-radius: 3.33vw 3.33vw 0 0; border-radius: var(--current-border-radius) }
-
-html,body,#app { /* #app might be specific to the framework's root */
+html,body { 
     display: flex;
     height: 100%;
     width: 100%;
     flex-grow: 1;
     flex-direction: column;
-    padding: 0
-}
-
-/* Assuming default is dark theme based on screenshot */
-html, body {
-    background-color: var(--app-screenshot-main-bg); /* Use screenshot's bg */
-    font-family: Roboto,SF Pro,sans-serif; /* From framework */
-    color: var(--app-screenshot-primary-text); /* From screenshot */
+    padding: 0;
+    background-color: var(--current-app-bg);
+    font-family: 'Roboto', SF Pro, sans-serif;
+    color: var(--current-text-color);
     line-height: 1.4;
+    overflow-x: hidden; /* Prevent horizontal scroll */
 }
-
-body {
-    position: relative;
-    z-index: 0
-}
-/* Gradient/Surface utilities from framework - can be used if needed */
-.background-gradient { background: var(--surface-gradient) }
-.pressable-surface { cursor: pointer; background: var(--surface-gradient); transition: all .1s ease-in }
-.pressable-surface:active { transform: scale(.98); background: linear-gradient(to bottom,#ffffff0d,#ffffff0d),linear-gradient(to bottom,#ababab1a,#8f8f8f1a) }
-.menu-surface { /* Styles from framework for menus */ }
-.accent-surface { background: var(--accent-gradient) } /* This is the lavender accent from framework */
-/* ... Other framework specific interaction styles ... */
-
-/* Spinner, app-header, react-modal-sheet -- keep from framework if they are used */
-
 /* === PROVIDED BASE/FRAMEWORK CSS END === */
 
 
-/* === CUSTOM COMPONENT STYLES FOR SCREENSHOT UI (placed AFTER framework CSS) === */
-
-.app-container { /* This is our main wrapper from character_selector.html */
+/* === APP STRUCTURE AND GENERIC VIEW STYLES === */
+.app-container {
     display: flex;
     flex-direction: column;
     min-height: 100vh; 
-    padding: 15px 15px 5px 15px;
+    width: 100%;
+    max-width: 100vw; /* Telegram WebApp max width */
     box-sizing: border-box;
-    background-color: var(--app-screenshot-content-bg); /* Screenshot's content area bg */
+    margin: 0 auto;
+    padding: 0; /* Padding managed by inner elements */
 }
 
 .app-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 0px;
-    margin-bottom: 10px;
-    background-color: var(--app-screenshot-header-bg); /* Screenshot's header bg */
-    /* position: sticky; top: 0; z-index: 10; */ /* Uncomment if sticky header is desired */
+    padding: 10px 15px;
+    background-color: var(--current-header-bg);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    min-height: 50px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
-
-.header-title {
-    font-size: 1.1em;
+.app-header .header-left {
+    display: flex;
+    align-items: center;
+}
+.app-header .header-title-main {
+    font-size: 1.15em;
     font-weight: 600;
-    color: var(--app-screenshot-primary-text);
+    color: var(--current-text-color);
 }
-
-.header-actions .icon-button {
+.app-header .icon-button {
     font-size: 1.4em;
-    margin-left: 18px;
     cursor: pointer;
-    color: var(--app-screenshot-icon-color);
-}
-.header-actions .icon-button:hover {
-    color: var(--app-screenshot-primary-text);
-}
-
-.main-content {
-    flex-grow: 1;
-}
-
-.characters-title {
-    font-size: 2.2em;
-    font-weight: 700; /* Corresponds to font-bold or similar utility if framework provides it */
-    margin-bottom: 15px; /* ~mb-f16px */
-    color: var(--app-screenshot-primary-text);
-}
-
-.gem-bar {
-    display: flex;
-    align-items: center;
-    background-color: var(--app-screenshot-gem-bar-bg); 
-    border-radius: 30px; /* Framework may have .rounded-full or similar utility */
-    padding: 6px 12px;   /* ~py-f6px px-f12px */
-    margin-bottom: 20px; /* ~mb-f20px */
-    font-size: 0.95em;   /* Smaller than base */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.gem-bar span {
-    margin-right: 6px;
-    display: flex;
-    align-items: center;
-}
-.gem-bar .gem-count {
-    font-weight: 600; /* font-semibold */
-    margin-left: -2px;
-    margin-right: 10px;
-}
-.gem-icon { font-size: 1.1em; color: var(--app-screenshot-gem-icon); }
-.energy-icon { font-size: 1.1em; color: var(--app-screenshot-energy-icon); }
-.energy-status {
-    margin-right: 10px;
-    font-weight: 600; /* font-semibold */
-}
-.plus-btn {
-    background-color: var(--app-screenshot-accent-magenta); 
-    color: var(--app-screenshot-primary-text); /* Plus button text color (white) */
+    color: var(--app-icon-color);
+    background: none;
     border: none;
-    border-radius: 50%; /* rounded-full */
-    width: 26px;
-    height: 26px;
-    font-size: 1.3em;
-    font-weight: bold; /* font-bold */
+    padding: 5px;
+}
+.app-header #back-btn {
+    margin-right: 10px;
+    font-size: 1.6em;
+    font-weight: bold;
+}
+.app-header .header-right {
+    display: flex;
+    align-items: center;
+}
+.app-header .header-actions-main .icon-button {
+     margin-left: 15px;
+}
+
+
+.view-container {
+    display: none; /* Hidden by default, JS will show active view */
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 15px;
+    background-color: var(--current-content-bg);
+    overflow-y: auto;
+}
+.view-container.active-view {
+    display: flex;
+}
+
+.screen-main-title { /* For "Characters", "Settings" etc. headings */
+    font-size: 2.2em;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: var(--current-text-color);
+}
+
+/* === GEM BAR (as seen in Characters, Settings, Store) === */
+.gem-bar { /* This class styles the actual bar elements */
+    display: flex;
+    align-items: center;
+    background-color: var(--app-gem-bar-bg); 
+    border-radius: 30px;
+    padding: 6px 10px;
+    font-size: 0.9em;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    color: var(--current-text-color);
+    min-width: 150px; /* Ensure it doesn't get too squished */
+}
+.gem-bar span { margin-right: 5px; display: flex; align-items: center; }
+.gem-bar .gem-count { font-weight: 600; margin-left: -2px; margin-right: 8px; }
+.gem-icon { font-size: 1.1em; color: var(--app-gem-icon-color); }
+.energy-icon { font-size: 1.1em; color: var(--app-energy-icon-color); }
+.energy-status { margin-right: 8px; font-weight: 600; }
+.plus-btn {
+    background-color: var(--app-accent-magenta); 
+    color: var(--current-text-color);
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 1.2em;
+    font-weight: bold;
     cursor: pointer;
     margin-left: auto; 
     display: flex;
     align-items: center;
     justify-content: center;
-    line-height: 1; /* Ensure "+" is centered */
+    line-height: 1;
 }
-.plus-btn:hover {
-    filter: brightness(1.1);
-}
+.plus-btn:hover { filter: brightness(1.1); }
 
+
+/* === CHARACTER VIEW STYLES (largely from user's provided CSS, adapted) === */
+#characters-view .screen-main-title { /* Specifically the "Characters" text from 1st screenshot */
+     /* style inherited */
+}
 .character-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* grid-cols-2 */
-    gap: 12px; /* ~gap-f12px from framework if values match desired output */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
 }
-
 .character-card {
-    background-color: var(--app-screenshot-card-bg);
-    border-radius: 10px; /* Slightly less than framework .rounded if using specific value */
+    background-color: var(--current-card-bg);
+    border-radius: 12px; /* Consistent radius for cards */
     overflow: hidden;
     cursor: pointer;
     transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    border: 2px solid transparent; /* Key for the glow effect */
+    border: 2px solid transparent;
     position: relative;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.15); /* Softer shadow than framework default perhaps */
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
 }
 .character-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 12px rgba(0,0,0,0.2);
 }
-
 .character-card.selected {
-    border-color: var(--app-screenshot-accent-magenta);
-    /* Using CSS box-shadow for the glow */
-    box-shadow: 0 0 10px var(--app-screenshot-accent-magenta), 
-                0 0 15px var(--app-screenshot-accent-magenta),
-                /* Inset shadow for inner part of the glow effect if needed, a bit subtle */
-                0 0 8px var(--app-screenshot-accent-magenta) inset;
+    border-color: var(--app-accent-magenta);
+    box-shadow: 0 0 10px var(--app-accent-magenta), 
+                0 0 15px var(--app-accent-magenta),
+                0 0 5px var(--app-accent-magenta) inset; /* Softer inset glow */
 }
-
 .character-image-container {
     width: 100%;
-    padding-top: 125%; /* Aspect ratio. Original was 133% for 3:4, this is closer to 4:5 */
+    padding-top: 125%; /* Aspect ratio like screenshots */
     position: relative;
-    background-color: #3a3f58; /* Image placeholder color */
+    background-color: #3a3f58; 
 }
-
 .character-image {
     position: absolute;
     top: 0;
@@ -618,63 +547,381 @@ body {
     object-fit: cover; 
     object-position: center top; 
 }
-
-.character-info {
-    padding: 12px 10px; /* ~p-f12px p-f10px */
-}
-
+.character-info { padding: 10px; } /* Adjusted padding */
 .character-name {
-    font-size: 1.05em;
-    font-weight: 600; /* font-semibold */
+    font-size: 1em; /* Slightly smaller than title */
+    font-weight: 600; 
     margin-bottom: 3px;
     display: flex; 
-    align-items: center; /* items-center */
-    color: var(--app-screenshot-primary-text);
+    align-items: center;
+    color: var(--current-text-color);
 }
-.character-name .card-icon { /* Icon for Sakura's heart */
+.character-name .card-icon {
     font-size: 0.85em;
     margin-left: 6px;
-    color: var(--app-screenshot-accent-magenta); /* Heart is magenta */
+    color: var(--app-accent-magenta);
 }
-
 .character-description {
-    font-size: 0.8em; /* Smaller text for description */
-    color: var(--app-screenshot-secondary-text); 
+    font-size: 0.75em; /* Smaller description */
+    color: var(--current-secondary-text-color); 
     line-height: 1.3;
 }
-
 .paw-print-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none; 
-    overflow: hidden; 
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; overflow: hidden; 
 }
-
 .paw-print {
-    position: absolute;
-    font-size: 1.5em; 
-    opacity: 0.5;  
-    color: var(--app-screenshot-accent-magenta); 
-    filter: brightness(1.1);
-    /* display: none; by default if not on Nya's card - handled by JS logic or more specific CSS below */
+    position: absolute; font-size: 1.3em; opacity: 0.6;  
+    color: var(--app-accent-magenta); 
 }
-/* Specific positioning for paw prints */
 .paw-print.p1 { top: 8%; left: 10%; transform: rotate(-20deg); }
 .paw-print.p2 { top: 15%; right: 8%; transform: rotate(25deg); }
+.paw-print.p3 { top: 60%; left: 15%; transform: rotate(10deg); }
+.paw-print.p4 { top: 70%; right: 20%; transform: rotate(-10deg); }
 
-/* Make paws visible specifically on Nya's card by targeting its data-attribute (set by JS) */
-.character-card[data-display-name="Nya"] .paw-print {
-    display: block;
+/* === SETTINGS VIEW STYLES === */
+.settings-section {
+    background-color: var(--current-card-bg); /* Similar to card background for grouping */
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+.settings-item-header {
+    font-size: 0.9em;
+    color: var(--current-secondary-text-color);
+    margin-bottom: 10px;
+    text-transform: capitalize;
+}
+.settings-plan-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1em;
+    font-weight: 500;
+}
+.upgrade-button.small-button {
+    background-color: var(--app-accent-magenta);
+    color: var(--app-primary-text);
+    border: none;
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-size: 0.9em;
+    font-weight: 600;
+    cursor: pointer;
+}
+.upgrade-button.small-button:hover { filter: brightness(1.1); }
+
+.style-toggle-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2 / 1; /* Approximation of screenshot */
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px; /* Space for labels below */
+    cursor: pointer;
+}
+.style-image {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover;
+    display: none; /* Hidden by default, JS shows active */
+}
+.style-image.active { display: block; }
+
+.style-toggle-labels {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+.style-label {
+    display: flex;
+    align-items: center;
+    font-size: 0.95em;
+    cursor: pointer;
+    color: var(--current-secondary-text-color);
+}
+.style-label.active { color: var(--current-text-color); font-weight: 500; }
+
+.checkbox-custom { /* General purpose custom checkbox/radio look */
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--current-secondary-text-color);
+    border-radius: 50%;
+    margin-right: 8px;
+    position: relative;
+}
+.style-label.active .checkbox-custom {
+    border-color: var(--app-accent-purple);
+    background-color: var(--app-accent-purple);
+}
+.checkbox-custom.checked::before { /* Checkmark */
+    content: '✔';
+    color: var(--app-primary-text);
+    font-size: 10px;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1;
+}
+.settings-item-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.05em;
+    padding: 10px 0; /* Clickable area */
+    cursor: pointer;
+    font-weight: 500;
+}
+.settings-item-action span:last-child { color: var(--current-secondary-text-color); }
+.settings-spacer { flex-grow: 1; } /* Pushes bottom nav down if content is short */
+
+/* === BOTTOM NAVIGATION BAR (for Settings) === */
+.bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: var(--app-section-bg); /* slightly different bg from screenshots */
+    padding: 8px 0;
+    border-top: 1px solid var(--current-border-color);
+    position: sticky;
+    bottom: 0;
+    z-index: 100;
+}
+.bottom-nav-item {
+    background: none;
+    border: none;
+    color: var(--current-secondary-text-color);
+    font-size: 1.8em; /* Icon size */
+    padding: 5px 15px;
+    cursor: pointer;
+}
+.bottom-nav-item.active { color: var(--app-accent-magenta); }
+
+/* === PLAN VIEW STYLES === */
+.plan-option {
+    background-color: var(--current-card-bg);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s;
+}
+.plan-option.selected { border-color: var(--app-accent-purple); }
+.plan-title { font-size: 1.1em; font-weight: 600; margin-bottom: 3px; }
+.plan-gems { color: var(--app-gem-icon-color); font-weight: 500; }
+.plan-price { font-size: 1em; color: var(--current-text-color); }
+.plan-period { font-size: 0.85em; color: var(--current-secondary-text-color); }
+
+.radio-custom { /* For Plan, Language, Payment Method options */
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--current-secondary-text-color);
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+}
+.plan-option.selected .radio-custom,
+.language-option.selected .radio-custom,
+.payment-method-option.selected .radio-custom.purple {
+    border-color: var(--app-accent-purple);
+    background-color: var(--app-accent-purple);
+}
+.radio-custom.checked::before {
+    content: '✔';
+    color: white; /* Checkmark color */
+    font-size: 12px;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1;
+}
+.plan-features {
+    list-style: none;
+    padding: 10px 0 20px 5px;
+    font-size: 0.95em;
+    color: var(--current-secondary-text-color);
+}
+.plan-features li { margin-bottom: 8px; }
+.plan-features li:before { /* Custom bullet */
+    content: '';
+    display: inline-block;
+    width: 1em; /* Space for icon */
+    height: 1em;
+    margin-right: 8px;
+    font-weight: bold;
+    vertical-align: middle;
+}
+.plan-features li:nth-child(1):before { content: '⚡'; color: var(--app-energy-icon-color);}
+.plan-features li:nth-child(2):before { content: '💎'; color: var(--app-gem-icon-color); }
+.plan-features li:nth-child(3):before { content: '🧠'; } /* Placeholder, find better unicode */
+.plan-features li:nth-child(4):before { content: '📸'; }
+.plan-features li:nth-child(5):before { content: '💬'; }
+
+.upgrade-button-large {
+    background-color: var(--app-accent-magenta);
+    color: var(--app-primary-text);
+    border: none;
+    border-radius: 10px;
+    padding: 15px;
+    width: 100%;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+}
+.upgrade-button-large:hover { filter: brightness(1.1); }
+
+/* === PAYMENT METHOD VIEW STYLES === */
+.payment-summary-card {
+    background-color: var(--current-card-bg);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
+.payment-avatar {
+    width: 60px; /* Adjust from screenshot */
+    height: 60px;
+    border-radius: 8px;
+    margin-right: 15px;
+    object-fit: cover;
+}
+.payment-description { flex-grow: 1; }
+.payment-description div:first-child { font-size: 1em; font-weight: 500; margin-bottom: 2px; }
+.payment-plan-details { font-size: 0.9em; color: var(--current-secondary-text-color); margin-bottom: 4px; }
+.payment-bot-name { font-size: 0.8em; color: var(--current-secondary-text-color); }
+.payment-total {
+    font-size: 1.1em;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+.telegram-star {
+    color: #FFC107; /* Gold color for star */
+    font-size: 1.2em;
+    margin-left: 3px;
+}
+.telegram-star.blue { color: #2196F3; font-size: 1.3em; margin-right: 8px; } /* For Telegram Stars text */
+
+.payment-method-option {
+    background-color: var(--current-card-bg);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-size: 1.05em;
+    font-weight: 500;
+}
+.payment-secure-note {
+    display: flex;
+    align-items: center;
+    font-size: 0.85em;
+    color: var(--current-secondary-text-color);
+    margin-bottom: 25px;
+    padding-left: 5px;
+}
+.info-icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--current-secondary-text-color);
+    border-radius: 50%;
+    text-align: center;
+    line-height: 14px;
+    font-size: 0.7em;
+    font-weight: bold;
+    margin-right: 8px;
 }
 
+/* === LANGUAGE VIEW STYLES === */
+.language-option {
+    background-color: var(--current-card-bg);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 500;
+}
+.language-option.selected .radio-custom { /* Uses purple check defined before */
+    border-color: var(--app-accent-purple);
+    background-color: var(--app-accent-purple);
+}
+.language-native {
+    font-size: 0.9em;
+    color: var(--current-secondary-text-color);
+    margin-left: auto; /* Pushes it to the right before radio */
+    margin-right: 15px;
+}
+
+/* === STORE VIEW STYLES === */
+.store-unlimited-energy {
+    background-color: var(--current-card-bg);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
+.store-energy-chest {
+    width: 70px; /* Adjust */
+    height: 70px;
+    margin-right: 15px;
+}
+.store-energy-info { flex-grow: 1; }
+.store-energy-info h3 { font-size: 1.15em; font-weight: 600; margin-bottom: 5px; }
+.store-energy-info p { font-size: 0.9em; color: var(--current-secondary-text-color); }
+.recharge-button {
+    background-color: var(--app-accent-magenta);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+}
+.recharge-button:hover { filter: brightness(1.1); }
+
+.store-gem-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Responsive columns */
+    gap: 12px;
+}
+.store-gem-pack {
+    background-color: var(--current-card-bg);
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+}
+.store-gem-pack img {
+    width: 60px; /* Gem icon size */
+    height: 60px;
+    margin: 0 auto 10px auto;
+    object-fit: contain;
+}
+.store-gem-pack h4 { font-size: 1em; font-weight: 600; margin-bottom: 5px; }
+.store-gem-pack p { font-size: 0.9em; color: var(--current-secondary-text-color); }
+
+/* === FOOTER (Main character screen) === */
 .app-footer {
-    text-align: center; /* text-center */
-    padding: 15px 0 5px;
-    font-size: 0.85em; /* Smaller text */
-    color: var(--app-screenshot-footer-text);
-    margin-top: auto; /* Push to bottom if content is short */
-    background-color: var(--app-screenshot-header-bg); /* Footer matches header bg */
+    text-align: center;
+    padding: 15px 0 10px;
+    font-size: 0.85em;
+    color: var(--app-footer-text);
+    background-color: var(--app-header-bg); /* Matching header */
 }
