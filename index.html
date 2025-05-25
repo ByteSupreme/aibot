@@ -79,6 +79,18 @@
             <button class="upgrade-button-large" id="save-character-btn">Create Character (15 ⭐)</button>
         </div>
 
+        <div id="recharge-energy-view" class="view-container">
+            <h1 class="screen-main-title">Recharge Energy</h1>
+            <div class="form-section">
+                <label for="energy-amount">Amount of Energy:</label>
+                <input type="number" id="energy-amount" name="energy-amount" placeholder="e.g., 50" min="1" value="50">
+            </div>
+            <div class="form-section">
+                <p>Estimated cost: <span id="estimated-energy-stars">100</span> <span class="telegram-star">⭐</span> (2 ⭐ per energy point)</p>
+            </div>
+            <button class="upgrade-button-large" id="confirm-recharge-btn">Recharge Energy</button>
+        </div>
+
 
         <div id="plan-view" class="view-container">
             <h1 class="screen-main-title">Plan</h1>
@@ -208,10 +220,10 @@
             </div>
         </div>
 
-        <div id="payment-gems-view" class="view-container">
+        <div id="payment-item-view" class="view-container"> <!-- Unified payment screen for items -->
             <h1 class="screen-main-title">Payment Method</h1>
             <div class="payment-summary-card">
-                 <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=Gems&font=roboto" alt="Item Pack" id="payment-item-avatar" class="payment-avatar">
+                 <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=Item&font=roboto" alt="Item Pack" id="payment-item-avatar" class="payment-avatar">
                 <div class="payment-description">
                     <div id="payment-item-purchase-title">Purchasing an item</div>
                     <div class="payment-plan-details" id="payment-item-details">Item Details</div>
