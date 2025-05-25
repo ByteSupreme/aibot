@@ -3,39 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Character Selection</title>
+    <title>Lucid Dreams</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
-<body>
+<body class="dark"> <!-- Assuming dark mode as default from screenshots -->
+
     <div class="app-container">
+
+        <!-- === Generic Header (adaptable for different views) === -->
         <header class="app-header">
-            <div class="header-title">Lucid Dreams (18+)</div>
-            <div class="header-actions">
-                <span class="icon-button" id="more-options-btn">⋮</span>
-                <span class="icon-button" id="close-btn">✕</span>
+            <div class="header-left">
+                <button class="icon-button" id="back-btn" style="display: none;"><</button>
+                <span id="header-title-text" class="header-title-main">Characters</span>
+            </div>
+            <div class="header-right gem-bar-container" id="header-gem-bar-container">
+                 <!-- Gem bar will be injected here or placed statically depending on view -->
+            </div>
+            <div class="header-actions-main" id="header-actions-main">
+                <!-- Contextual actions like More options or Close button -->
             </div>
         </header>
 
-        <div class="main-content">
-            <h1 class="characters-title">Characters</h1>
-            
-            <div class="gem-bar">
-                <span class="gem-icon">💎</span>
-                <span class="gem-count">0</span>
-                <span class="energy-icon">⚡️</span>
-                <span class="energy-status">100/100</span>
-                <button class="plus-btn">➕</button>
-            </div>
-
+        <!-- === View Containers === -->
+        <div id="characters-view" class="view-container active-view">
+            <h1 class="screen-main-title">Characters</h1>
             <div class="character-grid" id="character-grid">
                 <!-- Character cards will be injected here by script.js -->
             </div>
         </div>
 
-        <footer class="app-footer">
-            @luciddreams
+        <div id="settings-view" class="view-container">
+            <!-- Settings screen content -->
+            <div class="settings-section">
+                <div class="settings-item-header">Your plan</div>
+                <div class="settings-plan-card">
+                    <span>Free</span>
+                    <button class="upgrade-button small-button" id="settings-upgrade-plan-btn">Upgrade</button>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                 <div class="settings-item-header">Style</div>
+                 <div class="style-toggle-container">
+                    <img src="https://placehold.co/350x180/2A203C/E0E0E0/png?text=Realistic+Style&font=roboto" alt="Style Realistic" id="style-realistic" class="style-image active">
+                    <img src="https://placehold.co/350x180/3A2F4B/E0E0E0/png?text=Anime+Style&font=roboto" alt="Style Anime" id="style-anime" class="style-image">
+                    <div class="style-toggle-labels">
+                        <div class="style-label realistic active">
+                            <span class="checkbox-custom checked"></span>Realistic
+                        </div>
+                        <div class="style-label anime">
+                            <span class="checkbox-custom"></span>Anime
+                        </div>
+                    </div>
+                 </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-item-header">Language</div>
+                <div class="settings-item-action" id="settings-language-btn">
+                    <span>English</span>
+                    <span>></span>
+                </div>
+            </div>
+            
+            <div class="settings-spacer"></div>
+        </div>
+
+        <div id="plan-view" class="view-container">
+            <!-- Plan screen content -->
+            <div class="plan-option selected" data-plan="1month">
+                <div>
+                    <div class="plan-title">1 Month <span class="plan-gems">+30 💎</span></div>
+                    <div class="plan-price">$7.50 <span class="plan-period">/ month</span></div>
+                </div>
+                <span class="radio-custom checked"></span>
+            </div>
+            <div class="plan-option" data-plan="3months">
+                <div>
+                    <div class="plan-title">3 Months <span class="plan-gems">+70 💎</span></div>
+                    <div class="plan-price">$15.00 <span class="plan-period">/ 3 months</span></div>
+                </div>
+                <span class="radio-custom"></span>
+            </div>
+            <div class="plan-option" data-plan="1year">
+                <div>
+                    <div class="plan-title">1 Year <span class="plan-gems">+210 💎</span></div>
+                    <div class="plan-price">$45.00 <span class="plan-period">/ year</span></div>
+                </div>
+                <span class="radio-custom"></span>
+            </div>
+
+            <ul class="plan-features">
+                <li>⚡ Infinite energy</li>
+                <li>💎 30 gems for shopping</li>
+                <li>🧠 Our most advanced AI engines</li>
+                <li>📸 Unlimited photo generation</li>
+                <li>💬 Near instant reply times</li>
+            </ul>
+            <button class="upgrade-button-large" id="plan-upgrade-btn">Upgrade 💎</button>
+        </div>
+
+        <div id="payment-subscription-view" class="view-container">
+            <!-- Payment method for subscription -->
+            <div class="payment-summary-card">
+                <img src="https://placehold.co/80x80/7E57C2/FFFFFF/png?text=LD&font=roboto" alt="Lucid Dreams Bot" class="payment-avatar">
+                <div class="payment-description">
+                    <div>Purchasing a subscription</div>
+                    <div class="payment-plan-details">1 Year + 210 💎</div>
+                    <div class="payment-bot-name">Lucid Dreams Bot</div>
+                </div>
+                <div class="payment-total">
+                    2250 <span class="telegram-star">⭐</span>
+                </div>
+            </div>
+            <div class="payment-method-option selected">
+                <span><span class="telegram-star blue">⭐</span> Telegram Stars</span>
+                <span class="radio-custom checked purple"></span>
+            </div>
+            <div class="payment-secure-note">
+                <span class="info-icon">ⓘ</span> All payments are anonymous and secure
+            </div>
+            <button class="upgrade-button-large" id="payment-sub-confirm-btn">Upgrade 💎</button>
+        </div>
+        
+        <div id="language-view" class="view-container">
+            <!-- Language selection screen -->
+            <div class="language-option selected" data-lang="ru">
+                Русский <span class="language-native">Русский</span>
+                <span class="radio-custom checked purple"></span>
+            </div>
+            <div class="language-option" data-lang="en">
+                English <span class="language-native">English</span>
+                <span class="radio-custom"></span>
+            </div>
+            <div class="language-option" data-lang="fr">
+                French <span class="language-native">Français</span>
+                <span class="radio-custom"></span>
+            </div>
+            <div class="language-option" data-lang="it">
+                Italian <span class="language-native">Italiano</span>
+                <span class="radio-custom"></span>
+            </div>
+            <div class="language-option" data-lang="de">
+                German <span class="language-native">Deutsch</span>
+                <span class="radio-custom"></span>
+            </div>
+             <div class="language-option" data-lang="es">
+                Spanish <span class="language-native">Español</span>
+                <span class="radio-custom"></span>
+            </div>
+        </div>
+
+        <div id="store-view" class="view-container">
+            <!-- Store screen content -->
+            <div class="store-unlimited-energy">
+                <img src="https://placehold.co/100x100/FFC107/333333/png?text=Chest&font=roboto" alt="Unlimited Energy Chest" class="store-energy-chest">
+                <div class="store-energy-info">
+                    <h3>Unlimited Energy</h3>
+                    <p>Remove the barriers. Gain endless energy!</p>
+                </div>
+                <button class="recharge-button">Recharge</button>
+            </div>
+
+            <div class="store-gem-grid">
+                <div class="store-gem-pack">
+                    <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsL&font=roboto" alt="5000 Gems">
+                    <h4>5000 Gems</h4>
+                    <p>$175.00</p>
+                </div>
+                <div class="store-gem-pack">
+                    <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsXS&font=roboto" alt="85 Gems">
+                    <h4>85 Gems</h4>
+                    <p>$6.00</p>
+                </div>
+                 <div class="store-gem-pack">
+                    <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsS&font=roboto" alt="540 Gems">
+                    <h4>540 Gems</h4>
+                    <p>$30.00</p>
+                </div>
+                <div class="store-gem-pack">
+                    <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsM&font=roboto" alt="1360 Gems">
+                    <h4>1360 Gems</h4>
+                    <p>$65.00</p>
+                </div>
+                 <div class="store-gem-pack">
+                    <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsXL&font=roboto" alt="2720 Gems">
+                    <h4>2720 Gems</h4>
+                    <p>$120.00</p>
+                </div>
+                <div class="store-gem-pack">
+                    <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsXXS&font=roboto" alt="210 Gems">
+                    <h4>210 Gems</h4>
+                    <p>$15.00</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="payment-gems-view" class="view-container">
+            <!-- Payment method for gems -->
+            <div class="payment-summary-card">
+                 <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsL&font=roboto" alt="Gem Pack" class="payment-avatar">
+                <div class="payment-description">
+                    <div>Purchasing a pack</div>
+                    <div class="payment-plan-details">5000 Gems</div>
+                    <div class="payment-bot-name">Lucid Dreams Bot</div>
+                </div>
+                <div class="payment-total">
+                    8750 <span class="telegram-star">⭐</span>
+                </div>
+            </div>
+            <div class="payment-method-option selected">
+                <span><span class="telegram-star blue">⭐</span> Telegram Stars</span>
+                <span class="radio-custom checked purple"></span>
+            </div>
+            <div class="payment-secure-note">
+                <span class="info-icon">ⓘ</span> All payments are anonymous and secure
+            </div>
+            <button class="upgrade-button-large" id="payment-gems-confirm-btn">Upgrade 💎</button>
+        </div>
+        
+        <!-- === Footer (Common or View-Specific) === -->
+        <footer class="app-footer" id="app-main-footer">
+            @luciddreams <!-- Default footer -->
         </footer>
+        
+        <nav class="bottom-nav" id="bottom-nav-bar" style="display: none;">
+            <button class="bottom-nav-item" data-view="characters-view">❤️</button>
+            <button class="bottom-nav-item" data-view="stories-view">🍸</button> <!-- Assuming a "stories" view might exist -->
+            <button class="bottom-nav-item active" data-view="settings-view">⚙️</button>
+        </nav>
     </div>
 
     <script src="script.js"></script>
