@@ -61,6 +61,24 @@
             <div class="settings-spacer"></div>
         </div>
 
+        <div id="create-character-view" class="view-container">
+            <h1 class="screen-main-title">Create Character</h1>
+            <div class="form-section">
+                <label for="char-name">Name:</label>
+                <input type="text" id="char-name" name="char-name" placeholder="E.g., Alex Ryder">
+            </div>
+            <div class="form-section">
+                <label for="char-desc">Description:</label>
+                <textarea id="char-desc" name="char-desc" rows="4" placeholder="E.g., A curious adventurer with a knack for finding trouble..."></textarea>
+            </div>
+            <div class="form-section">
+                <label for="char-image">Image URL (Optional):</label>
+                <input type="url" id="char-image" name="char-image" placeholder="https://example.com/image.png">
+            </div>
+            <button class="upgrade-button-large" id="save-character-btn">Save Character</button>
+        </div>
+
+
         <div id="plan-view" class="view-container">
             <h1 class="screen-main-title">Plan</h1>
             <div class="plan-option selected" data-plan="1month">
@@ -213,8 +231,8 @@
         </div>
                 
         <nav class="bottom-nav" id="bottom-nav-bar" style="display: none;">
-            <button class="bottom-nav-item active" data-view="characters-view">❤️</button> <!-- Default active -->
-            <button class="bottom-nav-item" data-view="stories-view">🍸</button> 
+            <button class="bottom-nav-item active" data-view="characters-view">❤️</button>
+            <button class="bottom-nav-item" data-view="create-character-view">➕</button> 
             <button class="bottom-nav-item" data-view="settings-view">⚙️</button>
         </nav>
     </div>
