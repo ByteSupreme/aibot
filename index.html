@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Lucid Dreams</title>
+    <title>Lucid Dreams</title> <!-- This title is for the browser tab/Telegram Mini App info -->
     <link rel="stylesheet" href="styles.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
@@ -13,11 +13,11 @@
 
         <header class="app-header">
             <div class="header-left">
-                <!-- Telegram's Native Back Button will appear here when active -->
-                <span id="header-title-text" class="header-title-main">Characters</span>
+                <!-- Telegram's Native Back Button will appear here when active via JS -->
+                <span id="header-title-text" class="header-title-main">Characters</span> <!-- Dynamically updated -->
             </div>
             <div class="header-right gem-bar-container" id="header-gem-bar-container">
-                 <!-- Gem bar will be injected here or placed statically depending on view -->
+                 <!-- Gem bar will be injected here -->
             </div>
         </header>
 
@@ -25,7 +25,7 @@
         <div id="characters-view" class="view-container active-view">
             <h1 class="screen-main-title">Characters</h1>
             <div class="character-grid" id="character-grid">
-                <!-- Character cards will be injected here by script.js -->
+                <!-- Character cards injected here -->
             </div>
         </div>
 
@@ -56,7 +56,7 @@
             <div class="settings-section">
                 <div class="settings-item-header">Language</div>
                 <div class="settings-item-action" id="settings-language-btn">
-                    <span>English</span>
+                    <span id="current-language-display">English</span>
                     <span>></span>
                 </div>
             </div>
@@ -65,21 +65,21 @@
 
         <div id="plan-view" class="view-container">
             <h1 class="screen-main-title">Plan</h1>
-            <div class="plan-option selected" data-plan="1month">
+            <div class="plan-option selected" data-plan="1month" data-gems-bonus="30">
                 <div>
                     <div class="plan-title">1 Month <span class="plan-gems">+30 💎</span></div>
                     <div class="plan-price">$7.50 <span class="plan-period">/ month</span></div>
                 </div>
                 <span class="radio-custom checked"></span>
             </div>
-            <div class="plan-option" data-plan="3months">
+            <div class="plan-option" data-plan="3months" data-gems-bonus="70">
                 <div>
                     <div class="plan-title">3 Months <span class="plan-gems">+70 💎</span></div>
                     <div class="plan-price">$15.00 <span class="plan-period">/ 3 months</span></div>
                 </div>
                 <span class="radio-custom"></span>
             </div>
-            <div class="plan-option" data-plan="1year">
+            <div class="plan-option" data-plan="1year" data-gems-bonus="210">
                 <div>
                     <div class="plan-title">1 Year <span class="plan-gems">+210 💎</span></div>
                     <div class="plan-price">$45.00 <span class="plan-period">/ year</span></div>
@@ -88,7 +88,7 @@
             </div>
             <ul class="plan-features">
                 <li>⚡ Infinite energy</li>
-                <li>💎 30 gems for shopping</li>
+                <li id="plan-feature-gems">💎 30 gems for shopping</li> <!-- Dynamically updated by JS -->
                 <li>🧠 Our most advanced AI engines</li>
                 <li>📸 Unlimited photo generation</li>
                 <li>💬 Near instant reply times</li>
@@ -102,11 +102,11 @@
                 <img src="https://placehold.co/80x80/7E57C2/FFFFFF/png?text=LD&font=roboto" alt="Lucid Dreams Bot" class="payment-avatar">
                 <div class="payment-description">
                     <div>Purchasing a subscription</div>
-                    <div class="payment-plan-details">1 Year + 210 💎</div>
+                    <div class="payment-plan-details" id="payment-sub-plan-details">1 Year + 210 💎</div> <!-- Dynamic based on plan choice -->
                     <div class="payment-bot-name">Lucid Dreams Bot</div>
                 </div>
-                <div class="payment-total">
-                    2250 <span class="telegram-star">⭐</span>
+                <div class="payment-total" id="payment-sub-total">
+                    2250 <span class="telegram-star">⭐</span> <!-- Dynamic -->
                 </div>
             </div>
             <div class="payment-method-option selected">
@@ -121,13 +121,13 @@
         
         <div id="language-view" class="view-container">
             <h1 class="screen-main-title">Language</h1>
-            <div class="language-option selected" data-lang="ru"> <!-- Default English will be set by JS in real app based on actual logic -->
+            <div class="language-option" data-lang="ru">
                 Русский <span class="language-native">Русский</span>
-                <span class="radio-custom checked purple"></span>
-            </div>
-            <div class="language-option" data-lang="en">
-                English <span class="language-native">English</span>
                 <span class="radio-custom"></span>
+            </div>
+            <div class="language-option selected" data-lang="en"> <!-- Default English -->
+                English <span class="language-native">English</span>
+                <span class="radio-custom checked purple"></span>
             </div>
              <div class="language-option" data-lang="fr">
                 French <span class="language-native">Français</span>
@@ -158,32 +158,32 @@
                 <button class="recharge-button">Recharge</button>
             </div>
             <div class="store-gem-grid">
-                <div class="store-gem-pack">
+                <div class="store-gem-pack" data-gems="5000" data-price-stars="8750" data-dollar-price="175.00">
                     <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsL&font=roboto" alt="5000 Gems">
                     <h4>5000 Gems</h4>
                     <p>$175.00</p>
                 </div>
-                <div class="store-gem-pack">
+                <div class="store-gem-pack" data-gems="85" data-price-stars="150" data-dollar-price="6.00"> <!-- Example star price -->
                     <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsXS&font=roboto" alt="85 Gems">
                     <h4>85 Gems</h4>
                     <p>$6.00</p>
                 </div>
-                 <div class="store-gem-pack">
+                 <div class="store-gem-pack" data-gems="540" data-price-stars="750" data-dollar-price="30.00"> <!-- Example star price -->
                     <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsS&font=roboto" alt="540 Gems">
                     <h4>540 Gems</h4>
                     <p>$30.00</p>
                 </div>
-                <div class="store-gem-pack">
+                <div class="store-gem-pack" data-gems="1360" data-price-stars="1625" data-dollar-price="65.00"> <!-- Example star price -->
                     <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsM&font=roboto" alt="1360 Gems">
                     <h4>1360 Gems</h4>
                     <p>$65.00</p>
                 </div>
-                 <div class="store-gem-pack">
+                 <div class="store-gem-pack" data-gems="2720" data-price-stars="3000" data-dollar-price="120.00"> <!-- Example star price -->
                     <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsXL&font=roboto" alt="2720 Gems">
                     <h4>2720 Gems</h4>
                     <p>$120.00</p>
                 </div>
-                <div class="store-gem-pack">
+                <div class="store-gem-pack" data-gems="210" data-price-stars="375" data-dollar-price="15.00"> <!-- Example star price -->
                     <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsXXS&font=roboto" alt="210 Gems">
                     <h4>210 Gems</h4>
                     <p>$15.00</p>
@@ -194,14 +194,14 @@
         <div id="payment-gems-view" class="view-container">
             <h1 class="screen-main-title">Payment Method</h1>
             <div class="payment-summary-card">
-                 <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsL&font=roboto" alt="Gem Pack" class="payment-avatar">
+                 <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=Gems&font=roboto" alt="Gem Pack" class="payment-avatar" id="payment-gem-pack-image">
                 <div class="payment-description">
                     <div>Purchasing a pack</div>
-                    <div class="payment-plan-details">5000 Gems</div> <!-- This would be dynamic -->
+                    <div class="payment-plan-details" id="payment-gem-pack-details">5000 Gems</div>
                     <div class="payment-bot-name">Lucid Dreams Bot</div>
                 </div>
-                <div class="payment-total">
-                    8750 <span class="telegram-star">⭐</span> <!-- This would be dynamic -->
+                <div class="payment-total" id="payment-gem-pack-total">
+                    8750 <span class="telegram-star">⭐</span>
                 </div>
             </div>
             <div class="payment-method-option selected">
@@ -213,11 +213,7 @@
             </div>
             <button class="upgrade-button-large" id="payment-gems-confirm-btn">Upgrade 💎</button>
         </div>
-        
-        <footer class="app-footer" id="app-main-footer">
-            @luciddreams
-        </footer>
-        
+                
         <nav class="bottom-nav" id="bottom-nav-bar" style="display: none;">
             <button class="bottom-nav-item" data-view="characters-view">❤️</button>
             <button class="bottom-nav-item" data-view="stories-view">🍸</button> 
