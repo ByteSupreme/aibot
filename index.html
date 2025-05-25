@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Lucid Dreams</title> <!-- This title is used by Telegram for the Mini App window -->
+    <title>Lucid Dreams</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
@@ -11,9 +11,8 @@
 
     <div class="app-container">
 
-        <!-- Simplified sticky header, mainly for the Gem Bar -->
         <header class="app-header">
-            <div class="header-content-wrapper"> <!-- Wrapper for potential future elements -->
+            <div class="header-content-wrapper">
                 <div class="gem-bar-container-outer" id="gem-bar-container-outer">
                      <!-- Gem bar will be injected here by script.js -->
                 </div>
@@ -101,11 +100,11 @@
                 <img src="https://placehold.co/80x80/7E57C2/FFFFFF/png?text=LD&font=roboto" alt="Lucid Dreams Bot" class="payment-avatar">
                 <div class="payment-description">
                     <div>Purchasing a subscription</div>
-                    <div class="payment-plan-details" id="payment-sub-plan-details">1 Year + 210 💎</div> <!-- ID for dynamic update -->
+                    <div class="payment-plan-details" id="payment-sub-plan-details">1 Year + 210 💎</div>
                     <div class="payment-bot-name">Lucid Dreams Bot</div>
                 </div>
                 <div class="payment-total" id="payment-sub-total-stars">
-                    2250 <span class="telegram-star">⭐</span> <!-- ID for dynamic update -->
+                    2250 <span class="telegram-star">⭐</span>
                 </div>
             </div>
             <div class="payment-method-option selected">
@@ -162,27 +161,27 @@
                     <h4>5000 Gems</h4>
                     <p>$175.00</p>
                 </div>
-                <div class="store-gem-pack" data-gems="85" data-stars="150" data-price-usd="6.00"> <!-- Approx. Stars -->
+                <div class="store-gem-pack" data-gems="85" data-stars="150" data-price-usd="6.00">
                     <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsXS&font=roboto" alt="85 Gems">
                     <h4>85 Gems</h4>
                     <p>$6.00</p>
                 </div>
-                 <div class="store-gem-pack" data-gems="540" data-stars="950" data-price-usd="30.00"> <!-- Approx. Stars -->
+                 <div class="store-gem-pack" data-gems="540" data-stars="950" data-price-usd="30.00">
                     <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsS&font=roboto" alt="540 Gems">
                     <h4>540 Gems</h4>
                     <p>$30.00</p>
                 </div>
-                <div class="store-gem-pack" data-gems="1360" data-stars="2380" data-price-usd="65.00"> <!-- Approx. Stars -->
+                <div class="store-gem-pack" data-gems="1360" data-stars="2380" data-price-usd="65.00">
                     <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsM&font=roboto" alt="1360 Gems">
                     <h4>1360 Gems</h4>
                     <p>$65.00</p>
                 </div>
-                 <div class="store-gem-pack" data-gems="2720" data-stars="4760" data-price-usd="120.00"> <!-- Approx. Stars -->
+                 <div class="store-gem-pack" data-gems="2720" data-stars="4760" data-price-usd="120.00">
                     <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsXL&font=roboto" alt="2720 Gems">
                     <h4>2720 Gems</h4>
                     <p>$120.00</p>
                 </div>
-                <div class="store-gem-pack" data-gems="210" data-stars="370" data-price-usd="15.00"> <!-- Approx. Stars -->
+                <div class="store-gem-pack" data-gems="210" data-stars="370" data-price-usd="15.00">
                     <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsXXS&font=roboto" alt="210 Gems">
                     <h4>210 Gems</h4>
                     <p>$15.00</p>
@@ -214,9 +213,9 @@
         </div>
                 
         <nav class="bottom-nav" id="bottom-nav-bar" style="display: none;">
-            <button class="bottom-nav-item" data-view="characters-view">❤️</button>
+            <button class="bottom-nav-item active" data-view="characters-view">❤️</button> <!-- Default active -->
             <button class="bottom-nav-item" data-view="stories-view">🍸</button> 
-            <button class="bottom-nav-item active" data-view="settings-view">⚙️</button>
+            <button class="bottom-nav-item" data-view="settings-view">⚙️</button>
         </nav>
     </div>
 
