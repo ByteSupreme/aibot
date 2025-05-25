@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
         paymentGems: document.getElementById('payment-gems-view')
     };
 
-    const gemBarContainerOuter = document.getElementById('gem-bar-container-outer'); // Updated Gem Bar container
+    const gemBarContainerOuter = document.getElementById('gem-bar-container-outer');
     const bottomNavBar = document.getElementById('bottom-nav-bar');
 
     let viewHistory = [];
@@ -54,17 +54,16 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
         currentViewId = viewId;
-        updateStickyHeaderAndNav(viewId, params); // Updated function name
+        updateStickyHeaderAndNav(viewId, params); 
         updateTelegramBackButton(); 
         
         tg.expand();
         window.scrollTo(0, 0);
     }
 
-    function updateStickyHeaderAndNav(viewId, params = {}) { // Renamed and simplified
-        gemBarContainerOuter.innerHTML = ''; // Clear gem bar container
-        bottomNavBar.style.display = 'none';
-
+    function updateStickyHeaderAndNav(viewId, params = {}) {
+        gemBarContainerOuter.innerHTML = ''; 
+        
         const commonGemBarHTML = `
             <div class="gem-bar">
                 <span class="gem-icon">💎</span>
@@ -74,7 +73,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 <button class="plus-btn" id="gem-bar-plus-btn">➕</button>
             </div>`;
 
-        // Logic for showing Gem Bar in the sticky header
         if (viewId === 'characters' || viewId === 'settings' || viewId === 'store') {
             gemBarContainerOuter.innerHTML = commonGemBarHTML;
             const plusButton = document.getElementById('gem-bar-plus-btn');
@@ -83,19 +81,22 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Logic for bottom navigation
-        if (viewId === 'settings') { // Only show bottom nav on settings, can be expanded
+        const viewsWithBottomNav = ['characters', 'settings'];
+        if (viewsWithBottomNav.includes(viewId)) {
             bottomNavBar.style.display = 'flex';
             document.querySelectorAll('.bottom-nav-item').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.view === viewId);
             });
+        } else {
+            bottomNavBar.style.display = 'none';
         }
         
-        // Update payment screens with dynamic data if params are passed
         if (viewId === 'paymentGems' && params.gems && params.stars) {
             document.getElementById('payment-gems-pack-details').textContent = `${params.gems} Gems`;
             document.getElementById('payment-gems-total-stars').innerHTML = 
                 `${params.stars} <span class="telegram-star">⭐</span>`;
+            // Potentially update the gem icon image for the payment screen too if desired
+            // document.getElementById('payment-gems-avatar').src = `...new_image_for_${params.gems}_gems...`;
         }
         if (viewId === 'paymentSubscription' && params.planDetails && params.stars) {
             document.getElementById('payment-sub-plan-details').textContent = params.planDetails;
@@ -207,13 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const planFeatureGemsEl = document.getElementById('plan-feature-gems');
     const paymentSubPlanDetailsEl = document.getElementById('payment-sub-plan-details');
     const paymentSubTotalStarsEl = document.getElementById('payment-sub-total-stars');
-
-    // Dummy Star conversion (replace with actual logic or API if Telegram provides it for Stars)
-    const planStarPrices = {
-        "1month": 375, // Example: $7.50
-        "3months": 750, // Example: $15.00
-        "1year": 2250  // Example: $45.00
-    };
+    const planStarPrices = { "1month": 375, "3months": 750, "1year": 2250 };
 
     planOptions.forEach(option => {
         option.addEventListener('click', () => {
@@ -223,9 +218,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             option.classList.add('selected');
             option.querySelector('.radio-custom').classList.add('checked');
-            
-            const planGemsText = option.querySelector('.plan-gems').textContent; // e.g., "+30 💎"
-            const planType = option.dataset.plan;
+            const planGemsText = option.querySelector('.plan-gems').textContent;
             if (planFeatureGemsEl) {
                  planFeatureGemsEl.innerHTML = `💎 ${planGemsText.split(' ')[0].replace('+','')} gems for shopping`;
             }
@@ -237,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (selectedPlan) {
             const planTitle = selectedPlan.querySelector('.plan-title').textContent;
             const planType = selectedPlan.dataset.plan;
-            const stars = planStarPrices[planType] || 0; // Get stars for the selected plan
+            const stars = planStarPrices[planType] || 0;
             showView('paymentSubscription', false, { planDetails: planTitle, stars: stars });
         } else {
             tg.showAlert("Please select a plan first.");
@@ -252,8 +245,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const languageOptions = document.querySelectorAll('.language-option');
     const currentLangDisplayEl = document.getElementById('current-language-display');
-    
-    // Set initial language state (example: English selected by default)
     const defaultLang = 'en';
     languageOptions.forEach(opt => {
         const isSelected = opt.dataset.lang === defaultLang;
@@ -275,9 +266,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (currentLangDisplayEl) {
                 currentLangDisplayEl.textContent = option.childNodes[0].nodeValue.trim();
             }
-            console.log("Language selected:", option.dataset.lang);
-            
-            if (viewHistory.length > 0) { // Go back if history exists
+            if (viewHistory.length > 0) {
                  tg.BackButton.onClick(); 
             } else {
                 showView('settings', true); 
@@ -290,6 +279,9 @@ document.addEventListener('DOMContentLoaded', function () {
         pack.addEventListener('click', () => {
             const gems = pack.dataset.gems;
             const stars = pack.dataset.stars;
+            // Optionally, update the gem pack avatar image too if they are different
+            // const packImageSrc = pack.querySelector('img').src;
+            // document.getElementById('payment-gems-avatar').src = packImageSrc;
             showView('paymentGems', false, { gems, stars });
         });
     });
@@ -299,15 +291,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('payment-gems-confirm-btn').addEventListener('click', () => {
         tg.showAlert("Gem purchase initiated (simulated)!");
-        // Navigate back smartly
         if (viewHistory.includes('store')) {
             while(viewHistory.length > 0 && viewHistory[viewHistory.length-1] !== 'store') {
-                viewHistory.pop(); // Remove intermediate screens if any
+                viewHistory.pop();
             }
-            tg.BackButton.onClick(); // This will take to 'store' if it's the last one
+            if (viewHistory[viewHistory.length-1] === 'store') tg.BackButton.onClick(); // Should take to store
+            else showView('store', true); // Fallback
         } else {
-             viewHistory = []; // Reset history
-            showView('characters'); // Fallback to characters
+             viewHistory = []; 
+            showView('characters');
         }
     });
 
@@ -321,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             if (views[targetView] && currentViewId !== targetView) {
                 if (targetView === 'characters' || targetView === 'settings') { 
-                    viewHistory = []; 
+                    viewHistory = []; // Treat these as main tabs, reset history on direct click
                 }
                 showView(targetView);
             }
