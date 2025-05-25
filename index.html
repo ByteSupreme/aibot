@@ -7,21 +7,17 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
-<body class="dark"> <!-- Assuming dark mode as default from screenshots -->
+<body class="dark">
 
     <div class="app-container">
 
-        <!-- === Generic Header (adaptable for different views) === -->
         <header class="app-header">
             <div class="header-left">
-                <button class="icon-button" id="back-btn" style="display: none;"><</button>
+                <!-- Telegram's Native Back Button will appear here when active -->
                 <span id="header-title-text" class="header-title-main">Characters</span>
             </div>
             <div class="header-right gem-bar-container" id="header-gem-bar-container">
                  <!-- Gem bar will be injected here or placed statically depending on view -->
-            </div>
-            <div class="header-actions-main" id="header-actions-main">
-                <!-- Contextual actions like More options or Close button -->
             </div>
         </header>
 
@@ -34,7 +30,7 @@
         </div>
 
         <div id="settings-view" class="view-container">
-            <!-- Settings screen content -->
+            <h1 class="screen-main-title">Settings</h1>
             <div class="settings-section">
                 <div class="settings-item-header">Your plan</div>
                 <div class="settings-plan-card">
@@ -42,7 +38,6 @@
                     <button class="upgrade-button small-button" id="settings-upgrade-plan-btn">Upgrade</button>
                 </div>
             </div>
-
             <div class="settings-section">
                  <div class="settings-item-header">Style</div>
                  <div class="style-toggle-container">
@@ -58,7 +53,6 @@
                     </div>
                  </div>
             </div>
-
             <div class="settings-section">
                 <div class="settings-item-header">Language</div>
                 <div class="settings-item-action" id="settings-language-btn">
@@ -66,12 +60,11 @@
                     <span>></span>
                 </div>
             </div>
-            
             <div class="settings-spacer"></div>
         </div>
 
         <div id="plan-view" class="view-container">
-            <!-- Plan screen content -->
+            <h1 class="screen-main-title">Plan</h1>
             <div class="plan-option selected" data-plan="1month">
                 <div>
                     <div class="plan-title">1 Month <span class="plan-gems">+30 💎</span></div>
@@ -93,7 +86,6 @@
                 </div>
                 <span class="radio-custom"></span>
             </div>
-
             <ul class="plan-features">
                 <li>⚡ Infinite energy</li>
                 <li>💎 30 gems for shopping</li>
@@ -105,7 +97,7 @@
         </div>
 
         <div id="payment-subscription-view" class="view-container">
-            <!-- Payment method for subscription -->
+            <h1 class="screen-main-title">Payment Method</h1>
             <div class="payment-summary-card">
                 <img src="https://placehold.co/80x80/7E57C2/FFFFFF/png?text=LD&font=roboto" alt="Lucid Dreams Bot" class="payment-avatar">
                 <div class="payment-description">
@@ -128,8 +120,8 @@
         </div>
         
         <div id="language-view" class="view-container">
-            <!-- Language selection screen -->
-            <div class="language-option selected" data-lang="ru">
+            <h1 class="screen-main-title">Language</h1>
+            <div class="language-option selected" data-lang="ru"> <!-- Default English will be set by JS in real app based on actual logic -->
                 Русский <span class="language-native">Русский</span>
                 <span class="radio-custom checked purple"></span>
             </div>
@@ -137,7 +129,7 @@
                 English <span class="language-native">English</span>
                 <span class="radio-custom"></span>
             </div>
-            <div class="language-option" data-lang="fr">
+             <div class="language-option" data-lang="fr">
                 French <span class="language-native">Français</span>
                 <span class="radio-custom"></span>
             </div>
@@ -156,7 +148,7 @@
         </div>
 
         <div id="store-view" class="view-container">
-            <!-- Store screen content -->
+            <h1 class="screen-main-title">Store</h1>
             <div class="store-unlimited-energy">
                 <img src="https://placehold.co/100x100/FFC107/333333/png?text=Chest&font=roboto" alt="Unlimited Energy Chest" class="store-energy-chest">
                 <div class="store-energy-info">
@@ -165,7 +157,6 @@
                 </div>
                 <button class="recharge-button">Recharge</button>
             </div>
-
             <div class="store-gem-grid">
                 <div class="store-gem-pack">
                     <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsL&font=roboto" alt="5000 Gems">
@@ -201,16 +192,16 @@
         </div>
 
         <div id="payment-gems-view" class="view-container">
-            <!-- Payment method for gems -->
+            <h1 class="screen-main-title">Payment Method</h1>
             <div class="payment-summary-card">
                  <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsL&font=roboto" alt="Gem Pack" class="payment-avatar">
                 <div class="payment-description">
                     <div>Purchasing a pack</div>
-                    <div class="payment-plan-details">5000 Gems</div>
+                    <div class="payment-plan-details">5000 Gems</div> <!-- This would be dynamic -->
                     <div class="payment-bot-name">Lucid Dreams Bot</div>
                 </div>
                 <div class="payment-total">
-                    8750 <span class="telegram-star">⭐</span>
+                    8750 <span class="telegram-star">⭐</span> <!-- This would be dynamic -->
                 </div>
             </div>
             <div class="payment-method-option selected">
@@ -223,14 +214,13 @@
             <button class="upgrade-button-large" id="payment-gems-confirm-btn">Upgrade 💎</button>
         </div>
         
-        <!-- === Footer (Common or View-Specific) === -->
         <footer class="app-footer" id="app-main-footer">
-            @luciddreams <!-- Default footer -->
+            @luciddreams
         </footer>
         
         <nav class="bottom-nav" id="bottom-nav-bar" style="display: none;">
             <button class="bottom-nav-item" data-view="characters-view">❤️</button>
-            <button class="bottom-nav-item" data-view="stories-view">🍸</button> <!-- Assuming a "stories" view might exist -->
+            <button class="bottom-nav-item" data-view="stories-view">🍸</button> 
             <button class="bottom-nav-item active" data-view="settings-view">⚙️</button>
         </nav>
     </div>
