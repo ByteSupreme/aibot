@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const views = {
         characters: document.getElementById('characters-view'),
         settings: document.getElementById('settings-view'),
+        createCharacter: document.getElementById('create-character-view'), // Added
         plan: document.getElementById('plan-view'),
         paymentSubscription: document.getElementById('payment-subscription-view'),
         language: document.getElementById('language-view'),
@@ -81,11 +82,19 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        const viewsWithBottomNav = ['characters', 'settings'];
-        if (viewsWithBottomNav.includes(viewId)) {
+        const viewsWithBottomNav = ['characters', 'settings', 'createCharacter']; // Added createCharacter temporarily if we want nav there
+        if (viewId === 'characters' || viewId === 'settings' || viewId === 'createCharacter') { // Or simply check viewsWithBottomNav.includes(viewId)
             bottomNavBar.style.display = 'flex';
             document.querySelectorAll('.bottom-nav-item').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.view === viewId);
+                const btnDataView = btn.dataset.view;
+                let isActive = false;
+                if ((viewId === 'characters' && btnDataView === 'characters-view') ||
+                    (viewId === 'settings' && btnDataView === 'settings-view') ||
+                    (viewId === 'createCharacter' && btnDataView === 'create-character-view') 
+                ) {
+                    isActive = true;
+                }
+                btn.classList.toggle('active', isActive);
             });
         } else {
             bottomNavBar.style.display = 'none';
@@ -95,8 +104,6 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('payment-gems-pack-details').textContent = `${params.gems} Gems`;
             document.getElementById('payment-gems-total-stars').innerHTML = 
                 `${params.stars} <span class="telegram-star">⭐</span>`;
-            // Potentially update the gem icon image for the payment screen too if desired
-            // document.getElementById('payment-gems-avatar').src = `...new_image_for_${params.gems}_gems...`;
         }
         if (viewId === 'paymentSubscription' && params.planDetails && params.stars) {
             document.getElementById('payment-sub-plan-details').textContent = params.planDetails;
@@ -132,54 +139,18 @@ document.addEventListener('DOMContentLoaded', function () {
             if (charData.special_decoration === "paws") {
                 const pawOverlay = document.createElement('div');
                 pawOverlay.classList.add('paw-print-overlay');
-                const pawPositions = [
-                    { top: '8%', left: '10%', transform: 'rotate(-20deg)', class: 'p1' },
-                    { top: '15%', right: '8%', transform: 'rotate(25deg)', class: 'p2' },
-                    { top: '60%', left: '15%', transform: 'rotate(10deg)', class: 'p3' },
-                    { top: '70%', right: '20%', transform: 'rotate(-10deg)', class: 'p4' }
-                ];
-                pawPositions.forEach(pos => {
-                    const paw = document.createElement('span');
-                    paw.classList.add('paw-print', pos.class);
-                    paw.style.top = pos.top;
-                    if(pos.left) paw.style.left = pos.left;
-                    if(pos.right) paw.style.right = pos.right;
-                    paw.style.transform = pos.transform;
-                    paw.textContent = '🐾';
-                    pawOverlay.appendChild(paw);
-                });
+                const pawPositions = [ { top: '8%', left: '10%', transform: 'rotate(-20deg)', class: 'p1' }, { top: '15%', right: '8%', transform: 'rotate(25deg)', class: 'p2' }, { top: '60%', left: '15%', transform: 'rotate(10deg)', class: 'p3' }, { top: '70%', right: '20%', transform: 'rotate(-10deg)', class: 'p4' } ];
+                pawPositions.forEach(pos => { const paw = document.createElement('span'); paw.classList.add('paw-print', pos.class); paw.style.top = pos.top; if(pos.left) paw.style.left = pos.left; if(pos.right) paw.style.right = pos.right; paw.style.transform = pos.transform; paw.textContent = '🐾'; pawOverlay.appendChild(paw); });
                 imageContainer.appendChild(pawOverlay);
             }
             card.appendChild(imageContainer);
-            const info = document.createElement('div');
-            info.classList.add('character-info');
-            const nameHeader = document.createElement('h3');
-            nameHeader.classList.add('character-name');
-            nameHeader.textContent = charData.display_name;
-            if (charData.icon) {
-                const iconSpan = document.createElement('span');
-                iconSpan.classList.add('card-icon');
-                iconSpan.textContent = charData.icon;
-                nameHeader.appendChild(iconSpan);
-            }
-            const desc = document.createElement('p');
-            desc.classList.add('character-description');
-            desc.textContent = charData.description;
-            info.appendChild(nameHeader);
-            info.appendChild(desc);
-            card.appendChild(info);
-            if (charData.selected) {
-                card.classList.add('selected');
-                selectedCharacterCard = card;
-            }
-            card.addEventListener('click', function () {
-                if (selectedCharacterCard) {
-                    selectedCharacterCard.classList.remove('selected');
-                }
-                this.classList.add('selected');
-                selectedCharacterCard = this;
-                console.log("Selected Persona ID:", this.dataset.personaId);
-            });
+            const info = document.createElement('div'); info.classList.add('character-info');
+            const nameHeader = document.createElement('h3'); nameHeader.classList.add('character-name'); nameHeader.textContent = charData.display_name;
+            if (charData.icon) { const iconSpan = document.createElement('span'); iconSpan.classList.add('card-icon'); iconSpan.textContent = charData.icon; nameHeader.appendChild(iconSpan); }
+            const desc = document.createElement('p'); desc.classList.add('character-description'); desc.textContent = charData.description;
+            info.appendChild(nameHeader); info.appendChild(desc); card.appendChild(info);
+            if (charData.selected) { card.classList.add('selected'); selectedCharacterCard = card; }
+            card.addEventListener('click', function () { if (selectedCharacterCard) { selectedCharacterCard.classList.remove('selected'); } this.classList.add('selected'); selectedCharacterCard = this; console.log("Selected Persona ID:", this.dataset.personaId); });
             characterGrid.appendChild(card);
         });
     }
@@ -189,16 +160,11 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('settings-language-btn').addEventListener('click', () => showView('language'));
     
     const styleLabels = document.querySelectorAll('.style-label');
-    const styleImages = {
-        realistic: document.getElementById('style-realistic'),
-        anime: document.getElementById('style-anime')
-    };
+    const styleImages = { realistic: document.getElementById('style-realistic'), anime: document.getElementById('style-anime') };
     styleLabels.forEach(label => {
         label.addEventListener('click', () => {
-            styleLabels.forEach(lbl => lbl.classList.remove('active'));
-            label.classList.add('active');
-            styleLabels.forEach(lbl => lbl.querySelector('.checkbox-custom').classList.remove('checked'));
-            label.querySelector('.checkbox-custom').classList.add('checked');
+            styleLabels.forEach(lbl => lbl.classList.remove('active')); label.classList.add('active');
+            styleLabels.forEach(lbl => lbl.querySelector('.checkbox-custom').classList.remove('checked')); label.querySelector('.checkbox-custom').classList.add('checked');
             styleImages.realistic.classList.toggle('active', label.classList.contains('realistic'));
             styleImages.anime.classList.toggle('active', label.classList.contains('anime'));
         });
@@ -206,116 +172,86 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const planOptions = document.querySelectorAll('.plan-option');
     const planFeatureGemsEl = document.getElementById('plan-feature-gems');
-    const paymentSubPlanDetailsEl = document.getElementById('payment-sub-plan-details');
-    const paymentSubTotalStarsEl = document.getElementById('payment-sub-total-stars');
     const planStarPrices = { "1month": 375, "3months": 750, "1year": 2250 };
-
     planOptions.forEach(option => {
         option.addEventListener('click', () => {
-            planOptions.forEach(opt => {
-                opt.classList.remove('selected');
-                opt.querySelector('.radio-custom').classList.remove('checked');
-            });
-            option.classList.add('selected');
-            option.querySelector('.radio-custom').classList.add('checked');
+            planOptions.forEach(opt => { opt.classList.remove('selected'); opt.querySelector('.radio-custom').classList.remove('checked'); });
+            option.classList.add('selected'); option.querySelector('.radio-custom').classList.add('checked');
             const planGemsText = option.querySelector('.plan-gems').textContent;
-            if (planFeatureGemsEl) {
-                 planFeatureGemsEl.innerHTML = `💎 ${planGemsText.split(' ')[0].replace('+','')} gems for shopping`;
-            }
+            if (planFeatureGemsEl) { planFeatureGemsEl.innerHTML = `💎 ${planGemsText.split(' ')[0].replace('+','')} gems for shopping`; }
         });
     });
 
     document.getElementById('plan-upgrade-btn').addEventListener('click', () => {
         const selectedPlan = document.querySelector('.plan-option.selected');
         if (selectedPlan) {
-            const planTitle = selectedPlan.querySelector('.plan-title').textContent;
-            const planType = selectedPlan.dataset.plan;
-            const stars = planStarPrices[planType] || 0;
+            const planTitle = selectedPlan.querySelector('.plan-title').textContent; const planType = selectedPlan.dataset.plan; const stars = planStarPrices[planType] || 0;
             showView('paymentSubscription', false, { planDetails: planTitle, stars: stars });
-        } else {
-            tg.showAlert("Please select a plan first.");
-        }
+        } else { tg.showAlert("Please select a plan first."); }
     });
 
-    document.getElementById('payment-sub-confirm-btn').addEventListener('click', () => {
-        tg.showAlert("Subscription upgrade initiated (simulated)!");
-        viewHistory = []; 
-        showView('characters'); 
-    });
+    document.getElementById('payment-sub-confirm-btn').addEventListener('click', () => { tg.showAlert("Subscription upgrade initiated (simulated)!"); viewHistory = []; showView('characters'); });
 
     const languageOptions = document.querySelectorAll('.language-option');
     const currentLangDisplayEl = document.getElementById('current-language-display');
     const defaultLang = 'en';
     languageOptions.forEach(opt => {
-        const isSelected = opt.dataset.lang === defaultLang;
-        opt.classList.toggle('selected', isSelected);
-        opt.querySelector('.radio-custom').classList.toggle('checked', isSelected);
-        if (isSelected && currentLangDisplayEl) {
-            currentLangDisplayEl.textContent = opt.childNodes[0].nodeValue.trim();
-        }
+        const isSelected = opt.dataset.lang === defaultLang; opt.classList.toggle('selected', isSelected); opt.querySelector('.radio-custom').classList.toggle('checked', isSelected);
+        if (isSelected && currentLangDisplayEl) { currentLangDisplayEl.textContent = opt.childNodes[0].nodeValue.trim(); }
     });
-
     languageOptions.forEach(option => {
         option.addEventListener('click', () => {
-            languageOptions.forEach(opt => {
-                opt.classList.remove('selected');
-                opt.querySelector('.radio-custom').classList.remove('checked');
-            });
-            option.classList.add('selected');
-            option.querySelector('.radio-custom').classList.add('checked');
-            if (currentLangDisplayEl) {
-                currentLangDisplayEl.textContent = option.childNodes[0].nodeValue.trim();
-            }
-            if (viewHistory.length > 0) {
-                 tg.BackButton.onClick(); 
-            } else {
-                showView('settings', true); 
-            }
+            languageOptions.forEach(opt => { opt.classList.remove('selected'); opt.querySelector('.radio-custom').classList.remove('checked'); });
+            option.classList.add('selected'); option.querySelector('.radio-custom').classList.add('checked');
+            if (currentLangDisplayEl) { currentLangDisplayEl.textContent = option.childNodes[0].nodeValue.trim(); }
+            if (viewHistory.length > 0) { tg.BackButton.onClick(); } else { showView('settings', true); }
         });
     });
 
     const storeGemPacks = document.querySelectorAll('.store-gem-pack');
     storeGemPacks.forEach(pack => {
         pack.addEventListener('click', () => {
-            const gems = pack.dataset.gems;
-            const stars = pack.dataset.stars;
-            // Optionally, update the gem pack avatar image too if they are different
-            // const packImageSrc = pack.querySelector('img').src;
-            // document.getElementById('payment-gems-avatar').src = packImageSrc;
+            const gems = pack.dataset.gems; const stars = pack.dataset.stars;
             showView('paymentGems', false, { gems, stars });
         });
     });
-     document.querySelector('.recharge-button').addEventListener('click', () => {
-        tg.showAlert("Energy recharge initiated (simulated)!");
-    });
+     document.querySelector('.recharge-button').addEventListener('click', () => { tg.showAlert("Energy recharge initiated (simulated)!"); });
 
     document.getElementById('payment-gems-confirm-btn').addEventListener('click', () => {
         tg.showAlert("Gem purchase initiated (simulated)!");
-        if (viewHistory.includes('store')) {
-            while(viewHistory.length > 0 && viewHistory[viewHistory.length-1] !== 'store') {
-                viewHistory.pop();
-            }
-            if (viewHistory[viewHistory.length-1] === 'store') tg.BackButton.onClick(); // Should take to store
-            else showView('store', true); // Fallback
-        } else {
-             viewHistory = []; 
-            showView('characters');
-        }
+        if (viewHistory.includes('store')) { while(viewHistory.length > 0 && viewHistory[viewHistory.length-1] !== 'store') { viewHistory.pop(); } if (viewHistory[viewHistory.length-1] === 'store') tg.BackButton.onClick(); else showView('store', true); } 
+        else { viewHistory = []; showView('characters');}
     });
+
+    const saveCharBtn = document.getElementById('save-character-btn');
+    if (saveCharBtn) {
+        saveCharBtn.addEventListener('click', () => {
+            const charName = document.getElementById('char-name').value;
+            const charDesc = document.getElementById('char-desc').value;
+            if (charName.trim() === "" || charDesc.trim() === "") { tg.showAlert("Please enter a name and description for your character."); return; }
+            tg.showAlert(`Character "${charName}" saved (simulated)!`);
+            document.getElementById('char-name').value = ''; document.getElementById('char-desc').value = ''; document.getElementById('char-image').value = '';
+            if (viewHistory.length > 0 && viewHistory.includes('characters')) { while (viewHistory.length > 0 && viewHistory[viewHistory.length - 1] !== 'characters') { viewHistory.pop(); } if (viewHistory.length > 0) { tg.BackButton.onClick(); } else { showView('characters'); } } 
+            else { viewHistory = []; showView('characters'); }
+        });
+    }
 
     const bottomNavItems = document.querySelectorAll('.bottom-nav-item');
     bottomNavItems.forEach(item => {
         item.addEventListener('click', () => {
-            const targetView = item.dataset.view;
-            if (targetView === 'stories-view') {
-                tg.showAlert("Stories coming soon!");
-                return;
+            const dataView = item.dataset.view;
+            let targetInternalViewId = '';
+            switch(dataView) {
+                case 'characters-view': targetInternalViewId = 'characters'; break;
+                case 'settings-view': targetInternalViewId = 'settings'; break;
+                case 'create-character-view': targetInternalViewId = 'createCharacter'; break;
+                default: console.warn("Unknown bottom nav item:", dataView); return;
             }
-            if (views[targetView] && currentViewId !== targetView) {
-                if (targetView === 'characters' || targetView === 'settings') { 
-                    viewHistory = []; // Treat these as main tabs, reset history on direct click
+            if (views[targetInternalViewId] && currentViewId !== targetInternalViewId) { 
+                if (targetInternalViewId === 'characters' || targetInternalViewId === 'settings' || targetInternalViewId === 'createCharacter') { 
+                    viewHistory = []; 
                 }
-                showView(targetView);
+                showView(targetInternalViewId);
             }
         });
     });
