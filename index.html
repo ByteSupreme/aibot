@@ -33,7 +33,7 @@
                 <button class="action-button stylish-button" id="my-characters-btn">My Creations</button>
             </div>
             <div class="search-bar-container">
-                <input type="search" id="users-character-search-input" placeholder="Search characters by name or description...">
+                <input type="search" id="users-character-search-input" placeholder="Search characters...">
             </div>
             <div class="tabs-container">
                 <button class="tab-button active" data-tab="featured">Featured</button>
@@ -42,7 +42,7 @@
             <div class="character-grid" id="public-character-grid">
                 <!-- Public user-created character cards will be injected here -->
             </div>
-            <p class="empty-state-message" id="no-public-characters-message" style="display:none;">No characters found for this selection. Try a different tab or search.</p>
+            <p class="empty-state-message" id="no-public-characters-message" style="display:none;">No characters found. Try a different tab or search.</p>
         </div>
 
         <div id="my-characters-view" class="view-container">
@@ -52,6 +52,22 @@
                 <!-- User's own character cards will be injected here -->
             </div>
              <p class="empty-state-message" id="no-my-characters-message" style="display:none;">You haven't created any characters yet. <a href="#" id="create-first-character-link">Bring your first character to life!</a></p>
+        </div>
+
+        <div id="character-detail-view" class="view-container"> <!-- NEW CHARACTER DETAIL VIEW -->
+            <div class="character-detail-image-container">
+                <img id="char-detail-image" src="https://placehold.co/600x800/333/fff?text=Character" alt="Character Image">
+            </div>
+            <h1 id="char-detail-name" class="screen-main-title char-detail-title">Character Name</h1>
+            <div class="char-detail-content">
+                <p class="char-detail-section-title">Summary</p>
+                <p id="char-detail-desc" class="char-detail-text">Short description goes here.</p>
+                <div id="char-detail-full-details-section" style="display:none;"> <!-- Hide if no full details -->
+                    <p class="char-detail-section-title">Full Details</p>
+                    <p id="char-detail-full-details" class="char-detail-text full-details-text"></p>
+                </div>
+            </div>
+            <button class="upgrade-button-large stylish-button" id="start-character-btn">Start Character</button>
         </div>
 
 
@@ -147,7 +163,6 @@
             <button class="upgrade-button-large stylish-button" id="save-edited-character-btn">Save Changes</button>
         </div>
 
-
         <div id="recharge-energy-view" class="view-container">
             <h1 class="screen-main-title">Recharge Energy</h1>
             <div class="form-section">
@@ -159,7 +174,6 @@
             </div>
             <button class="upgrade-button-large stylish-button" id="confirm-recharge-btn">Recharge Energy</button>
         </div>
-
 
         <div id="plan-view" class="view-container">
             <h1 class="screen-main-title">Plan</h1>
@@ -323,7 +337,7 @@
                 <svg viewBox="0 0 24 24" fill="currentColor" width="30" height="30"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>
             </button>
             <button class="bottom-nav-item" data-view="settings-view" aria-label="Settings">
-                <svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l-.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"></path></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l-.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l-.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"></path></svg>
             </button>
         </nav>
     </div>
