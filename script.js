@@ -2,24 +2,26 @@ document.addEventListener('DOMContentLoaded', function () {
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
-    
+
     try {
-        tg.setHeaderColor('#0E0F1A'); 
-        tg.setBackgroundColor('#0E0F1A'); 
+        tg.setHeaderColor('#0E0F1A');
+        tg.setBackgroundColor('#0E0F1A');
     } catch (e) {
         console.error("Error setting Telegram theme colors:", e);
     }
 
     const views = {
         characters: document.getElementById('characters-view'),
+        usersCharacters: document.getElementById('users-characters-view'), // New view
+        myCharacters: document.getElementById('my-characters-view'),       // New view
         settings: document.getElementById('settings-view'),
         createCharacter: document.getElementById('create-character-view'),
-        rechargeEnergy: document.getElementById('recharge-energy-view'), // New view for recharge
+        rechargeEnergy: document.getElementById('recharge-energy-view'),
         plan: document.getElementById('plan-view'),
         paymentSubscription: document.getElementById('payment-subscription-view'),
         language: document.getElementById('language-view'),
         store: document.getElementById('store-view'),
-        paymentItem: document.getElementById('payment-item-view') // Unified payment screen
+        paymentItem: document.getElementById('payment-item-view')
     };
 
     const gemBarContainerOuter = document.getElementById('gem-bar-container-outer');
@@ -28,15 +30,17 @@ document.addEventListener('DOMContentLoaded', function () {
     const estimatedEnergyStarsEl = document.getElementById('estimated-energy-stars');
 
     let viewHistory = [];
-    let currentViewId = 'characters'; 
-    let selectedLanguage = 'en'; 
-    const ENERGY_PER_STAR_RATE = 0.5; // Example: 0.5 energy per star (or 2 stars per energy)
+    let currentViewId = 'characters';
+    let selectedLanguage = 'en';
+    const ENERGY_PER_STAR_RATE = 0.5;
 
+    let userCreatedCharacters = []; // To store characters created by the user
+    let nextUserCharacterId = 1;    // Simple ID generator for user characters
 
     tg.BackButton.onClick(() => {
         if (viewHistory.length > 0) {
             const previousViewId = viewHistory.pop();
-            showView(previousViewId, true); 
+            showView(previousViewId, true);
         }
     });
 
@@ -50,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function showView(viewId, isBack = false, params = {}) {
         const oldViewId = currentViewId;
-        if (!isBack && oldViewId && oldViewId !== viewId) { 
+        if (!isBack && oldViewId && oldViewId !== viewId) {
             viewHistory.push(oldViewId);
         }
 
@@ -61,16 +65,23 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
         currentViewId = viewId;
-        updateStickyHeaderAndNav(viewId, params); 
-        updateTelegramBackButton(); 
-        
+        updateStickyHeaderAndNav(viewId, params);
+        updateTelegramBackButton();
+
+        // Populate specific views when shown
+        if (viewId === 'usersCharacters') {
+            populatePublicCharacters();
+        } else if (viewId === 'myCharacters') {
+            populateMyCharacters();
+        }
+
         tg.expand();
         window.scrollTo(0, 0);
     }
 
     function updateStickyHeaderAndNav(viewId, params = {}) {
-        gemBarContainerOuter.innerHTML = ''; 
-        
+        gemBarContainerOuter.innerHTML = '';
+
         const commonGemBarHTML = `
             <div class="gem-bar">
                 <span class="gem-icon">💎</span>
@@ -80,7 +91,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 <button class="plus-btn" id="gem-bar-plus-btn">➕</button>
             </div>`;
 
-        const viewsWithGemBar = ['characters', 'settings', 'store', 'createCharacter', 'rechargeEnergy'];
+        // Views that should have the gem bar
+        const viewsWithGemBar = ['characters', 'usersCharacters', 'myCharacters', 'settings', 'store', 'createCharacter', 'rechargeEnergy'];
         if (viewsWithGemBar.includes(viewId)) {
             gemBarContainerOuter.innerHTML = commonGemBarHTML;
             const plusButton = document.getElementById('gem-bar-plus-btn');
@@ -89,38 +101,44 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        const viewsWithBottomNav = ['characters', 'settings', 'createCharacter'];
+        // Views that should have the bottom navigation bar
+        const viewsWithBottomNav = ['characters', 'usersCharacters', 'settings', 'createCharacter'];
         if (viewsWithBottomNav.includes(viewId)) {
             bottomNavBar.style.display = 'flex';
             document.querySelectorAll('.bottom-nav-item').forEach(btn => {
-                const btnDataView = btn.dataset.view; 
+                const btnDataView = btn.dataset.view;
                 // Map HTML data-view to internal JS viewId for comparison
-                const btnInternalViewId = btnDataView.replace(/-/g, '').replace('view', ''); // characters-view -> characters
+                let btnInternalViewId = '';
+                if (btnDataView === 'characters-view') btnInternalViewId = 'characters';
+                else if (btnDataView === 'users-characters-view') btnInternalViewId = 'usersCharacters';
+                else if (btnDataView === 'create-character-view') btnInternalViewId = 'createCharacter';
+                else if (btnDataView === 'settings-view') btnInternalViewId = 'settings';
+
                 let isActive = (currentViewId.toLowerCase() === btnInternalViewId.toLowerCase());
                 btn.classList.toggle('active', isActive);
             });
         } else {
             bottomNavBar.style.display = 'none';
         }
-        
+
         const paymentItemAvatar = document.getElementById('payment-item-avatar');
         const paymentItemPurchaseTitle = document.getElementById('payment-item-purchase-title');
         const paymentItemDetails = document.getElementById('payment-item-details');
         const paymentItemTotalStars = document.getElementById('payment-item-total-stars');
 
-        if (viewId === 'paymentItem') { 
+        if (viewId === 'paymentItem') {
             if (params.type === 'energy') {
                 paymentItemPurchaseTitle.textContent = 'Recharging Energy';
                 paymentItemDetails.textContent = `${params.amount} Energy`;
                 if(paymentItemAvatar) paymentItemAvatar.src = 'https://placehold.co/80x80/FFD700/333333/png?text=⚡&font=roboto';
-            } else if (params.type === 'gems') { 
+            } else if (params.type === 'gems') {
                 paymentItemPurchaseTitle.textContent = 'Purchasing a pack';
                 paymentItemDetails.textContent = `${params.gems} Gems`;
                  if(paymentItemAvatar) paymentItemAvatar.src = 'https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=Gems&font=roboto';
             } else if (params.type === 'characterCreation') {
                 paymentItemPurchaseTitle.textContent = 'Creating Character';
                 paymentItemDetails.textContent = `New Character: ${params.characterName}`;
-                if(paymentItemAvatar) paymentItemAvatar.src = 'https://placehold.co/80x80/D32FDB/FFFFFF/png?text=🧑&font=roboto'; // Generic user icon
+                if(paymentItemAvatar) paymentItemAvatar.src = 'https://placehold.co/80x80/D32FDB/FFFFFF/png?text=🧑&font=roboto';
             }
             paymentItemTotalStars.innerHTML = `${params.stars} <span class="telegram-star">⭐</span>`;
         }
@@ -130,8 +148,8 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('payment-sub-total-stars').innerHTML = `${params.stars} <span class="telegram-star">⭐</span>`;
         }
     }
-    
-    // --- CHARACTER DATA AND RENDERING ---
+
+    // --- PREDEFINED CHARACTER DATA AND RENDERING ---
     const charactersData = [
         { id_to_send: "jane", display_name: "Jane", description: "Flirtatious traditional girl.", image_url: "https://placehold.co/300x400/332E45/E0E0E0/png?text=Jane&font=roboto" },
         { id_to_send: "mrsgrace", display_name: "Mrs. Grace", description: "Caring and charming MILF.", image_url: "https://placehold.co/300x400/2A203C/E0E0E0/png?text=Mrs.+Grace&font=roboto" },
@@ -142,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let selectedCharacterCard = null;
 
     function populateCharacters() {
-        characterGrid.innerHTML = ''; 
+        characterGrid.innerHTML = '';
         charactersData.forEach(charData => {
             const card = document.createElement('div'); card.classList.add('character-card'); card.dataset.personaId = charData.id_to_send; card.dataset.displayName = charData.display_name;
             const imageContainer = document.createElement('div'); imageContainer.classList.add('character-image-container');
@@ -159,11 +177,180 @@ document.addEventListener('DOMContentLoaded', function () {
             characterGrid.appendChild(card);
         });
     }
-    
+
+    // --- USER-CREATED CHARACTER FUNCTIONS ---
+    const publicCharacterGrid = document.getElementById('public-character-grid');
+    const myCharacterList = document.getElementById('my-character-list');
+    const noPublicCharsMsg = document.getElementById('no-public-characters-message');
+    const noMyCharsMsg = document.getElementById('no-my-characters-message');
+
+
+    function populatePublicCharacters() {
+        publicCharacterGrid.innerHTML = ''; // Clear existing
+        const publicChars = userCreatedCharacters.filter(char => char.visibility === 'public');
+
+        if (publicChars.length === 0) {
+            if (noPublicCharsMsg) noPublicCharsMsg.style.display = 'block';
+            // Ensure grid has no content if a <p> element itself is in the grid
+            if (publicCharacterGrid.querySelector('.empty-state-message')) {
+                 publicCharacterGrid.innerHTML = ''; // Clear if it was there
+                 publicCharacterGrid.appendChild(noPublicCharsMsg);
+            }
+            return;
+        }
+        if (noPublicCharsMsg) noPublicCharsMsg.style.display = 'none';
+
+
+        publicChars.forEach(charData => {
+            const card = document.createElement('div');
+            card.classList.add('character-card'); // Re-use existing style
+            // card.dataset.userCharId = charData.id; // Optional: if needed for interaction
+
+            const imageContainer = document.createElement('div');
+            imageContainer.classList.add('character-image-container');
+            const img = document.createElement('img');
+            img.classList.add('character-image');
+            img.src = charData.image_url || 'https://placehold.co/300x400/4B4265/E0E0E0/png?text=No+Image&font=roboto'; // Default if no image
+            img.alt = charData.name;
+            imageContainer.appendChild(img);
+            card.appendChild(imageContainer);
+
+            const info = document.createElement('div');
+            info.classList.add('character-info');
+            const nameHeader = document.createElement('h3');
+            nameHeader.classList.add('character-name');
+            nameHeader.textContent = charData.name;
+            const desc = document.createElement('p');
+            desc.classList.add('character-description');
+            desc.textContent = charData.description;
+            info.appendChild(nameHeader);
+            info.appendChild(desc);
+            card.appendChild(info);
+
+            // Basic click handler for public characters (can be expanded)
+            card.addEventListener('click', () => {
+                tg.showAlert(`You selected public character: ${charData.name}`);
+            });
+            publicCharacterGrid.appendChild(card);
+        });
+    }
+
+    function populateMyCharacters() {
+        myCharacterList.innerHTML = ''; // Clear existing
+
+        if (userCreatedCharacters.length === 0) {
+            if (noMyCharsMsg) noMyCharsMsg.style.display = 'block';
+             // Ensure list has no content if a <p> element itself is in the list
+            if (myCharacterList.querySelector('.empty-state-message')) {
+                 myCharacterList.innerHTML = ''; // Clear if it was there
+                 myCharacterList.appendChild(noMyCharsMsg);
+            }
+            return;
+        }
+        if (noMyCharsMsg) noMyCharsMsg.style.display = 'none';
+
+
+        userCreatedCharacters.forEach(charData => {
+            const card = document.createElement('div');
+            card.classList.add('my-character-card');
+            card.dataset.charId = charData.id;
+
+            const img = document.createElement('img');
+            img.classList.add('character-image-thumb');
+            img.src = charData.image_url || 'https://placehold.co/70x90/4B4265/E0E0E0/png?text=N/A&font=roboto';
+            img.alt = charData.name;
+
+            const detailsDiv = document.createElement('div');
+            detailsDiv.classList.add('my-character-details');
+
+            const nameHeader = document.createElement('h3');
+            nameHeader.classList.add('my-character-name');
+            nameHeader.textContent = charData.name;
+
+            const descP = document.createElement('p');
+            descP.classList.add('my-character-desc');
+            descP.textContent = charData.description;
+
+            const statusSpan = document.createElement('span');
+            statusSpan.classList.add('my-character-status', charData.visibility);
+            statusSpan.textContent = charData.visibility.charAt(0).toUpperCase() + charData.visibility.slice(1);
+
+            const actionsDiv = document.createElement('div');
+            actionsDiv.classList.add('my-character-actions');
+
+            const toggleBtn = document.createElement('button');
+            toggleBtn.classList.add('action-btn', 'toggle-visibility');
+            toggleBtn.textContent = charData.visibility === 'public' ? 'Make Private' : 'Make Public';
+            toggleBtn.addEventListener('click', () => toggleCharacterVisibility(charData.id));
+
+            const editBtn = document.createElement('button');
+            editBtn.classList.add('action-btn', 'edit');
+            editBtn.textContent = 'Edit';
+            editBtn.addEventListener('click', () => {
+                 tg.showAlert(`Edit for "${charData.name}" (not implemented).`);
+                 // Future: showView('createCharacter', false, { editCharId: charData.id });
+            });
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.classList.add('action-btn', 'delete');
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.addEventListener('click', () => deleteCharacter(charData.id, charData.name));
+
+            actionsDiv.appendChild(toggleBtn);
+            actionsDiv.appendChild(editBtn);
+            actionsDiv.appendChild(deleteBtn);
+
+            detailsDiv.appendChild(nameHeader);
+            detailsDiv.appendChild(descP);
+            detailsDiv.appendChild(statusSpan);
+            detailsDiv.appendChild(actionsDiv);
+
+            card.appendChild(img);
+            card.appendChild(detailsDiv);
+            myCharacterList.appendChild(card);
+        });
+    }
+
+    function toggleCharacterVisibility(charId) {
+        const charIndex = userCreatedCharacters.findIndex(c => c.id === charId);
+        if (charIndex > -1) {
+            userCreatedCharacters[charIndex].visibility = userCreatedCharacters[charIndex].visibility === 'public' ? 'private' : 'public';
+            populateMyCharacters(); // Refresh "My Characters" list
+            if (currentViewId === 'usersCharacters') { // If user is on public list, refresh it too
+                populatePublicCharacters();
+            }
+            tg.HapticFeedback.impactOccurred('light');
+        }
+    }
+
+    function deleteCharacter(charId, charName) {
+        tg.showConfirm(`Are you sure you want to delete "${charName}"? This action cannot be undone.`, (ok) => {
+            if (ok) {
+                userCreatedCharacters = userCreatedCharacters.filter(c => c.id !== charId);
+                populateMyCharacters(); // Refresh "My Characters" list
+                if (currentViewId === 'usersCharacters') { // If user is on public list, refresh it too
+                    populatePublicCharacters();
+                }
+                tg.HapticFeedback.notificationOccurred('success');
+                tg.showAlert(`Character "${charName}" has been deleted.`);
+            }
+        });
+    }
+
+
     // --- EVENT LISTENERS ---
+    document.getElementById('my-characters-btn').addEventListener('click', () => showView('myCharacters'));
+    if (document.getElementById('create-first-character-link')) {
+        document.getElementById('create-first-character-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            showView('createCharacter');
+        });
+    }
+
+
     document.getElementById('settings-upgrade-plan-btn').addEventListener('click', () => showView('plan'));
     document.getElementById('settings-language-btn').addEventListener('click', () => showView('language'));
-    
+
     const styleLabels = document.querySelectorAll('.style-label');
     const styleImages = { realistic: document.getElementById('style-realistic'), anime: document.getElementById('style-anime') };
     styleLabels.forEach(label => {
@@ -193,7 +380,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('plan-upgrade-btn').addEventListener('click', () => {
         const selectedPlan = document.querySelector('.plan-option.selected');
         if (selectedPlan) {
-            const planTitle = selectedPlan.querySelector('.plan-title').textContent.replace(/<span.*?<\/span>/g, '').trim(); // Get text only
+            const planTitle = selectedPlan.querySelector('.plan-title').textContent.replace(/<span.*?<\/span>/g, '').trim();
             const stars = selectedPlan.dataset.starsCost;
             showView('paymentSubscription', false, { planDetails: planTitle, stars: stars });
         } else { tg.showAlert("Please select a plan first."); }
@@ -203,10 +390,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const languageOptions = document.querySelectorAll('.language-option');
     const currentLangDisplayEl = document.getElementById('current-language-display');
-    selectedLanguage = 'en'; // Default
+    selectedLanguage = 'en';
     languageOptions.forEach(opt => {
-        const isSelected = opt.dataset.lang === selectedLanguage; 
-        opt.classList.toggle('selected', isSelected); 
+        const isSelected = opt.dataset.lang === selectedLanguage;
+        opt.classList.toggle('selected', isSelected);
         opt.querySelector('.radio-custom').classList.toggle('checked', isSelected);
         if (isSelected && currentLangDisplayEl) { currentLangDisplayEl.textContent = opt.dataset.langName; }
     });
@@ -217,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function () {
             selectedLanguage = option.dataset.lang;
             if (currentLangDisplayEl) { currentLangDisplayEl.textContent = option.dataset.langName; }
             console.log("Language selected:", selectedLanguage);
-            if (viewHistory.length > 0) { tg.BackButton.onClick(); } else { showView('settings', true); }
+            if (viewHistory.length > 0 && tg.BackButton.isVisible) { tg.BackButton.onClick(); } else { showView('settings', true); }
         });
     });
 
@@ -228,23 +415,19 @@ document.addEventListener('DOMContentLoaded', function () {
             showView('paymentItem', false, { type: 'gems', gems, stars });
         });
     });
-    
-    // Recharge Energy Button in Store
-     document.getElementById('recharge-energy-btn').addEventListener('click', () => {
+
+    document.getElementById('recharge-energy-btn').addEventListener('click', () => {
         showView('rechargeEnergy');
     });
 
-    // Energy Amount Input Listener (in Recharge Energy View)
     if(energyAmountInput && estimatedEnergyStarsEl) {
         energyAmountInput.addEventListener('input', () => {
             const amount = parseInt(energyAmountInput.value) || 0;
             estimatedEnergyStarsEl.textContent = Math.ceil(amount / ENERGY_PER_STAR_RATE);
         });
-         // Initialize
         estimatedEnergyStarsEl.textContent = Math.ceil(parseInt(energyAmountInput.value) / ENERGY_PER_STAR_RATE);
     }
 
-    // Confirm Recharge Button (in Recharge Energy View)
     const confirmRechargeBtn = document.getElementById('confirm-recharge-btn');
     if(confirmRechargeBtn) {
         confirmRechargeBtn.addEventListener('click', () => {
@@ -257,23 +440,21 @@ document.addEventListener('DOMContentLoaded', function () {
             tg.showConfirm(`Recharge ${amount} energy for ${starsCost} Stars?`, (ok) => {
                 if (ok) {
                     console.log(`Attempting to recharge ${amount} energy for ${starsCost} stars.`);
-                    // Simulate going to payment screen for this energy recharge
                     showView('paymentItem', false, {type: 'energy', amount: amount, stars: starsCost});
                 }
             });
         });
     }
 
-
-    document.getElementById('payment-item-confirm-btn').addEventListener('click', () => { 
+    document.getElementById('payment-item-confirm-btn').addEventListener('click', () => {
         const itemDetails = document.getElementById('payment-item-details').textContent;
         tg.showAlert(`Payment for "${itemDetails}" initiated (simulated)!`);
-        if (viewHistory.includes('store')) { 
-            while(viewHistory.length > 0 && viewHistory[viewHistory.length-1] !== 'store') { viewHistory.pop(); } 
-            if (viewHistory.length > 0 && viewHistory[viewHistory.length-1] === 'store') tg.BackButton.onClick(); 
-            else showView('store', true); 
-        } else { 
-            viewHistory = []; 
+        if (viewHistory.includes('store')) {
+            while(viewHistory.length > 0 && viewHistory[viewHistory.length-1] !== 'store') { viewHistory.pop(); }
+            if (viewHistory.length > 0 && viewHistory[viewHistory.length-1] === 'store' && tg.BackButton.isVisible) tg.BackButton.onClick();
+            else showView('store', true);
+        } else {
+            viewHistory = [];
             showView('characters');
         }
     });
@@ -281,28 +462,53 @@ document.addEventListener('DOMContentLoaded', function () {
     const saveCharBtn = document.getElementById('save-character-btn');
     if (saveCharBtn) {
         saveCharBtn.addEventListener('click', () => {
-            const charName = document.getElementById('char-name').value;
-            const charDesc = document.getElementById('char-desc').value;
-            const charImage = document.getElementById('char-image').value;
-            const creationCost = 15; 
+            const charNameInput = document.getElementById('char-name');
+            const charDescInput = document.getElementById('char-desc');
+            const charImageInput = document.getElementById('char-image');
+            const charVisibilityInput = document.querySelector('input[name="char-visibility"]:checked');
 
-            if (charName.trim() === "" || charDesc.trim() === "") { tg.showAlert("Please enter a name and description."); return; }
-            
-            tg.showConfirm(`Create character "${charName}" for ${creationCost} Stars?`, (ok) => {
-               if (ok) { 
-                    console.log("Creating character:", {name: charName, desc: charDesc, image: charImage});
-                    tg.showAlert(`Character "${charName}" creation process started for ${creationCost} Stars (simulated)!`);
-                    document.getElementById('char-name').value = ''; document.getElementById('char-desc').value = ''; document.getElementById('char-image').value = '';
-                    // Smart navigation back
-                    if (viewHistory.includes('characters')) {
-                         while(viewHistory.length > 0 && viewHistory[viewHistory.length - 1] !== 'characters') { viewHistory.pop(); }
-                         if(viewHistory.length > 0 && viewHistory[viewHistory.length - 1] === 'characters') {
-                            tg.BackButton.onClick(); // Takes to 'characters' if it was the direct predecessor in this refined history
-                         } else {
-                            showView('characters', true); // Go to characters and remove createCharacter from history if it was pushed
-                         }
-                    } else {
-                        viewHistory = []; showView('characters');
+            const charName = charNameInput.value.trim();
+            const charDesc = charDescInput.value.trim();
+            const charImage = charImageInput.value.trim();
+            const charVisibility = charVisibilityInput ? charVisibilityInput.value : 'public'; // Default to public
+            const creationCost = 15;
+
+            if (charName === "" || charDesc === "") { tg.showAlert("Please enter a name and description."); return; }
+
+            tg.showConfirm(`Create character "${charName}" (${charVisibility}) for ${creationCost} Stars?`, (ok) => {
+               if (ok) {
+                    const newChar = {
+                        id: nextUserCharacterId++,
+                        name: charName,
+                        description: charDesc,
+                        image_url: charImage || null, // Store null if empty, or a default placeholder
+                        visibility: charVisibility
+                    };
+                    userCreatedCharacters.push(newChar);
+                    console.log("Creating character:", newChar);
+                    tg.HapticFeedback.notificationOccurred('success');
+                    tg.showAlert(`Character "${charName}" created as ${charVisibility} for ${creationCost} Stars (simulated)!`);
+
+                    // Clear form
+                    charNameInput.value = '';
+                    charDescInput.value = '';
+                    charImageInput.value = '';
+                    // Reset visibility radio to public
+                    document.querySelector('input[name="char-visibility"][value="public"]').checked = true;
+
+
+                    // Smart navigation back: try to go to 'myCharacters' or 'usersCharacters' if it was the recent direct parent
+                    let navigated = false;
+                    if (viewHistory.length > 0) {
+                        const previousView = viewHistory[viewHistory.length - 1];
+                        if (previousView === 'myCharacters' || previousView === 'usersCharacters' || previousView === 'characters') {
+                            if (tg.BackButton.isVisible) tg.BackButton.onClick(); // Will pop createCharacter from history
+                            navigated = true;
+                        }
+                    }
+                    if (!navigated) {
+                         // Fallback: If no relevant parent or history is empty, go to My Characters, then remove createChar from history.
+                        showView('myCharacters', true); // 'true' removes current (createChar) from history stack effectively
                     }
                }
             });
@@ -312,25 +518,25 @@ document.addEventListener('DOMContentLoaded', function () {
     const bottomNavItems = document.querySelectorAll('.bottom-nav-item');
     bottomNavItems.forEach(item => {
         item.addEventListener('click', () => {
-            const targetViewHtmlId = item.dataset.view; // e.g., characters-view
+            const targetViewHtmlId = item.dataset.view;
             let targetInternalViewId = '';
-            // Map the data-view from HTML to internal JS view ID
+
             if (targetViewHtmlId === 'characters-view') targetInternalViewId = 'characters';
+            else if (targetViewHtmlId === 'users-characters-view') targetInternalViewId = 'usersCharacters'; // New
             else if (targetViewHtmlId === 'settings-view') targetInternalViewId = 'settings';
             else if (targetViewHtmlId === 'create-character-view') targetInternalViewId = 'createCharacter';
             else { console.warn("Unknown bottom nav item:", targetViewHtmlId); return; }
 
 
-            if (views[targetInternalViewId] && currentViewId !== targetInternalViewId) { 
-                // Treat bottom nav clicks as navigating to a main tab, resetting history for that tab's context
-                viewHistory = []; 
+            if (views[targetInternalViewId] && currentViewId !== targetInternalViewId) {
+                viewHistory = []; // Reset history for main tab navigation
                 showView(targetInternalViewId);
             }
         });
     });
 
     // --- INITIAL APP STARTUP ---
-    populateCharacters();
-    showView('characters'); 
+    populateCharacters(); // Predefined characters
+    showView('characters');
 
 });
