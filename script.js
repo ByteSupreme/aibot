@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
         characters: document.getElementById('characters-view'),
         usersCharacters: document.getElementById('users-characters-view'),
         myCharacters: document.getElementById('my-characters-view'),
+        characterDetail: document.getElementById('character-detail-view'), // New
         settings: document.getElementById('settings-view'),
         createCharacter: document.getElementById('create-character-view'),
         editCharacter: document.getElementById('edit-character-view'),
@@ -25,32 +26,46 @@ document.addEventListener('DOMContentLoaded', function () {
         paymentItem: document.getElementById('payment-item-view')
     };
 
+    // --- DOM Cache ---
     const gemBarContainerOuter = document.getElementById('gem-bar-container-outer');
     const bottomNavBar = document.getElementById('bottom-nav-bar');
     const energyAmountInput = document.getElementById('energy-amount');
     const estimatedEnergyStarsEl = document.getElementById('estimated-energy-stars');
 
-    // Users Characters View elements
     const usersCharacterSearchInput = document.getElementById('users-character-search-input');
     const usersCharacterTabs = document.querySelectorAll('#users-characters-view .tab-button');
     const publicCharacterGrid = document.getElementById('public-character-grid');
     const noPublicCharsMsg = document.getElementById('no-public-characters-message');
 
+    const myCharacterList = document.getElementById('my-character-list');
+    const noMyCharsMsg = document.getElementById('no-my-characters-message');
 
+    // Character Detail View Elements
+    const charDetailImage = document.getElementById('char-detail-image');
+    const charDetailName = document.getElementById('char-detail-name');
+    const charDetailDesc = document.getElementById('char-detail-desc');
+    const charDetailFullDetailsSection = document.getElementById('char-detail-full-details-section');
+    const charDetailFullDetails = document.getElementById('char-detail-full-details');
+    const startCharacterBtn = document.getElementById('start-character-btn');
+    let currentCharacterDetailData = null; // To hold data for "Start Character" button
+
+
+    // --- App State ---
     let viewHistory = [];
     let currentViewId = 'characters';
     let selectedLanguage = 'en';
     const ENERGY_PER_STAR_RATE = 0.5;
     const CHARACTER_CREATION_COST_GEMS = 15;
 
-    let userCreatedCharacters = []; // { id, name, description, details, image_url, visibility, createdAt (timestamp) }
+    let userCreatedCharacters = [];
     let nextUserCharacterId = 1;
 
-    // State for Users Characters View
-    let currentUsersCharacterTab = 'featured'; // 'featured' or 'recent'
+    let currentUsersCharacterTab = 'featured';
     let currentUsersCharacterSearchTerm = '';
 
-    function setupSegmentedControl(segmentContainerId) {
+
+    // --- Utility Functions ---
+    function setupSegmentedControl(segmentContainerId) { /* ... as before ... */
         const container = document.getElementById(segmentContainerId);
         if (!container) return;
         const buttons = container.querySelectorAll('.segment-button');
@@ -64,14 +79,13 @@ document.addEventListener('DOMContentLoaded', function () {
     setupSegmentedControl('char-visibility-segment');
     setupSegmentedControl('edit-char-visibility-segment');
 
-    function getSegmentedControlValue(segmentContainerId) {
+    function getSegmentedControlValue(segmentContainerId) { /* ... as before ... */
         const container = document.getElementById(segmentContainerId);
         if (!container) return 'public';
         const activeButton = container.querySelector('.segment-button.active');
         return activeButton ? activeButton.dataset.value : 'public';
     }
-
-    function setSegmentedControlValue(segmentContainerId, value) {
+    function setSegmentedControlValue(segmentContainerId, value) { /* ... as before ... */
         const container = document.getElementById(segmentContainerId);
         if (!container) return;
         const buttons = container.querySelectorAll('.segment-button');
@@ -80,6 +94,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+
+    // --- Navigation & View Management ---
     tg.BackButton.onClick(() => {
         if (viewHistory.length > 0) {
             const previousViewId = viewHistory.pop();
@@ -108,20 +124,20 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
         currentViewId = viewId;
-        updateStickyHeaderAndNav(viewId, params);
+        updateStickyHeaderAndNav(viewId, params); // Includes nav bar logic
         updateTelegramBackButton();
 
+        // View-specific population
         if (viewId === 'usersCharacters') {
-            // Reset search and set default tab if not already set or if navigating fresh
-            if (!isBack || !usersCharacterSearchInput.value) { // Reset search on fresh navigation
+            if (!isBack || !usersCharacterSearchInput.value) {
                  usersCharacterSearchInput.value = '';
                  currentUsersCharacterSearchTerm = '';
             }
-            // Default to 'featured' if no specific tab brought us here
-            // currentUsersCharacterTab will persist if user was already on this view and switched tabs
-            renderUsersCharacterContent(); // Render with current tab and search
+            renderUsersCharacterContent();
         } else if (viewId === 'myCharacters') {
             populateMyCharacters();
+        } else if (viewId === 'characterDetail' && params.characterData) {
+            populateCharacterDetailView(params.characterData);
         } else if (viewId === 'editCharacter' && params.charId) {
             loadCharacterForEditing(params.charId);
         }
@@ -142,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <button class="plus-btn" id="gem-bar-plus-btn">➕</button>
             </div>`;
 
-        const viewsWithGemBar = ['characters', 'usersCharacters', 'myCharacters', 'settings', 'store', 'createCharacter', 'editCharacter', 'rechargeEnergy'];
+        const viewsWithGemBar = ['characters', 'usersCharacters', 'myCharacters', 'characterDetail', 'settings', 'store', 'createCharacter', 'editCharacter', 'rechargeEnergy'];
         if (viewsWithGemBar.includes(viewId)) {
             gemBarContainerOuter.innerHTML = commonGemBarHTML;
             const plusButton = document.getElementById('gem-bar-plus-btn');
@@ -169,6 +185,7 @@ document.addEventListener('DOMContentLoaded', function () {
             bottomNavBar.style.display = 'none';
         }
 
+        // Payment Item View (unchanged)
         const paymentItemAvatar = document.getElementById('payment-item-avatar');
         const paymentItemPurchaseTitle = document.getElementById('payment-item-purchase-title');
         const paymentItemDetails = document.getElementById('payment-item-details');
@@ -186,14 +203,14 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             paymentItemTotalStars.innerHTML = `${params.stars} <span class="telegram-star">⭐</span>`;
         }
-
-        if (viewId === 'paymentSubscription' && params.planDetails && params.stars) {
+         if (viewId === 'paymentSubscription' && params.planDetails && params.stars) {
             document.getElementById('payment-sub-plan-details').textContent = params.planDetails;
             document.getElementById('payment-sub-total-stars').innerHTML = `${params.stars} <span class="telegram-star">⭐</span>`;
         }
     }
 
-    const charactersData = [
+    // --- Predefined Characters ---
+    const charactersData = [ /* ... as before ... */
         { id_to_send: "jane", display_name: "Jane", description: "Flirtatious traditional girl.", image_url: "https://placehold.co/300x400/332E45/E0E0E0/png?text=Jane&font=roboto" },
         { id_to_send: "mrsgrace", display_name: "Mrs. Grace", description: "Caring and charming MILF.", image_url: "https://placehold.co/300x400/2A203C/E0E0E0/png?text=Mrs.+Grace&font=roboto" },
         { id_to_send: "sakura", display_name: "Sakura", description: "Japanese secret agent.", image_url: "https://placehold.co/300x400/3A2F4B/E0E0E0/png?text=Sakura&font=roboto", icon: "❤️" },
@@ -202,31 +219,48 @@ document.addEventListener('DOMContentLoaded', function () {
     const characterGrid = document.getElementById('character-grid');
     let selectedCharacterCard = null;
 
-    function populateCharacters() { /* ... as before ... */
+    function populateCharacters() { /* ... as before, BUT add click for detail view ... */
         characterGrid.innerHTML = '';
         charactersData.forEach(charData => {
-            const card = document.createElement('div'); card.classList.add('character-card'); card.dataset.personaId = charData.id_to_send; card.dataset.displayName = charData.display_name;
+            const card = document.createElement('div'); card.classList.add('character-card');
+            card.dataset.idToSend = charData.id_to_send; // For bot interaction
+
             const imageContainer = document.createElement('div'); imageContainer.classList.add('character-image-container');
             const img = document.createElement('img'); img.classList.add('character-image'); img.src = charData.image_url; img.alt = charData.display_name; imageContainer.appendChild(img);
-            if (charData.special_decoration === "paws") { const pawOverlay = document.createElement('div'); pawOverlay.classList.add('paw-print-overlay'); const pawPositions = [ { top: '8%', left: '10%', transform: 'rotate(-20deg)', class: 'p1' }, { top: '15%', right: '8%', transform: 'rotate(25deg)', class: 'p2' }, { top: '60%', left: '15%', transform: 'rotate(10deg)', class: 'p3' }, { top: '70%', right: '20%', transform: 'rotate(-10deg)', class: 'p4' } ]; pawPositions.forEach(pos => { const paw = document.createElement('span'); paw.classList.add('paw-print', pos.class); paw.style.top = pos.top; if(pos.left) paw.style.left = pos.left; if(pos.right) paw.style.right = pos.right; paw.style.transform = pos.transform; paw.textContent = '🐾'; pawOverlay.appendChild(paw); }); imageContainer.appendChild(pawOverlay); }
+            if (charData.special_decoration === "paws") { /* ... paw logic ... */
+                 const pawOverlay = document.createElement('div'); pawOverlay.classList.add('paw-print-overlay'); const pawPositions = [ { top: '8%', left: '10%', transform: 'rotate(-20deg)', class: 'p1' }, { top: '15%', right: '8%', transform: 'rotate(25deg)', class: 'p2' }, { top: '60%', left: '15%', transform: 'rotate(10deg)', class: 'p3' }, { top: '70%', right: '20%', transform: 'rotate(-10deg)', class: 'p4' } ]; pawPositions.forEach(pos => { const paw = document.createElement('span'); paw.classList.add('paw-print', pos.class); paw.style.top = pos.top; if(pos.left) paw.style.left = pos.left; if(pos.right) paw.style.right = pos.right; paw.style.transform = pos.transform; paw.textContent = '🐾'; pawOverlay.appendChild(paw); }); imageContainer.appendChild(pawOverlay);
+            }
             card.appendChild(imageContainer);
             const info = document.createElement('div'); info.classList.add('character-info');
             const nameHeader = document.createElement('h3'); nameHeader.classList.add('character-name'); nameHeader.textContent = charData.display_name;
             if (charData.icon) { const iconSpan = document.createElement('span'); iconSpan.classList.add('card-icon'); iconSpan.innerHTML = charData.icon; nameHeader.appendChild(iconSpan); }
             const desc = document.createElement('p'); desc.classList.add('character-description'); desc.textContent = charData.description;
             info.appendChild(nameHeader); info.appendChild(desc); card.appendChild(info);
-            if (charData.selected) { card.classList.add('selected'); selectedCharacterCard = card; }
-            card.addEventListener('click', function () { if (selectedCharacterCard) { selectedCharacterCard.classList.remove('selected'); } this.classList.add('selected'); selectedCharacterCard = this; console.log("Selected Persona ID:", this.dataset.personaId); });
+
+            if (charData.selected && !selectedCharacterCard) { // Ensure only one selected by default
+                 card.classList.add('selected'); selectedCharacterCard = card;
+            }
+            card.addEventListener('click', function () {
+                if (selectedCharacterCard) { selectedCharacterCard.classList.remove('selected'); }
+                this.classList.add('selected'); selectedCharacterCard = this;
+                console.log("Selected Predefined Persona ID for bot:", this.dataset.idToSend);
+
+                const detailData = {
+                    type: 'predefined', // To differentiate from user-created if needed later
+                    id_to_send: charData.id_to_send,
+                    name: charData.display_name,
+                    description: charData.description,
+                    image_url: charData.image_url,
+                    // No 'details' field for predefined characters
+                };
+                showView('characterDetail', false, { characterData: detailData });
+            });
             characterGrid.appendChild(card);
         });
     }
 
-
-    // --- USER-CREATED CHARACTER FUNCTIONS (My Creations Page) ---
-    const myCharacterList = document.getElementById('my-character-list');
-    const noMyCharsMsg = document.getElementById('no-my-characters-message');
-
-    function populateMyCharacters() { /* ... as before ... */
+    // --- User-Created Characters ("My Creations" Page) ---
+    function populateMyCharacters() { /* ... as before, BUT add click for detail view ... */
         myCharacterList.innerHTML = '';
 
         if (userCreatedCharacters.length === 0) {
@@ -240,8 +274,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
         userCreatedCharacters.forEach(charData => {
             const card = document.createElement('div');
-            card.classList.add('my-character-card');
+            card.classList.add('my-character-card'); // This already makes it clickable (from CSS)
             card.dataset.charId = charData.id;
+
+            card.addEventListener('click', (event) => {
+                // Prevent click on buttons inside the card from also triggering this
+                if (event.target.closest('.my-character-actions .action-btn')) {
+                    return;
+                }
+                const detailData = {
+                    type: 'user_created',
+                    id: charData.id, // internal ID
+                    name: charData.name,
+                    description: charData.description,
+                    details: charData.details,
+                    image_url: charData.image_url,
+                };
+                showView('characterDetail', false, { characterData: detailData });
+            });
 
             const img = document.createElement('img');
             img.classList.add('character-image-thumb');
@@ -269,19 +319,20 @@ document.addEventListener('DOMContentLoaded', function () {
             const toggleBtn = document.createElement('button');
             toggleBtn.classList.add('action-btn', 'toggle-visibility');
             toggleBtn.textContent = charData.visibility === 'public' ? 'Make Private' : 'Make Public';
-            toggleBtn.addEventListener('click', () => toggleCharacterVisibility(charData.id));
+            toggleBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleCharacterVisibility(charData.id); });
+
 
             const editBtn = document.createElement('button');
             editBtn.classList.add('action-btn', 'edit');
             editBtn.textContent = 'Edit';
-            editBtn.addEventListener('click', () => {
-                 showView('editCharacter', false, { charId: charData.id });
-            });
+            editBtn.addEventListener('click', (e) => { e.stopPropagation(); showView('editCharacter', false, { charId: charData.id });});
+
 
             const deleteBtn = document.createElement('button');
             deleteBtn.classList.add('action-btn', 'delete');
             deleteBtn.textContent = 'Delete';
-            deleteBtn.addEventListener('click', () => deleteCharacter(charData.id, charData.name));
+            deleteBtn.addEventListener('click', (e) => { e.stopPropagation(); deleteCharacter(charData.id, charData.name); });
+
 
             actionsDiv.appendChild(toggleBtn);
             actionsDiv.appendChild(editBtn);
@@ -298,48 +349,43 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function toggleCharacterVisibility(charId) {
+    function toggleCharacterVisibility(charId) { /* ... as before ... */
         const charIndex = userCreatedCharacters.findIndex(c => c.id === charId);
         if (charIndex > -1) {
             userCreatedCharacters[charIndex].visibility = userCreatedCharacters[charIndex].visibility === 'public' ? 'private' : 'public';
-            populateMyCharacters(); // Refresh "My Characters" list
-            renderUsersCharacterContent(); // Refresh "Users Characters" if visible and relevant
+            populateMyCharacters();
+            renderUsersCharacterContent();
             tg.HapticFeedback.impactOccurred('light');
         }
     }
-
-    function deleteCharacter(charId, charName) {
-        tg.showConfirm(`Are you sure you want to delete "${charName}"? This action cannot be undone.`, (ok) => {
+    function deleteCharacter(charId, charName) { /* ... as before ... */
+         tg.showConfirm(`Are you sure you want to delete "${charName}"? This action cannot be undone.`, (ok) => {
             if (ok) {
                 userCreatedCharacters = userCreatedCharacters.filter(c => c.id !== charId);
-                populateMyCharacters(); // Refresh "My Characters" list
-                renderUsersCharacterContent(); // Refresh "Users Characters" if visible and relevant
+                populateMyCharacters();
+                renderUsersCharacterContent();
                 tg.HapticFeedback.notificationOccurred('success');
                 tg.showAlert(`Character "${charName}" has been deleted.`);
             }
         });
     }
 
-    // --- USERS CHARACTERS VIEW LOGIC (Tabs & Search) ---
-    function renderUsersCharacterContent() {
-        if (currentViewId !== 'usersCharacters') return; // Only render if this view is active
+    // --- Users Characters View (Tabs & Search) ---
+    function renderUsersCharacterContent() { /* ... as before, BUT add click for detail view ... */
+        if (currentViewId !== 'usersCharacters') return;
 
         let charactersToDisplay = userCreatedCharacters.filter(char => char.visibility === 'public');
 
-        // Apply tab logic
         if (currentUsersCharacterTab === 'featured') {
-            // Simulated: first N public characters with images are "featured", newest first
-            const featuredChars = [...charactersToDisplay] // Create a copy to sort
-                                .sort((a,b) => b.createdAt - a.createdAt) // newest first
-                                .filter(char => char.image_url) // only with images
-                                .slice(0, 4); // Max 4 featured
+            const featuredChars = [...charactersToDisplay]
+                                .sort((a,b) => b.createdAt - a.createdAt)
+                                .filter(char => char.image_url)
+                                .slice(0, 4);
             charactersToDisplay = featuredChars;
         } else if (currentUsersCharacterTab === 'recent') {
-            // Sort by newest first (based on creation timestamp)
             charactersToDisplay.sort((a, b) => b.createdAt - a.createdAt);
         }
 
-        // Apply search term
         const searchTerm = currentUsersCharacterSearchTerm.toLowerCase();
         if (searchTerm) {
             charactersToDisplay = charactersToDisplay.filter(char =>
@@ -348,7 +394,6 @@ document.addEventListener('DOMContentLoaded', function () {
             );
         }
 
-        // Render
         publicCharacterGrid.innerHTML = '';
         if (charactersToDisplay.length === 0) {
             if (noPublicCharsMsg) {
@@ -360,9 +405,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (noPublicCharsMsg) noPublicCharsMsg.style.display = 'none';
 
         charactersToDisplay.forEach(charData => {
-            // Re-use character card structure
             const card = document.createElement('div');
             card.classList.add('character-card');
+            card.dataset.charId = charData.id; // For user-created char
+
             const imageContainer = document.createElement('div');
             imageContainer.classList.add('character-image-container');
             const img = document.createElement('img');
@@ -379,23 +425,31 @@ document.addEventListener('DOMContentLoaded', function () {
             nameHeader.textContent = charData.name;
             const desc = document.createElement('p');
             desc.classList.add('character-description');
-            desc.textContent = charData.description; // Short description
+            desc.textContent = charData.description;
             info.appendChild(nameHeader); info.appendChild(desc); card.appendChild(info);
+
             card.addEventListener('click', () => {
-                tg.showAlert(`You selected public character: ${charData.name}. Full details (not shown on card): ${charData.details || 'N/A'}`);
+                 const detailData = {
+                    type: 'user_created',
+                    id: charData.id,
+                    name: charData.name,
+                    description: charData.description,
+                    details: charData.details,
+                    image_url: charData.image_url,
+                };
+                showView('characterDetail', false, { characterData: detailData });
             });
             publicCharacterGrid.appendChild(card);
         });
     }
 
-    if (usersCharacterSearchInput) {
-        usersCharacterSearchInput.addEventListener('input', (e) => {
+    if (usersCharacterSearchInput) { /* ... as before ... */
+         usersCharacterSearchInput.addEventListener('input', (e) => {
             currentUsersCharacterSearchTerm = e.target.value;
             renderUsersCharacterContent();
         });
     }
-
-    usersCharacterTabs.forEach(tab => {
+    usersCharacterTabs.forEach(tab => { /* ... as before ... */
         tab.addEventListener('click', () => {
             usersCharacterTabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
@@ -404,8 +458,51 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // --- Character Detail View ---
+    function populateCharacterDetailView(characterData) {
+        currentCharacterDetailData = characterData; // Store for "Start" button
 
-    // --- CHARACTER EDITING ---
+        charDetailImage.src = characterData.image_url || 'https://placehold.co/600x800/333/fff?text=No+Image';
+        charDetailImage.alt = characterData.name;
+        charDetailName.textContent = characterData.name;
+        charDetailDesc.textContent = characterData.description;
+
+        if (characterData.details && characterData.details.trim() !== "") {
+            charDetailFullDetails.textContent = characterData.details;
+            charDetailFullDetailsSection.style.display = 'block';
+        } else {
+            charDetailFullDetailsSection.style.display = 'none';
+        }
+    }
+
+    if (startCharacterBtn) {
+        startCharacterBtn.addEventListener('click', () => {
+            if (currentCharacterDetailData) {
+                let message = `Starting character: ${currentCharacterDetailData.name}.`;
+                if (currentCharacterDetailData.type === 'predefined') {
+                    message += ` (ID for bot: ${currentCharacterDetailData.id_to_send})`;
+                } else {
+                    message += ` (Internal ID: ${currentCharacterDetailData.id})`;
+                }
+                tg.showAlert(message);
+                // Here you would typically send a message back to the bot
+                // e.g., tg.sendData(JSON.stringify({ action: 'start_char', id: currentCharacterDetailData.id_to_send || currentCharacterDetailData.id }));
+                // For now, just go back or to characters
+                if(viewHistory.includes('characters')) {
+                    while(viewHistory.length > 0 && viewHistory[viewHistory.length - 1] !== 'characters') { viewHistory.pop(); }
+                    if (tg.BackButton.isVisible) tg.BackButton.onClick(); else showView('characters');
+                } else {
+                     showView('characters');
+                }
+
+            } else {
+                tg.showAlert("No character data to start.");
+            }
+        });
+    }
+
+
+    // --- Character Creation & Editing ---
     const editingCharField = document.getElementById('editing-char-id');
     const editCharNameInput = document.getElementById('edit-char-name');
     const editCharDescInput = document.getElementById('edit-char-desc');
@@ -413,7 +510,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const editCharImageInput = document.getElementById('edit-char-image');
     const saveEditedCharBtn = document.getElementById('save-edited-character-btn');
 
-    function loadCharacterForEditing(charId) {
+    function loadCharacterForEditing(charId) { /* ... as before ... */
         const character = userCreatedCharacters.find(c => c.id === charId);
         if (character) {
             editingCharField.value = charId;
@@ -427,8 +524,7 @@ document.addEventListener('DOMContentLoaded', function () {
             showView('myCharacters', true);
         }
     }
-
-    if (saveEditedCharBtn) {
+    if (saveEditedCharBtn) { /* ... as before ... */
         saveEditedCharBtn.addEventListener('click', () => {
             const charId = parseInt(editingCharField.value);
             const charName = editCharNameInput.value.trim();
@@ -451,12 +547,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     details: charDetails,
                     image_url: charImage || null,
                     visibility: charVisibility,
-                    // createdAt: userCreatedCharacters[charIndex].createdAt // Preserve original creation time
                 };
                 tg.HapticFeedback.notificationOccurred('success');
                 tg.showAlert(`Character "${charName}" updated!`);
                 populateMyCharacters();
-                renderUsersCharacterContent(); // Update UsersCharacters view as data might have changed
+                renderUsersCharacterContent();
 
                 if (tg.BackButton.isVisible) tg.BackButton.onClick();
                 else showView('myCharacters', true);
@@ -467,8 +562,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+
+    // Event Listeners (Settings, Plans, Payments, Store, Create Character, etc.)
     document.getElementById('my-characters-btn').addEventListener('click', () => showView('myCharacters'));
-    if (document.getElementById('create-first-character-link')) {
+    if (document.getElementById('create-first-character-link')) { /* ... as before ... */
         document.getElementById('create-first-character-link').addEventListener('click', (e) => {
             e.preventDefault();
             showView('createCharacter');
@@ -476,9 +573,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     document.getElementById('settings-upgrade-plan-btn').addEventListener('click', () => showView('plan'));
     document.getElementById('settings-language-btn').addEventListener('click', () => showView('language'));
-
-    // ... (Style toggle, Plan options, Language options, Store, Energy, Payment logic - remains as before) ...
-     const styleLabels = document.querySelectorAll('.style-label');
+     const styleLabels = document.querySelectorAll('.style-label'); /* ... as before ... */
     const styleImages = { realistic: document.getElementById('style-realistic'), anime: document.getElementById('style-anime') };
     styleLabels.forEach(label => {
         label.addEventListener('click', () => {
@@ -489,7 +584,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    const planOptions = document.querySelectorAll('.plan-option');
+    const planOptions = document.querySelectorAll('.plan-option'); /* ... as before ... */
     const planFeatureGemsAmountEl = document.getElementById('plan-feature-gems-amount');
     planOptions.forEach(option => {
         option.addEventListener('click', () => {
@@ -503,8 +598,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (initialSelectedPlan && planFeatureGemsAmountEl) {
         planFeatureGemsAmountEl.textContent = initialSelectedPlan.dataset.gemsBonus;
     }
-
-    document.getElementById('plan-upgrade-btn').addEventListener('click', () => {
+    document.getElementById('plan-upgrade-btn').addEventListener('click', () => { /* ... as before ... */
         const selectedPlan = document.querySelector('.plan-option.selected');
         if (selectedPlan) {
             const planTitle = selectedPlan.querySelector('.plan-title').textContent.replace(/<span.*?<\/span>/g, '').trim();
@@ -512,10 +606,11 @@ document.addEventListener('DOMContentLoaded', function () {
             showView('paymentSubscription', false, { planDetails: planTitle, stars: stars });
         } else { tg.showAlert("Please select a plan first."); }
     });
+    document.getElementById('payment-sub-confirm-btn').addEventListener('click', () => { /* ... as before ... */
+         tg.showAlert("Subscription upgrade initiated (simulated)!"); viewHistory = []; showView('characters');
+    });
 
-    document.getElementById('payment-sub-confirm-btn').addEventListener('click', () => { tg.showAlert("Subscription upgrade initiated (simulated)!"); viewHistory = []; showView('characters'); });
-
-    const languageOptions = document.querySelectorAll('.language-option');
+    const languageOptions = document.querySelectorAll('.language-option'); /* ... as before ... */
     const currentLangDisplayEl = document.getElementById('current-language-display');
     selectedLanguage = 'en';
     languageOptions.forEach(opt => {
@@ -535,27 +630,22 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    const storeGemPacks = document.querySelectorAll('.store-gem-pack');
+    const storeGemPacks = document.querySelectorAll('.store-gem-pack'); /* ... as before ... */
     storeGemPacks.forEach(pack => {
         pack.addEventListener('click', () => {
             const gems = pack.dataset.gems; const stars = pack.dataset.stars;
             showView('paymentItem', false, { type: 'gems', gems, stars });
         });
     });
-
-    document.getElementById('recharge-energy-btn').addEventListener('click', () => {
-        showView('rechargeEnergy');
-    });
-
-    if(energyAmountInput && estimatedEnergyStarsEl) {
+    document.getElementById('recharge-energy-btn').addEventListener('click', () => showView('rechargeEnergy')); /* ... as before ... */
+    if(energyAmountInput && estimatedEnergyStarsEl) { /* ... as before ... */
         energyAmountInput.addEventListener('input', () => {
             const amount = parseInt(energyAmountInput.value) || 0;
             estimatedEnergyStarsEl.textContent = Math.ceil(amount / ENERGY_PER_STAR_RATE);
         });
         estimatedEnergyStarsEl.textContent = Math.ceil(parseInt(energyAmountInput.value) / ENERGY_PER_STAR_RATE);
     }
-
-    const confirmRechargeBtn = document.getElementById('confirm-recharge-btn');
+    const confirmRechargeBtn = document.getElementById('confirm-recharge-btn'); /* ... as before ... */
     if(confirmRechargeBtn) {
         confirmRechargeBtn.addEventListener('click', () => {
             const amount = parseInt(energyAmountInput.value);
@@ -572,7 +662,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
-     document.getElementById('payment-item-confirm-btn').addEventListener('click', () => {
+    document.getElementById('payment-item-confirm-btn').addEventListener('click', () => { /* ... as before ... */
         const itemDetails = document.getElementById('payment-item-details').textContent;
         tg.showAlert(`Payment for "${itemDetails}" initiated (simulated)!`);
         if (viewHistory.includes('store')) {
@@ -585,8 +675,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-
-    const saveCharBtn = document.getElementById('save-character-btn');
+    const saveCharBtn = document.getElementById('save-character-btn'); /* ... as before (includes charDetailsInput now) ... */
     if (saveCharBtn) {
         saveCharBtn.addEventListener('click', () => {
             const charNameInput = document.getElementById('char-name');
@@ -613,9 +702,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         details: charDetails,
                         image_url: charImage || null,
                         visibility: charVisibility,
-                        createdAt: Date.now() // Add creation timestamp
+                        createdAt: Date.now()
                     };
-                    userCreatedCharacters.push(newChar); // Add to end (naturally newest)
+                    userCreatedCharacters.push(newChar);
                     console.log("Creating character:", newChar);
                     tg.HapticFeedback.notificationOccurred('success');
                     tg.showAlert(`Character "${charName}" created as ${charVisibility} for ${CHARACTER_CREATION_COST_GEMS} 💎 (simulated)!`);
@@ -626,7 +715,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     charImageInput.value = '';
                     setSegmentedControlValue('char-visibility-segment', 'public');
 
-                    renderUsersCharacterContent(); // Update UsersCharacters view immediately if visible
+                    renderUsersCharacterContent();
                     let navigated = false;
                     if (viewHistory.length > 0) {
                         const previousView = viewHistory[viewHistory.length - 1];
@@ -643,7 +732,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    const bottomNavItems = document.querySelectorAll('.bottom-nav-item');
+    const bottomNavItems = document.querySelectorAll('.bottom-nav-item'); /* ... as before ... */
     bottomNavItems.forEach(item => {
          item.addEventListener('click', () => {
             const targetViewHtmlId = item.dataset.view;
@@ -662,6 +751,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // --- Initial Load ---
     populateCharacters();
     showView('characters');
 });
