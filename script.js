@@ -30,14 +30,25 @@ document.addEventListener('DOMContentLoaded', function () {
     const energyAmountInput = document.getElementById('energy-amount');
     const estimatedEnergyStarsEl = document.getElementById('estimated-energy-stars');
 
+    // Users Characters View elements
+    const usersCharacterSearchInput = document.getElementById('users-character-search-input');
+    const usersCharacterTabs = document.querySelectorAll('#users-characters-view .tab-button');
+    const publicCharacterGrid = document.getElementById('public-character-grid');
+    const noPublicCharsMsg = document.getElementById('no-public-characters-message');
+
+
     let viewHistory = [];
     let currentViewId = 'characters';
     let selectedLanguage = 'en';
     const ENERGY_PER_STAR_RATE = 0.5;
     const CHARACTER_CREATION_COST_GEMS = 15;
 
-    let userCreatedCharacters = [];
+    let userCreatedCharacters = []; // { id, name, description, details, image_url, visibility, createdAt (timestamp) }
     let nextUserCharacterId = 1;
+
+    // State for Users Characters View
+    let currentUsersCharacterTab = 'featured'; // 'featured' or 'recent'
+    let currentUsersCharacterSearchTerm = '';
 
     function setupSegmentedControl(segmentContainerId) {
         const container = document.getElementById(segmentContainerId);
@@ -101,7 +112,14 @@ document.addEventListener('DOMContentLoaded', function () {
         updateTelegramBackButton();
 
         if (viewId === 'usersCharacters') {
-            populatePublicCharacters();
+            // Reset search and set default tab if not already set or if navigating fresh
+            if (!isBack || !usersCharacterSearchInput.value) { // Reset search on fresh navigation
+                 usersCharacterSearchInput.value = '';
+                 currentUsersCharacterSearchTerm = '';
+            }
+            // Default to 'featured' if no specific tab brought us here
+            // currentUsersCharacterTab will persist if user was already on this view and switched tabs
+            renderUsersCharacterContent(); // Render with current tab and search
         } else if (viewId === 'myCharacters') {
             populateMyCharacters();
         } else if (viewId === 'editCharacter' && params.charId) {
@@ -112,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function () {
         window.scrollTo(0, 0);
     }
 
-    function updateStickyHeaderAndNav(viewId, params = {}) {
+    function updateStickyHeaderAndNav(viewId, params = {}) { /* ... as before ... */
         gemBarContainerOuter.innerHTML = '';
 
         const commonGemBarHTML = `
@@ -184,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const characterGrid = document.getElementById('character-grid');
     let selectedCharacterCard = null;
 
-    function populateCharacters() {
+    function populateCharacters() { /* ... as before ... */
         characterGrid.innerHTML = '';
         charactersData.forEach(charData => {
             const card = document.createElement('div'); card.classList.add('character-card'); card.dataset.personaId = charData.id_to_send; card.dataset.displayName = charData.display_name;
@@ -203,53 +221,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    const publicCharacterGrid = document.getElementById('public-character-grid');
+
+    // --- USER-CREATED CHARACTER FUNCTIONS (My Creations Page) ---
     const myCharacterList = document.getElementById('my-character-list');
-    const noPublicCharsMsg = document.getElementById('no-public-characters-message');
     const noMyCharsMsg = document.getElementById('no-my-characters-message');
 
-    function populatePublicCharacters() {
-        publicCharacterGrid.innerHTML = '';
-        const publicChars = userCreatedCharacters.filter(char => char.visibility === 'public');
-
-        if (publicChars.length === 0) {
-            if (noPublicCharsMsg) {
-                 publicCharacterGrid.appendChild(noPublicCharsMsg);
-                 noPublicCharsMsg.style.display = 'block';
-            }
-            return;
-        }
-        if (noPublicCharsMsg) noPublicCharsMsg.style.display = 'none';
-
-        publicChars.forEach(charData => {
-            const card = document.createElement('div');
-            card.classList.add('character-card');
-            const imageContainer = document.createElement('div');
-            imageContainer.classList.add('character-image-container');
-            const img = document.createElement('img');
-            img.classList.add('character-image');
-            img.src = charData.image_url || 'https://placehold.co/300x400/4B4265/E0E0E0/png?text=No+Image&font=roboto';
-            img.alt = charData.name;
-            imageContainer.appendChild(img);
-            card.appendChild(imageContainer);
-
-            const info = document.createElement('div');
-            info.classList.add('character-info');
-            const nameHeader = document.createElement('h3');
-            nameHeader.classList.add('character-name');
-            nameHeader.textContent = charData.name;
-            const desc = document.createElement('p');
-            desc.classList.add('character-description');
-            desc.textContent = charData.description; // Short description
-            info.appendChild(nameHeader); info.appendChild(desc); card.appendChild(info);
-            card.addEventListener('click', () => {
-                tg.showAlert(`You selected public character: ${charData.name}`);
-            });
-            publicCharacterGrid.appendChild(card);
-         });
-    }
-
-    function populateMyCharacters() {
+    function populateMyCharacters() { /* ... as before ... */
         myCharacterList.innerHTML = '';
 
         if (userCreatedCharacters.length === 0) {
@@ -284,7 +261,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const descP = document.createElement('p');
             descP.classList.add('my-character-desc');
-            descP.textContent = charData.description; // Short description
+            descP.textContent = charData.description;
 
             const actionsDiv = document.createElement('div');
             actionsDiv.classList.add('my-character-actions');
@@ -325,10 +302,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const charIndex = userCreatedCharacters.findIndex(c => c.id === charId);
         if (charIndex > -1) {
             userCreatedCharacters[charIndex].visibility = userCreatedCharacters[charIndex].visibility === 'public' ? 'private' : 'public';
-            populateMyCharacters();
-            if (currentViewId === 'usersCharacters') {
-                populatePublicCharacters();
-            }
+            populateMyCharacters(); // Refresh "My Characters" list
+            renderUsersCharacterContent(); // Refresh "Users Characters" if visible and relevant
             tg.HapticFeedback.impactOccurred('light');
         }
     }
@@ -337,20 +312,104 @@ document.addEventListener('DOMContentLoaded', function () {
         tg.showConfirm(`Are you sure you want to delete "${charName}"? This action cannot be undone.`, (ok) => {
             if (ok) {
                 userCreatedCharacters = userCreatedCharacters.filter(c => c.id !== charId);
-                populateMyCharacters();
-                if (currentViewId === 'usersCharacters') {
-                    populatePublicCharacters();
-                }
+                populateMyCharacters(); // Refresh "My Characters" list
+                renderUsersCharacterContent(); // Refresh "Users Characters" if visible and relevant
                 tg.HapticFeedback.notificationOccurred('success');
                 tg.showAlert(`Character "${charName}" has been deleted.`);
             }
         });
     }
 
+    // --- USERS CHARACTERS VIEW LOGIC (Tabs & Search) ---
+    function renderUsersCharacterContent() {
+        if (currentViewId !== 'usersCharacters') return; // Only render if this view is active
+
+        let charactersToDisplay = userCreatedCharacters.filter(char => char.visibility === 'public');
+
+        // Apply tab logic
+        if (currentUsersCharacterTab === 'featured') {
+            // Simulated: first N public characters with images are "featured", newest first
+            const featuredChars = [...charactersToDisplay] // Create a copy to sort
+                                .sort((a,b) => b.createdAt - a.createdAt) // newest first
+                                .filter(char => char.image_url) // only with images
+                                .slice(0, 4); // Max 4 featured
+            charactersToDisplay = featuredChars;
+        } else if (currentUsersCharacterTab === 'recent') {
+            // Sort by newest first (based on creation timestamp)
+            charactersToDisplay.sort((a, b) => b.createdAt - a.createdAt);
+        }
+
+        // Apply search term
+        const searchTerm = currentUsersCharacterSearchTerm.toLowerCase();
+        if (searchTerm) {
+            charactersToDisplay = charactersToDisplay.filter(char =>
+                char.name.toLowerCase().includes(searchTerm) ||
+                char.description.toLowerCase().includes(searchTerm)
+            );
+        }
+
+        // Render
+        publicCharacterGrid.innerHTML = '';
+        if (charactersToDisplay.length === 0) {
+            if (noPublicCharsMsg) {
+                publicCharacterGrid.appendChild(noPublicCharsMsg);
+                noPublicCharsMsg.style.display = 'block';
+            }
+            return;
+        }
+        if (noPublicCharsMsg) noPublicCharsMsg.style.display = 'none';
+
+        charactersToDisplay.forEach(charData => {
+            // Re-use character card structure
+            const card = document.createElement('div');
+            card.classList.add('character-card');
+            const imageContainer = document.createElement('div');
+            imageContainer.classList.add('character-image-container');
+            const img = document.createElement('img');
+            img.classList.add('character-image');
+            img.src = charData.image_url || 'https://placehold.co/300x400/4B4265/E0E0E0/png?text=No+Image&font=roboto';
+            img.alt = charData.name;
+            imageContainer.appendChild(img);
+            card.appendChild(imageContainer);
+
+            const info = document.createElement('div');
+            info.classList.add('character-info');
+            const nameHeader = document.createElement('h3');
+            nameHeader.classList.add('character-name');
+            nameHeader.textContent = charData.name;
+            const desc = document.createElement('p');
+            desc.classList.add('character-description');
+            desc.textContent = charData.description; // Short description
+            info.appendChild(nameHeader); info.appendChild(desc); card.appendChild(info);
+            card.addEventListener('click', () => {
+                tg.showAlert(`You selected public character: ${charData.name}. Full details (not shown on card): ${charData.details || 'N/A'}`);
+            });
+            publicCharacterGrid.appendChild(card);
+        });
+    }
+
+    if (usersCharacterSearchInput) {
+        usersCharacterSearchInput.addEventListener('input', (e) => {
+            currentUsersCharacterSearchTerm = e.target.value;
+            renderUsersCharacterContent();
+        });
+    }
+
+    usersCharacterTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            usersCharacterTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentUsersCharacterTab = tab.dataset.tab;
+            renderUsersCharacterContent();
+        });
+    });
+
+
+    // --- CHARACTER EDITING ---
     const editingCharField = document.getElementById('editing-char-id');
     const editCharNameInput = document.getElementById('edit-char-name');
     const editCharDescInput = document.getElementById('edit-char-desc');
-    const editCharDetailsInput = document.getElementById('edit-char-details'); // New
+    const editCharDetailsInput = document.getElementById('edit-char-details');
     const editCharImageInput = document.getElementById('edit-char-image');
     const saveEditedCharBtn = document.getElementById('save-edited-character-btn');
 
@@ -360,7 +419,7 @@ document.addEventListener('DOMContentLoaded', function () {
             editingCharField.value = charId;
             editCharNameInput.value = character.name;
             editCharDescInput.value = character.description;
-            editCharDetailsInput.value = character.details || ''; // New
+            editCharDetailsInput.value = character.details || '';
             editCharImageInput.value = character.image_url || '';
             setSegmentedControlValue('edit-char-visibility-segment', character.visibility);
         } else {
@@ -374,11 +433,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const charId = parseInt(editingCharField.value);
             const charName = editCharNameInput.value.trim();
             const charDesc = editCharDescInput.value.trim();
-            const charDetails = editCharDetailsInput.value.trim(); // New
+            const charDetails = editCharDetailsInput.value.trim();
             const charImage = editCharImageInput.value.trim();
             const charVisibility = getSegmentedControlValue('edit-char-visibility-segment');
 
-            if (!charName || !charDesc) { // Basic validation
+            if (!charName || !charDesc) {
                 tg.showAlert("Name and Short Description cannot be empty.");
                 return;
             }
@@ -386,23 +445,21 @@ document.addEventListener('DOMContentLoaded', function () {
             const charIndex = userCreatedCharacters.findIndex(c => c.id === charId);
             if (charIndex > -1) {
                 userCreatedCharacters[charIndex] = {
-                    ...userCreatedCharacters[charIndex], // Keep other potential fields
+                    ...userCreatedCharacters[charIndex],
                     name: charName,
                     description: charDesc,
-                    details: charDetails, // New
+                    details: charDetails,
                     image_url: charImage || null,
-                    visibility: charVisibility
+                    visibility: charVisibility,
+                    // createdAt: userCreatedCharacters[charIndex].createdAt // Preserve original creation time
                 };
                 tg.HapticFeedback.notificationOccurred('success');
                 tg.showAlert(`Character "${charName}" updated!`);
                 populateMyCharacters();
-                // If visibility changed to/from public, or was public, refresh public list
-                if (userCreatedCharacters[charIndex].visibility === 'public' || charVisibility === 'public') {
-                    populatePublicCharacters();
-                }
+                renderUsersCharacterContent(); // Update UsersCharacters view as data might have changed
+
                 if (tg.BackButton.isVisible) tg.BackButton.onClick();
                 else showView('myCharacters', true);
-
 
             } else {
                 tg.showAlert("Error: Could not save changes. Character not found.");
@@ -420,7 +477,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('settings-upgrade-plan-btn').addEventListener('click', () => showView('plan'));
     document.getElementById('settings-language-btn').addEventListener('click', () => showView('language'));
 
-    const styleLabels = document.querySelectorAll('.style-label');
+    // ... (Style toggle, Plan options, Language options, Store, Energy, Payment logic - remains as before) ...
+     const styleLabels = document.querySelectorAll('.style-label');
     const styleImages = { realistic: document.getElementById('style-realistic'), anime: document.getElementById('style-anime') };
     styleLabels.forEach(label => {
         label.addEventListener('click', () => {
@@ -527,21 +585,22 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+
     const saveCharBtn = document.getElementById('save-character-btn');
     if (saveCharBtn) {
         saveCharBtn.addEventListener('click', () => {
             const charNameInput = document.getElementById('char-name');
             const charDescInput = document.getElementById('char-desc');
-            const charDetailsInput = document.getElementById('char-details'); // New
+            const charDetailsInput = document.getElementById('char-details');
             const charImageInput = document.getElementById('char-image');
 
             const charName = charNameInput.value.trim();
-            const charDesc = charDescInput.value.trim(); // Short description
-            const charDetails = charDetailsInput.value.trim(); // Full details
+            const charDesc = charDescInput.value.trim();
+            const charDetails = charDetailsInput.value.trim();
             const charImage = charImageInput.value.trim();
             const charVisibility = getSegmentedControlValue('char-visibility-segment');
 
-            if (charName === "" || charDesc === "") { // Keep validation for short desc
+            if (charName === "" || charDesc === "") {
                 tg.showAlert("Please enter a Name and Short Description."); return;
             }
 
@@ -551,21 +610,23 @@ document.addEventListener('DOMContentLoaded', function () {
                         id: nextUserCharacterId++,
                         name: charName,
                         description: charDesc,
-                        details: charDetails, // New
+                        details: charDetails,
                         image_url: charImage || null,
-                        visibility: charVisibility
+                        visibility: charVisibility,
+                        createdAt: Date.now() // Add creation timestamp
                     };
-                    userCreatedCharacters.push(newChar);
+                    userCreatedCharacters.push(newChar); // Add to end (naturally newest)
                     console.log("Creating character:", newChar);
                     tg.HapticFeedback.notificationOccurred('success');
                     tg.showAlert(`Character "${charName}" created as ${charVisibility} for ${CHARACTER_CREATION_COST_GEMS} 💎 (simulated)!`);
 
                     charNameInput.value = '';
                     charDescInput.value = '';
-                    charDetailsInput.value = ''; // New
+                    charDetailsInput.value = '';
                     charImageInput.value = '';
                     setSegmentedControlValue('char-visibility-segment', 'public');
 
+                    renderUsersCharacterContent(); // Update UsersCharacters view immediately if visible
                     let navigated = false;
                     if (viewHistory.length > 0) {
                         const previousView = viewHistory[viewHistory.length - 1];
