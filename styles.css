@@ -82,11 +82,11 @@ img,video { max-width: 100%; height: auto }
     --app-segmented-control-text-color: #e0e0e0;
     --app-segmented-control-active-text-color: #FFFFFF;
     --app-border-subtle: rgba(255, 255, 255, 0.1);
-    --app-tab-inactive-bg: #2a2d3f; /* Slightly different from card for depth */
+    --app-tab-inactive-bg: #2a2d3f;
     --app-tab-active-bg: var(--app-accent-purple);
     --app-tab-text-color: var(--app-secondary-text);
     --app-tab-active-text-color: #FFFFFF;
-    --app-search-input-bg: #1E2236; /* Same as general input */
+    --app-search-input-bg: #1E2236;
 }
 
 html.dark {
@@ -124,7 +124,7 @@ html,body {
     margin: 0 auto;
     padding: 0;
     padding-top: 50px;
-    padding-bottom: 70px;
+    padding-bottom: 70px; /* Ensures space for fixed bottom nav */
 }
 
 .app-header {
@@ -159,8 +159,10 @@ html,body {
     flex-grow: 1;
     padding: 20px;
     background-color: var(--current-content-bg);
-    overflow-y: auto;
+    overflow-y: auto; /* Enables scrolling within the view if content overflows */
     animation: fadeIn 0.3s ease-out;
+    /* padding-bottom should be sufficient to see content above nav if not much content exists */
+    /* However, the app-container's padding-bottom is the primary mechanism for this */
 }
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
@@ -241,7 +243,7 @@ html,body {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 15px; /* Increased space before search/tabs */
+    margin-bottom: 15px;
 }
 .search-bar-container {
     margin-bottom: 15px;
@@ -249,7 +251,7 @@ html,body {
 #users-character-search-input {
     width: 100%;
     padding: 12px 15px;
-    border-radius: 25px; /* Pill shape */
+    border-radius: 25px;
     border: 1.5px solid var(--app-border-color);
     background-color: var(--app-search-input-bg);
     color: var(--app-primary-text);
@@ -268,7 +270,7 @@ html,body {
 .tabs-container {
     display: flex;
     margin-bottom: 20px;
-    background-color: var(--app-card-bg); /* Background for the tab bar itself */
+    background-color: var(--app-card-bg);
     border-radius: 10px;
     padding: 5px;
     box-shadow: 0 2px 5px var(--app-shadow-color-soft);
@@ -283,12 +285,12 @@ html,body {
     color: var(--app-tab-text-color);
     border: none;
     cursor: pointer;
-    border-radius: 8px; /* Individual button radius for inside the container */
+    border-radius: 8px;
     transition: background-color 0.2s ease-out, color 0.2s ease-out, box-shadow 0.2s ease-out;
     outline: none;
 }
 .tab-button:not(:last-child) {
-    margin-right: 5px; /* Space between tab buttons */
+    margin-right: 5px;
 }
 .tab-button.active {
     background-color: var(--app-tab-active-bg);
@@ -296,7 +298,7 @@ html,body {
     box-shadow: 0 0 10px var(--app-accent-purple-glow);
 }
 .tab-button:hover:not(.active) {
-    background-color: color-mix(in srgb, var(--app-tab-inactive-bg) 80%, white); /* Subtle hover */
+    background-color: color-mix(in srgb, var(--app-tab-inactive-bg) 80%, white);
 }
 
 
@@ -342,6 +344,7 @@ html,body {
     transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
     position: relative;
     overflow: hidden;
+    cursor: pointer; /* Make card itself clickable for detail view */
 }
 .my-character-card:hover {
     transform: translateY(-3px);
@@ -431,6 +434,67 @@ html,body {
 .my-character-actions .action-btn.delete {
     background-image: linear-gradient(135deg, var(--app-error-color), color-mix(in srgb, var(--app-error-color) 80%, black));
 }
+
+/* === CHARACTER DETAIL VIEW STYLES === */
+#character-detail-view {
+    align-items: center; /* Center content like image if it's not full width */
+}
+.character-detail-image-container {
+    width: 100%;
+    max-width: 400px; /* Max width for image */
+    aspect-ratio: 3 / 4; /* Or your preferred ratio */
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 25px;
+    background-color: var(--app-card-bg); /* Placeholder bg */
+    box-shadow: 0 5px 15px var(--app-shadow-color-strong);
+}
+#char-detail-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Cover ensures image fills, might crop */
+}
+#character-detail-view .char-detail-title {
+    font-size: 2.2em; /* Slightly smaller than main screen title */
+    text-align: center;
+    margin-bottom: 10px;
+}
+.char-detail-content {
+    background-color: var(--app-card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    width: 100%;
+    max-width: 600px; /* Max width for text content */
+    box-shadow: 0 3px 10px var(--app-shadow-color-soft);
+}
+.char-detail-section-title {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: var(--app-accent-purple);
+    margin-top: 15px;
+    margin-bottom: 8px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--app-border-subtle);
+}
+.char-detail-section-title:first-of-type {
+    margin-top: 0;
+}
+.char-detail-text {
+    font-size: 1em;
+    line-height: 1.6;
+    color: var(--app-secondary-text);
+    white-space: pre-wrap; /* Preserve line breaks in full details */
+}
+.full-details-text { /* More prominent full details */
+    color: var(--current-text-color);
+}
+#start-character-btn {
+    width: 100%;
+    max-width: 400px; /* Match other content */
+    margin-top: 10px; /* Space from content */
+}
+
 
 .settings-section { background-color: var(--current-card-bg); border-radius: 16px; padding: 18px; margin-bottom: 18px; box-shadow: 0 3px 10px var(--app-shadow-color-soft); border-top: 1px solid var(--app-border-highlight); }
 .settings-item-header { font-size: 0.95em; color: var(--current-secondary-text-color); margin-bottom: 12px; text-transform: capitalize; font-weight: 500; }
