@@ -27,6 +27,28 @@
             </div>
         </div>
 
+        <div id="users-characters-view" class="view-container">
+            <div class="users-characters-header">
+                <h1 class="screen-main-title">Users' Characters</h1>
+                <button class="action-button" id="my-characters-btn">My Characters</button>
+            </div>
+            <p class="view-description">Discover characters created by other users.</p>
+            <div class="character-grid" id="public-character-grid">
+                <!-- Public user-created character cards will be injected here -->
+                <p class="empty-state-message" id="no-public-characters-message" style="display:none;">No public characters created yet. Be the first!</p>
+            </div>
+        </div>
+
+        <div id="my-characters-view" class="view-container">
+            <h1 class="screen-main-title">My Characters</h1>
+            <p class="view-description">Manage your own created characters.</p>
+            <div class="my-character-list" id="my-character-list">
+                <!-- User's own character cards will be injected here -->
+                 <p class="empty-state-message" id="no-my-characters-message" style="display:none;">You haven't created any characters yet. <a href="#" id="create-first-character-link">Create one now!</a></p>
+            </div>
+        </div>
+
+
         <div id="settings-view" class="view-container">
             <h1 class="screen-main-title">Settings</h1>
             <div class="settings-section">
@@ -74,6 +96,19 @@
             <div class="form-section">
                 <label for="char-image">Image URL (Optional):</label>
                 <input type="url" id="char-image" name="char-image" placeholder="https://example.com/image.png">
+            </div>
+            <div class="form-section">
+                <label>Visibility:</label>
+                <div class="visibility-options">
+                    <label class="radio-label">
+                        <input type="radio" name="char-visibility" value="public" checked>
+                        <span class="radio-custom-input"></span> Public
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="char-visibility" value="private">
+                        <span class="radio-custom-input"></span> Private
+                    </label>
+                </div>
             </div>
             <p class="creation-cost-note">Cost: 15 <span class="telegram-star">⭐</span> per character</p>
             <button class="upgrade-button-large" id="save-character-btn">Create Character (15 ⭐)</button>
@@ -147,14 +182,14 @@
             </div>
             <button class="upgrade-button-large" id="payment-sub-confirm-btn">Upgrade 💎</button>
         </div>
-        
+
         <div id="language-view" class="view-container">
             <h1 class="screen-main-title">Language</h1>
             <div class="language-option" data-lang="en" data-lang-name="English">
                 English <span class="language-native">English</span>
                 <span class="radio-custom"></span>
             </div>
-            <div class="language-option" data-lang="ru" data-lang-name="Русский"> 
+            <div class="language-option" data-lang="ru" data-lang-name="Русский">
                 Русский <span class="language-native">Русский</span>
                 <span class="radio-custom"></span>
             </div>
@@ -242,10 +277,11 @@
             </div>
             <button class="upgrade-button-large" id="payment-item-confirm-btn">Pay with Stars</button>
         </div>
-                
+
         <nav class="bottom-nav" id="bottom-nav-bar" style="display: none;">
             <button class="bottom-nav-item active" data-view="characters-view">❤️</button>
-            <button class="bottom-nav-item" data-view="create-character-view">➕</button> 
+            <button class="bottom-nav-item" data-view="users-characters-view">🌍</button> <!-- New Users Characters Button -->
+            <button class="bottom-nav-item" data-view="create-character-view">➕</button>
             <button class="bottom-nav-item" data-view="settings-view">⚙️</button>
         </nav>
     </div>
