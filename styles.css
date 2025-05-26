@@ -58,7 +58,7 @@ img,video { max-width: 100%; height: auto }
     --app-accent-purple: #7C5CFF;
     --app-gem-icon-color: #6CDAFF;
     --app-energy-icon-color: #FFD700;
-    --app-icon-color: #C0C8D1; /* Default nav icon color */
+    --app-icon-color: #C0C8D1;
     --app-accent-magenta-darker: #B31FAF;
     --app-accent-magenta-glow: rgba(211, 47, 219, 0.5);
     --app-accent-purple-darker: #5C3DFF;
@@ -82,6 +82,11 @@ img,video { max-width: 100%; height: auto }
     --app-segmented-control-text-color: #e0e0e0;
     --app-segmented-control-active-text-color: #FFFFFF;
     --app-border-subtle: rgba(255, 255, 255, 0.1);
+    --app-tab-inactive-bg: #2a2d3f; /* Slightly different from card for depth */
+    --app-tab-active-bg: var(--app-accent-purple);
+    --app-tab-text-color: var(--app-secondary-text);
+    --app-tab-active-text-color: #FFFFFF;
+    --app-search-input-bg: #1E2236; /* Same as general input */
 }
 
 html.dark {
@@ -109,7 +114,6 @@ html,body {
     line-height: 1.4;
     overflow-x: hidden;
 }
-/* === APP STRUCTURE AND GENERIC VIEW STYLES === */
 .app-container {
     display: flex;
     flex-direction: column;
@@ -148,7 +152,6 @@ html,body {
 .app-header .gem-bar-container-outer {
     display: flex;
 }
-
 
 .view-container {
     display: none;
@@ -195,8 +198,6 @@ html,body {
     font-weight: 600;
 }
 
-
-/* === GEM BAR === */
 .gem-bar { display: flex; align-items: center; background-color: var(--app-gem-bar-bg);  border-radius: 30px; padding: 7px 12px; font-size: 0.95em; box-shadow: inset 0 0 8px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.1); color: var(--current-text-color); min-width: 160px; }
 .gem-bar span { margin-right: 6px; display: flex; align-items: center; }
 .gem-bar .gem-count { font-weight: 700; margin-left: 0px; margin-right: 10px; }
@@ -207,7 +208,6 @@ html,body {
 .plus-btn:hover { transform: scale(1.05); box-shadow: 0 3px 7px var(--app-shadow-color-strong), 0 0 12px var(--app-accent-magenta-glow); }
 .plus-btn:active { transform: scale(0.95); }
 
-/* === CHARACTER VIEW STYLES (AND PUBLIC USER CHARACTERS) === */
 .character-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
 .character-card { background-color: var(--current-card-bg); border-radius: 16px; overflow: hidden; cursor: pointer; border: 2px solid transparent; position: relative; box-shadow: 0 5px 15px var(--app-shadow-color-soft); transition: transform var(--app-transition-medium), box-shadow var(--app-transition-medium), border-color var(--app-transition-medium); display: flex; flex-direction: column;}
 .character-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 8px 20px var(--app-shadow-color-strong); border-color: var(--app-accent-magenta-glow); }
@@ -236,13 +236,70 @@ html,body {
 .paw-print.p3 { top: 60%; left: 15%; transform: rotate(10deg); }
 .paw-print.p4 { top: 70%; right: 20%; transform: rotate(-10deg); }
 
-/* === USERS CHARACTERS VIEW === */
+/* === USERS CHARACTERS VIEW (Community View) === */
 #users-characters-view .users-characters-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 0px;
+    margin-bottom: 15px; /* Increased space before search/tabs */
 }
+.search-bar-container {
+    margin-bottom: 15px;
+}
+#users-character-search-input {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 25px; /* Pill shape */
+    border: 1.5px solid var(--app-border-color);
+    background-color: var(--app-search-input-bg);
+    color: var(--app-primary-text);
+    font-size: 1em;
+    box-sizing: border-box;
+    outline: none;
+}
+#users-character-search-input:focus {
+    border-color: var(--app-accent-purple);
+    box-shadow: 0 0 8px var(--app-accent-purple-glow);
+}
+#users-character-search-input::placeholder {
+    color: var(--app-placeholder-text);
+}
+
+.tabs-container {
+    display: flex;
+    margin-bottom: 20px;
+    background-color: var(--app-card-bg); /* Background for the tab bar itself */
+    border-radius: 10px;
+    padding: 5px;
+    box-shadow: 0 2px 5px var(--app-shadow-color-soft);
+}
+.tab-button {
+    flex-grow: 1;
+    padding: 10px 15px;
+    font-size: 1em;
+    font-weight: 600;
+    text-align: center;
+    background-color: var(--app-tab-inactive-bg);
+    color: var(--app-tab-text-color);
+    border: none;
+    cursor: pointer;
+    border-radius: 8px; /* Individual button radius for inside the container */
+    transition: background-color 0.2s ease-out, color 0.2s ease-out, box-shadow 0.2s ease-out;
+    outline: none;
+}
+.tab-button:not(:last-child) {
+    margin-right: 5px; /* Space between tab buttons */
+}
+.tab-button.active {
+    background-color: var(--app-tab-active-bg);
+    color: var(--app-tab-active-text-color);
+    box-shadow: 0 0 10px var(--app-accent-purple-glow);
+}
+.tab-button:hover:not(.active) {
+    background-color: color-mix(in srgb, var(--app-tab-inactive-bg) 80%, white); /* Subtle hover */
+}
+
+
 .action-button.stylish-button, #users-characters-view .action-button {
     background-image: linear-gradient(135deg, var(--app-accent-purple), var(--app-accent-purple-darker));
     color: var(--app-primary-text);
@@ -267,7 +324,6 @@ html,body {
     filter: brightness(0.95);
 }
 
-/* === MY CHARACTERS VIEW === */
 .my-character-list {
     display: flex;
     flex-direction: column;
@@ -376,7 +432,6 @@ html,body {
     background-image: linear-gradient(135deg, var(--app-error-color), color-mix(in srgb, var(--app-error-color) 80%, black));
 }
 
-/* === SETTINGS VIEW STYLES === */
 .settings-section { background-color: var(--current-card-bg); border-radius: 16px; padding: 18px; margin-bottom: 18px; box-shadow: 0 3px 10px var(--app-shadow-color-soft); border-top: 1px solid var(--app-border-highlight); }
 .settings-item-header { font-size: 0.95em; color: var(--current-secondary-text-color); margin-bottom: 12px; text-transform: capitalize; font-weight: 500; }
 .settings-plan-card { display: flex; justify-content: space-between; align-items: center; font-size: 1.15em; font-weight: 600; }
@@ -399,7 +454,6 @@ html,body {
 .settings-item-action span:last-child { color: var(--app-secondary-text); font-weight: bold; font-size: 1.2em;}
 .settings-spacer { flex-grow: 1; }
 
-/* === CREATE CHARACTER, EDIT CHARACTER & RECHARGE ENERGY VIEW STYLES === */
 #create-character-view .form-section,
 #edit-character-view .form-section,
 #recharge-energy-view .form-section { background-color: var(--current-card-bg); padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 5px var(--app-shadow-color-soft); }
@@ -424,13 +478,11 @@ html,body {
 #edit-character-view textarea:focus,
 #recharge-energy-view input[type="number"]:focus { outline: none; border-color: var(--app-accent-purple); box-shadow: 0 0 8px var(--app-accent-purple-glow); }
 
-#create-character-view textarea, /* applies to new char-details too */
-#edit-character-view textarea { resize: vertical; min-height: 60px; } /* default min-height for textareas */
-
-#char-details, #edit-char-details { /* specific larger height for details field */
+#create-character-view textarea,
+#edit-character-view textarea { resize: vertical; min-height: 60px; }
+#char-details, #edit-char-details {
     min-height: 100px;
 }
-
 
 #create-character-view .creation-cost-note { text-align: center; margin-top: 15px; margin-bottom: -5px; color: var(--app-secondary-text); font-size: 0.9em;}
 .creation-cost-note .gem-currency-icon,
@@ -489,7 +541,6 @@ html,body {
     box-shadow: 0 1px 3px rgba(0,0,0,0.1) inset, 0 0 5px var(--app-accent-purple-glow);
 }
 
-/* === BOTTOM NAVIGATION BAR === */
 .bottom-nav {
     display: flex;
     justify-content: space-around;
@@ -546,7 +597,6 @@ html,body {
     height: 28px;
 }
 
-/* === PLAN VIEW STYLES === */
 .plan-option { background-color: var(--current-card-bg); border-radius: 16px; padding: 18px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 2px solid var(--current-card-bg);  box-shadow: 0 3px 10px var(--app-shadow-color-soft); transition: border-color var(--app-transition-medium), transform var(--app-transition-medium), box-shadow var(--app-transition-medium); }
 .plan-option:hover { border-color: var(--app-accent-purple-glow); transform: translateY(-3px); box-shadow: 0 5px 15px var(--app-shadow-color-soft); }
 .plan-option.selected { border-color: var(--app-accent-purple); box-shadow: 0 0 12px var(--app-accent-purple-glow), 0 3px 10px var(--app-shadow-color-soft); transform: scale(1.02); }
@@ -594,7 +644,6 @@ html,body {
     filter: brightness(0.9);
 }
 
-/* === PAYMENT METHOD VIEW STYLES === */
 .payment-summary-card { background-color: var(--current-card-bg); border-radius: 16px; padding: 18px; margin-bottom: 25px; display: flex; align-items: center; box-shadow: 0 3px 10px var(--app-shadow-color-soft); border-top: 1px solid var(--app-border-highlight); }
 .payment-avatar { width: 65px; height: 65px; border-radius: 10px; margin-right: 18px; object-fit: cover; box-shadow: 0 2px 5px var(--app-shadow-color-soft); }
 .payment-description { flex-grow: 1; }
@@ -610,13 +659,11 @@ html,body {
 .payment-secure-note { display: flex; align-items: center; font-size: 0.9em; color: var(--current-secondary-text-color); margin-bottom: 30px; padding-left: 5px; }
 .info-icon { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border: 2px solid var(--current-secondary-text-color); border-radius: 50%; text-align: center; font-size: 0.75em; font-weight: bold; margin-right: 10px; }
 
-/* === LANGUAGE VIEW STYLES === */
 .language-option { background-color: var(--current-card-bg); border-radius: 16px; padding: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 1.05em; font-weight: 600; border: 2px solid transparent; box-shadow: 0 2px 8px var(--app-shadow-color-soft); transition: border-color var(--app-transition-medium), transform var(--app-transition-medium); }
 .language-option:hover { border-color: var(--app-accent-purple-glow); transform: translateY(-2px); }
 .language-option.selected { border-color: var(--app-accent-purple); box-shadow: 0 0 10px var(--app-accent-purple-glow), 0 2px 8px var(--app-shadow-color-soft); }
 .language-native { font-size: 0.9em; color: var(--current-secondary-text-color); margin-left: auto; margin-right: 18px; }
 
-/* === STORE VIEW STYLES === */
 .store-unlimited-energy { background-image: linear-gradient(45deg, var(--app-section-bg), var(--current-card-bg)); border-radius: 16px; padding: 20px; margin-bottom: 25px; display: flex; align-items: center; box-shadow: 0 5px 15px var(--app-shadow-color-soft); border-top: 1px solid var(--app-border-highlight); }
 .store-energy-chest { width: 75px; height: 75px; margin-right: 20px; filter: drop-shadow(0 0 10px var(--app-energy-icon-color)); }
 .store-energy-info { flex-grow: 1; }
