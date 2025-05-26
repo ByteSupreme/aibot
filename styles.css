@@ -58,7 +58,7 @@ img,video { max-width: 100%; height: auto }
     --app-accent-purple: #7C5CFF;
     --app-gem-icon-color: #6CDAFF;
     --app-energy-icon-color: #FFD700;
-    --app-icon-color: #C0C8D1;
+    --app-icon-color: #C0C8D1; /* Default nav icon color */
     --app-accent-magenta-darker: #B31FAF;
     --app-accent-magenta-glow: rgba(211, 47, 219, 0.5);
     --app-accent-purple-darker: #5C3DFF;
@@ -71,14 +71,14 @@ img,video { max-width: 100%; height: auto }
     --app-transition-medium: 0.25s ease-out;
     --app-success-color: #4CAF50;
     --app-error-color: #F44336;
-    --app-warning-color: #FFA000; /* For Edit button or other warnings */
+    --app-warning-color: #FFA000;
 
     --app-button-bg: var(--app-accent-purple);
     --app-button-bg-hover: var(--app-accent-purple-darker);
     --app-button-text-color: #FFFFFF;
     --app-segmented-control-bg: #2c2c2e;
     --app-segmented-control-button-bg: transparent;
-    --app-segmented-control-button-active-bg: var(--app-accent-purple); /* Use accent for active segment */
+    --app-segmented-control-button-active-bg: var(--app-accent-purple);
     --app-segmented-control-text-color: #e0e0e0;
     --app-segmented-control-active-text-color: #FFFFFF;
     --app-border-subtle: rgba(255, 255, 255, 0.1);
@@ -119,8 +119,8 @@ html,body {
     box-sizing: border-box;
     margin: 0 auto;
     padding: 0;
-    padding-top: 50px; /* Space for fixed header */
-    padding-bottom: 70px; /* Space for fixed bottom nav, adjust if nav height changes */
+    padding-top: 50px;
+    padding-bottom: 70px;
 }
 
 .app-header {
@@ -133,7 +133,7 @@ html,body {
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1000; /* Ensure header is on top */
+    z-index: 1000;
     min-height: 50px;
     box-shadow: 0 1px 3px var(--app-shadow-color-soft);
     border-bottom: 1px solid var(--app-accent-magenta-glow);
@@ -151,7 +151,7 @@ html,body {
 
 
 .view-container {
-    display: none; /* Hidden by default */
+    display: none;
     flex-direction: column;
     flex-grow: 1;
     padding: 20px;
@@ -163,7 +163,7 @@ html,body {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
-.view-container.active-view { display: flex; } /* Shown when active */
+.view-container.active-view { display: flex; }
 
 .screen-main-title {
     font-size: 2.5em;
@@ -176,7 +176,7 @@ html,body {
 .view-description {
     font-size: 1em;
     color: var(--current-secondary-text-color);
-    margin-top: -15px; /* Pulls up slightly under title */
+    margin-top: -15px;
     margin-bottom: 20px;
 }
 .empty-state-message {
@@ -184,7 +184,7 @@ html,body {
     color: var(--app-secondary-text);
     font-size: 1.1em;
     padding: 30px 20px;
-    background-color: transparent; /* Less boxy */
+    background-color: transparent;
     border: 2px dashed var(--app-border-color);
     border-radius: 12px;
     margin-top: 25px;
@@ -208,25 +208,23 @@ html,body {
 .plus-btn:active { transform: scale(0.95); }
 
 /* === CHARACTER VIEW STYLES (AND PUBLIC USER CHARACTERS) === */
-/* Shared by #character-grid and #public-character-grid */
 .character-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
 .character-card { background-color: var(--current-card-bg); border-radius: 16px; overflow: hidden; cursor: pointer; border: 2px solid transparent; position: relative; box-shadow: 0 5px 15px var(--app-shadow-color-soft); transition: transform var(--app-transition-medium), box-shadow var(--app-transition-medium), border-color var(--app-transition-medium); display: flex; flex-direction: column;}
 .character-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 8px 20px var(--app-shadow-color-strong); border-color: var(--app-accent-magenta-glow); }
-#characters-view .character-card.selected { /* Specific to main characters view for selection */
+#characters-view .character-card.selected {
     border-color: var(--app-accent-magenta);
     box-shadow: 0 0 15px var(--app-accent-magenta-glow), 0 0 25px var(--app-accent-magenta-glow), 0 0 8px var(--app-accent-magenta) inset;
     transform: scale(1.03);
 }
-.character-image-container { width: 100%; padding-top: 125%; /* Aspect ratio for image */ position: relative; background-color: #3a3f58; }
+.character-image-container { width: 100%; padding-top: 125%; position: relative; background-color: #3a3f58; }
 .character-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; object-position: center top;  transition: transform 0.3s ease-out; }
 .character-card:hover .character-image { transform: scale(1.05); }
 .character-info { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;}
 .character-name { font-size: 1.05em; font-weight: 700;  margin-bottom: 4px; display: flex; align-items: center; color: var(--current-text-color); }
 .character-name .card-icon { font-size: 1em; margin-left: 8px; color: var(--app-accent-magenta); filter: drop-shadow(0 0 3px var(--app-accent-magenta)); }
 .character-description { font-size: 0.8em; color: var(--current-secondary-text-color);  line-height: 1.35;
-    /* Truncate long descriptions on cards */
     display: -webkit-box;
-    -webkit-line-clamp: 3; /* Show 3 lines */
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -242,10 +240,9 @@ html,body {
 #users-characters-view .users-characters-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start; /* Align to top for multi-line title */
-    margin-bottom: 0px; /* Adjusted because of view-description */
+    align-items: flex-start;
+    margin-bottom: 0px;
 }
-/* General Action Button style - used for "My Creations" etc */
 .action-button.stylish-button, #users-characters-view .action-button {
     background-image: linear-gradient(135deg, var(--app-accent-purple), var(--app-accent-purple-darker));
     color: var(--app-primary-text);
@@ -257,8 +254,8 @@ html,body {
     cursor: pointer;
     box-shadow: 0 2px 6px var(--app-shadow-color-strong), 0 0 8px var(--app-accent-purple-glow);
     transition: transform var(--app-transition-fast), box-shadow var(--app-transition-fast), filter var(--app-transition-fast);
-    align-self: center; /* For header button alignment */
-    margin-left: 15px; /* Space from title */
+    align-self: center;
+    margin-left: 15px;
 }
 .action-button.stylish-button:hover, #users-characters-view .action-button:hover {
     transform: translateY(-2px) scale(1.03);
@@ -274,7 +271,7 @@ html,body {
 .my-character-list {
     display: flex;
     flex-direction: column;
-    gap: 18px; /* Increased gap */
+    gap: 18px;
     margin-top: 10px;
 }
 .my-character-card {
@@ -283,19 +280,19 @@ html,body {
     padding: 15px;
     display: flex;
     gap: 15px;
-    align-items: flex-start; /* Align items to the top */
+    align-items: flex-start;
     box-shadow: 0 3px 8px var(--app-shadow-color-soft);
     border-left: 5px solid var(--app-accent-purple);
     transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
-    position: relative; /* For absolute positioning of status */
-    overflow: hidden; /* To contain absolute positioned elements */
+    position: relative;
+    overflow: hidden;
 }
 .my-character-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 15px var(--app-shadow-color-soft);
 }
 .my-character-card .character-image-thumb {
-    width: 75px; /* Slightly larger */
+    width: 75px;
     height: 100px;
     border-radius: 8px;
     object-fit: cover;
@@ -304,13 +301,13 @@ html,body {
 }
 .my-character-card .my-character-details {
     flex-grow: 1;
-    padding-right: 10px; /* Space for actions if they wrap */
+    padding-right: 10px;
 }
 .my-character-card .my-character-name {
     font-size: 1.25em;
     font-weight: 700;
     margin-bottom: 6px;
-    margin-top: 5px; /* Space below status */
+    margin-top: 5px;
     color: var(--current-text-color);
 }
 .my-character-card .my-character-desc {
@@ -329,8 +326,6 @@ html,body {
     font-weight: 600;
     padding: 4px 10px;
     border-radius: 20px;
-    display: inline-block; /* If not absolute */
-    /* For absolute positioning: */
     position: absolute;
     top: 15px;
     right: 15px;
@@ -349,7 +344,7 @@ html,body {
 
 .my-character-actions {
     display: flex;
-    gap: 10px; /* Increased gap */
+    gap: 10px;
     margin-top: 12px;
     padding-top: 10px;
     border-top: 1px solid var(--app-border-subtle);
@@ -405,7 +400,6 @@ html,body {
 .settings-spacer { flex-grow: 1; }
 
 /* === CREATE CHARACTER, EDIT CHARACTER & RECHARGE ENERGY VIEW STYLES === */
-/* Shared form styles */
 #create-character-view .form-section,
 #edit-character-view .form-section,
 #recharge-energy-view .form-section { background-color: var(--current-card-bg); padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 5px var(--app-shadow-color-soft); }
@@ -430,8 +424,13 @@ html,body {
 #edit-character-view textarea:focus,
 #recharge-energy-view input[type="number"]:focus { outline: none; border-color: var(--app-accent-purple); box-shadow: 0 0 8px var(--app-accent-purple-glow); }
 
-#create-character-view textarea,
-#edit-character-view textarea { resize: vertical; min-height: 80px; }
+#create-character-view textarea, /* applies to new char-details too */
+#edit-character-view textarea { resize: vertical; min-height: 60px; } /* default min-height for textareas */
+
+#char-details, #edit-char-details { /* specific larger height for details field */
+    min-height: 100px;
+}
+
 
 #create-character-view .creation-cost-note { text-align: center; margin-top: 15px; margin-bottom: -5px; color: var(--app-secondary-text); font-size: 0.9em;}
 .creation-cost-note .gem-currency-icon,
@@ -441,7 +440,7 @@ html,body {
     font-size: 1.1em;
     filter: drop-shadow(0 0 3px var(--app-gem-icon-color));
     vertical-align: middle;
-    display: inline-block; /* Prevents weird line breaks sometimes */
+    display: inline-block;
     line-height: 1;
 }
 
@@ -452,7 +451,6 @@ html,body {
 #recharge-energy-view .form-section p { color: var(--app-secondary-text); font-size: 0.9em; margin-top: 10px; }
 #recharge-energy-view .form-section p .telegram-star { font-size: 1.1em; vertical-align: middle;}
 
-/* Segmented Control for Visibility */
 .segmented-control {
     display: flex;
     border-radius: 8px;
@@ -460,8 +458,8 @@ html,body {
     overflow: hidden;
     padding: 2px;
     border: 1px solid var(--app-border-color);
-    width: fit-content; /* Adjust as needed, or use flex properties on parent */
-    margin-top: 5px; /* Space from label */
+    width: fit-content;
+    margin-top: 5px;
 }
 .segment-button {
     background-color: var(--app-segmented-control-button-bg);
@@ -476,7 +474,7 @@ html,body {
     transition: background-color 0.2s ease-out, color 0.2s ease-out, box-shadow 0.2s ease-out;
     outline: none;
 }
-.segment-button:first-child { /* For pill shape within container */
+.segment-button:first-child {
     border-top-left-radius: 6px;
     border-bottom-left-radius: 6px;
 }
@@ -490,11 +488,6 @@ html,body {
     font-weight: 600;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1) inset, 0 0 5px var(--app-accent-purple-glow);
 }
-/* Optional: Add a subtle separator line if not using padding on container */
-/* .segment-button:not(:last-child) {
-    border-right: 1px solid var(--app-border-color);
-} */
-
 
 /* === BOTTOM NAVIGATION BAR === */
 .bottom-nav {
@@ -502,13 +495,13 @@ html,body {
     justify-content: space-around;
     align-items: center;
     background-color: var(--app-section-bg);
-    padding: 10px 0; /* Adjusted padding */
+    padding: 10px 0;
     border-top: 1px solid var(--app-border-highlight);
-    position: fixed; /* Fixed to bottom */
+    position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 1000; /* Ensure on top of content */
+    z-index: 1000;
     box-shadow: 0 -2px 8px var(--app-shadow-color-soft);
     border-top-left-radius: 22px;
     border-top-right-radius: 22px;
@@ -516,20 +509,19 @@ html,body {
 .bottom-nav-item {
     background: none;
     border: none;
-    /* color is handled by SVG fill */
-    font-size: initial; /* Reset emoji sizing if any */
+    font-size: initial;
     padding: 8px 15px;
     cursor: pointer;
-    transition: transform var(--app-transition-medium); /* Only transform for button */
+    transition: transform var(--app-transition-medium);
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative; /* For icon layering if needed */
+    position: relative;
 }
 .bottom-nav-item svg {
-    width: 26px; /* Default size, can be overridden */
+    width: 26px;
     height: 26px;
-    fill: var(--app-icon-color); /* Default icon color */
+    fill: var(--app-icon-color);
     transition: fill var(--app-transition-medium), transform var(--app-transition-medium);
 }
 .bottom-nav-item:hover svg {
@@ -541,20 +533,18 @@ html,body {
     transform: scale(1.15);
     filter: drop-shadow(0 0 5px var(--app-accent-magenta-glow));
 }
-/* Specific icon size adjustments if needed */
 .bottom-nav-item[data-view="create-character-view"] svg {
     width: 30px;
     height: 30px;
 }
 .bottom-nav-item[data-view="users-characters-view"] svg {
-    width: 28px; /* Example */
+    width: 28px;
     height: 28px;
 }
 .bottom-nav-item[data-view="characters-view"] svg {
-    width: 28px; /* Example */
+    width: 28px;
     height: 28px;
 }
-
 
 /* === PLAN VIEW STYLES === */
 .plan-option { background-color: var(--current-card-bg); border-radius: 16px; padding: 18px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 2px solid var(--current-card-bg);  box-shadow: 0 3px 10px var(--app-shadow-color-soft); transition: border-color var(--app-transition-medium), transform var(--app-transition-medium), box-shadow var(--app-transition-medium); }
@@ -578,7 +568,6 @@ html,body {
 .plan-features li:nth-child(4):before { content: '📸'; }
 .plan-features li:nth-child(5):before { content: '💬'; }
 
-/* Upgrade Button (Large) General Styling */
 .upgrade-button-large {
     background-image: linear-gradient(135deg, var(--app-accent-magenta), var(--app-accent-magenta-darker));
     color: var(--app-primary-text);
@@ -591,9 +580,7 @@ html,body {
     cursor: pointer;
     margin-top: 15px;
     box-shadow: 0 3px 8px var(--app-shadow-color-strong), 0 0 12px var(--app-accent-magenta-glow);
-    /* transition for stylish-button class is more detailed */
 }
-/* Combined with stylish button for hover/active */
 .upgrade-button-large.stylish-button {
     transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, filter 0.15s ease-out;
 }
