@@ -12,10 +12,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const views = {
         characters: document.getElementById('characters-view'),
-        usersCharacters: document.getElementById('users-characters-view'), // New view
-        myCharacters: document.getElementById('my-characters-view'),       // New view
+        usersCharacters: document.getElementById('users-characters-view'),
+        myCharacters: document.getElementById('my-characters-view'),
         settings: document.getElementById('settings-view'),
         createCharacter: document.getElementById('create-character-view'),
+        editCharacter: document.getElementById('edit-character-view'), // New View
         rechargeEnergy: document.getElementById('recharge-energy-view'),
         plan: document.getElementById('plan-view'),
         paymentSubscription: document.getElementById('payment-subscription-view'),
@@ -33,9 +34,42 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentViewId = 'characters';
     let selectedLanguage = 'en';
     const ENERGY_PER_STAR_RATE = 0.5;
+    const CHARACTER_CREATION_COST_GEMS = 15; // Changed to Gems
 
-    let userCreatedCharacters = []; // To store characters created by the user
-    let nextUserCharacterId = 1;    // Simple ID generator for user characters
+    let userCreatedCharacters = [];
+    let nextUserCharacterId = 1;
+
+    // --- Utility for Segmented Control ---
+    function setupSegmentedControl(segmentContainerId) {
+        const container = document.getElementById(segmentContainerId);
+        if (!container) return;
+        const buttons = container.querySelectorAll('.segment-button');
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                buttons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+            });
+        });
+    }
+    setupSegmentedControl('char-visibility-segment');
+    setupSegmentedControl('edit-char-visibility-segment');
+
+    function getSegmentedControlValue(segmentContainerId) {
+        const container = document.getElementById(segmentContainerId);
+        if (!container) return 'public'; // Default
+        const activeButton = container.querySelector('.segment-button.active');
+        return activeButton ? activeButton.dataset.value : 'public';
+    }
+
+    function setSegmentedControlValue(segmentContainerId, value) {
+        const container = document.getElementById(segmentContainerId);
+        if (!container) return;
+        const buttons = container.querySelectorAll('.segment-button');
+        buttons.forEach(button => {
+            button.classList.toggle('active', button.dataset.value === value);
+        });
+    }
+
 
     tg.BackButton.onClick(() => {
         if (viewHistory.length > 0) {
@@ -68,12 +102,14 @@ document.addEventListener('DOMContentLoaded', function () {
         updateStickyHeaderAndNav(viewId, params);
         updateTelegramBackButton();
 
-        // Populate specific views when shown
         if (viewId === 'usersCharacters') {
             populatePublicCharacters();
         } else if (viewId === 'myCharacters') {
             populateMyCharacters();
+        } else if (viewId === 'editCharacter' && params.charId) {
+            loadCharacterForEditing(params.charId);
         }
+
 
         tg.expand();
         window.scrollTo(0, 0);
@@ -91,8 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <button class="plus-btn" id="gem-bar-plus-btn">➕</button>
             </div>`;
 
-        // Views that should have the gem bar
-        const viewsWithGemBar = ['characters', 'usersCharacters', 'myCharacters', 'settings', 'store', 'createCharacter', 'rechargeEnergy'];
+        const viewsWithGemBar = ['characters', 'usersCharacters', 'myCharacters', 'settings', 'store', 'createCharacter', 'editCharacter', 'rechargeEnergy'];
         if (viewsWithGemBar.includes(viewId)) {
             gemBarContainerOuter.innerHTML = commonGemBarHTML;
             const plusButton = document.getElementById('gem-bar-plus-btn');
@@ -101,13 +136,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Views that should have the bottom navigation bar
         const viewsWithBottomNav = ['characters', 'usersCharacters', 'settings', 'createCharacter'];
         if (viewsWithBottomNav.includes(viewId)) {
             bottomNavBar.style.display = 'flex';
             document.querySelectorAll('.bottom-nav-item').forEach(btn => {
                 const btnDataView = btn.dataset.view;
-                // Map HTML data-view to internal JS viewId for comparison
                 let btnInternalViewId = '';
                 if (btnDataView === 'characters-view') btnInternalViewId = 'characters';
                 else if (btnDataView === 'users-characters-view') btnInternalViewId = 'usersCharacters';
@@ -127,6 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const paymentItemTotalStars = document.getElementById('payment-item-total-stars');
 
         if (viewId === 'paymentItem') {
+            // ... (paymentItem logic as before, no changes here regarding character creation cost change) ...
             if (params.type === 'energy') {
                 paymentItemPurchaseTitle.textContent = 'Recharging Energy';
                 paymentItemDetails.textContent = `${params.amount} Energy`;
@@ -135,11 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 paymentItemPurchaseTitle.textContent = 'Purchasing a pack';
                 paymentItemDetails.textContent = `${params.gems} Gems`;
                  if(paymentItemAvatar) paymentItemAvatar.src = 'https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=Gems&font=roboto';
-            } else if (params.type === 'characterCreation') {
-                paymentItemPurchaseTitle.textContent = 'Creating Character';
-                paymentItemDetails.textContent = `New Character: ${params.characterName}`;
-                if(paymentItemAvatar) paymentItemAvatar.src = 'https://placehold.co/80x80/D32FDB/FFFFFF/png?text=🧑&font=roboto';
-            }
+            } // Note: Character creation no longer goes to a generic paymentItem screen, uses Gems directly.
             paymentItemTotalStars.innerHTML = `${params.stars} <span class="telegram-star">⭐</span>`;
         }
 
@@ -153,13 +183,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const charactersData = [
         { id_to_send: "jane", display_name: "Jane", description: "Flirtatious traditional girl.", image_url: "https://placehold.co/300x400/332E45/E0E0E0/png?text=Jane&font=roboto" },
         { id_to_send: "mrsgrace", display_name: "Mrs. Grace", description: "Caring and charming MILF.", image_url: "https://placehold.co/300x400/2A203C/E0E0E0/png?text=Mrs.+Grace&font=roboto" },
-        { id_to_send: "sakura", display_name: "Sakura", description: "Japanese secret agent.", image_url: "https://placehold.co/300x400/3A2F4B/E0E0E0/png?text=Sakura&font=roboto", icon: "❤️" },
+        { id_to_send: "sakura", display_name: "Sakura", description: "Japanese secret agent.", image_url: "https://placehold.co/300x400/3A2F4B/E0E0E0/png?text=Sakura&font=roboto", icon: "❤️" }, // Example with emoji
         { id_to_send: "nya", display_name: "Nya", description: "Playful, mischievous, and affectionate cat girl.", image_url: "https://placehold.co/300x400/2D2542/E0E0E0/png?text=Nya&font=roboto", selected: true, special_decoration: "paws" }
     ];
     const characterGrid = document.getElementById('character-grid');
     let selectedCharacterCard = null;
 
     function populateCharacters() {
+        // ... (populateCharacters function remains largely the same as your original)
         characterGrid.innerHTML = '';
         charactersData.forEach(charData => {
             const card = document.createElement('div'); card.classList.add('character-card'); card.dataset.personaId = charData.id_to_send; card.dataset.displayName = charData.display_name;
@@ -169,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function () {
             card.appendChild(imageContainer);
             const info = document.createElement('div'); info.classList.add('character-info');
             const nameHeader = document.createElement('h3'); nameHeader.classList.add('character-name'); nameHeader.textContent = charData.display_name;
-            if (charData.icon) { const iconSpan = document.createElement('span'); iconSpan.classList.add('card-icon'); iconSpan.textContent = charData.icon; nameHeader.appendChild(iconSpan); }
+            if (charData.icon) { const iconSpan = document.createElement('span'); iconSpan.classList.add('card-icon'); iconSpan.innerHTML = charData.icon; /* Allow HTML for potential future SVG icons */ nameHeader.appendChild(iconSpan); } // Keep if some use emojis
             const desc = document.createElement('p'); desc.classList.add('character-description'); desc.textContent = charData.description;
             info.appendChild(nameHeader); info.appendChild(desc); card.appendChild(info);
             if (charData.selected) { card.classList.add('selected'); selectedCharacterCard = card; }
@@ -186,31 +217,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     function populatePublicCharacters() {
-        publicCharacterGrid.innerHTML = ''; // Clear existing
+        // ... (code for populating public characters grid - ensure grid gets class .character-grid)
+        publicCharacterGrid.innerHTML = '';
         const publicChars = userCreatedCharacters.filter(char => char.visibility === 'public');
 
         if (publicChars.length === 0) {
-            if (noPublicCharsMsg) noPublicCharsMsg.style.display = 'block';
-            // Ensure grid has no content if a <p> element itself is in the grid
-            if (publicCharacterGrid.querySelector('.empty-state-message')) {
-                 publicCharacterGrid.innerHTML = ''; // Clear if it was there
-                 publicCharacterGrid.appendChild(noPublicCharsMsg);
+            if (noPublicCharsMsg) {
+                 publicCharacterGrid.appendChild(noPublicCharsMsg); // Append directly
+                 noPublicCharsMsg.style.display = 'block';
             }
             return;
         }
         if (noPublicCharsMsg) noPublicCharsMsg.style.display = 'none';
 
-
-        publicChars.forEach(charData => {
+        publicChars.forEach(charData => { /* ... use existing character-card structure ... */
             const card = document.createElement('div');
-            card.classList.add('character-card'); // Re-use existing style
-            // card.dataset.userCharId = charData.id; // Optional: if needed for interaction
-
+            card.classList.add('character-card');
             const imageContainer = document.createElement('div');
             imageContainer.classList.add('character-image-container');
             const img = document.createElement('img');
             img.classList.add('character-image');
-            img.src = charData.image_url || 'https://placehold.co/300x400/4B4265/E0E0E0/png?text=No+Image&font=roboto'; // Default if no image
+            img.src = charData.image_url || 'https://placehold.co/300x400/4B4265/E0E0E0/png?text=No+Image&font=roboto';
             img.alt = charData.name;
             imageContainer.appendChild(img);
             card.appendChild(imageContainer);
@@ -223,32 +250,25 @@ document.addEventListener('DOMContentLoaded', function () {
             const desc = document.createElement('p');
             desc.classList.add('character-description');
             desc.textContent = charData.description;
-            info.appendChild(nameHeader);
-            info.appendChild(desc);
-            card.appendChild(info);
-
-            // Basic click handler for public characters (can be expanded)
+            info.appendChild(nameHeader); info.appendChild(desc); card.appendChild(info);
             card.addEventListener('click', () => {
                 tg.showAlert(`You selected public character: ${charData.name}`);
             });
             publicCharacterGrid.appendChild(card);
-        });
+         });
     }
 
     function populateMyCharacters() {
-        myCharacterList.innerHTML = ''; // Clear existing
+        myCharacterList.innerHTML = '';
 
         if (userCreatedCharacters.length === 0) {
-            if (noMyCharsMsg) noMyCharsMsg.style.display = 'block';
-             // Ensure list has no content if a <p> element itself is in the list
-            if (myCharacterList.querySelector('.empty-state-message')) {
-                 myCharacterList.innerHTML = ''; // Clear if it was there
-                 myCharacterList.appendChild(noMyCharsMsg);
+            if (noMyCharsMsg) {
+                myCharacterList.appendChild(noMyCharsMsg); // Append directly
+                noMyCharsMsg.style.display = 'block';
             }
             return;
         }
         if (noMyCharsMsg) noMyCharsMsg.style.display = 'none';
-
 
         userCreatedCharacters.forEach(charData => {
             const card = document.createElement('div');
@@ -273,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const statusSpan = document.createElement('span');
             statusSpan.classList.add('my-character-status', charData.visibility);
-            statusSpan.textContent = charData.visibility.charAt(0).toUpperCase() + charData.visibility.slice(1);
+            statusSpan.textContent = charData.visibility; // .charAt(0).toUpperCase() + charData.visibility.slice(1); - css can do uppercase
 
             const actionsDiv = document.createElement('div');
             actionsDiv.classList.add('my-character-actions');
@@ -287,8 +307,7 @@ document.addEventListener('DOMContentLoaded', function () {
             editBtn.classList.add('action-btn', 'edit');
             editBtn.textContent = 'Edit';
             editBtn.addEventListener('click', () => {
-                 tg.showAlert(`Edit for "${charData.name}" (not implemented).`);
-                 // Future: showView('createCharacter', false, { editCharId: charData.id });
+                 showView('editCharacter', false, { charId: charData.id });
             });
 
             const deleteBtn = document.createElement('button');
@@ -300,9 +319,9 @@ document.addEventListener('DOMContentLoaded', function () {
             actionsDiv.appendChild(editBtn);
             actionsDiv.appendChild(deleteBtn);
 
+            detailsDiv.appendChild(statusSpan); // Status above name can look good
             detailsDiv.appendChild(nameHeader);
             detailsDiv.appendChild(descP);
-            detailsDiv.appendChild(statusSpan);
             detailsDiv.appendChild(actionsDiv);
 
             card.appendChild(img);
@@ -312,11 +331,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function toggleCharacterVisibility(charId) {
+        // ... (same as before)
         const charIndex = userCreatedCharacters.findIndex(c => c.id === charId);
         if (charIndex > -1) {
             userCreatedCharacters[charIndex].visibility = userCreatedCharacters[charIndex].visibility === 'public' ? 'private' : 'public';
-            populateMyCharacters(); // Refresh "My Characters" list
-            if (currentViewId === 'usersCharacters') { // If user is on public list, refresh it too
+            populateMyCharacters();
+            if (currentViewId === 'usersCharacters') {
                 populatePublicCharacters();
             }
             tg.HapticFeedback.impactOccurred('light');
@@ -324,11 +344,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function deleteCharacter(charId, charName) {
+        // ... (same as before)
         tg.showConfirm(`Are you sure you want to delete "${charName}"? This action cannot be undone.`, (ok) => {
             if (ok) {
                 userCreatedCharacters = userCreatedCharacters.filter(c => c.id !== charId);
-                populateMyCharacters(); // Refresh "My Characters" list
-                if (currentViewId === 'usersCharacters') { // If user is on public list, refresh it too
+                populateMyCharacters();
+                if (currentViewId === 'usersCharacters') {
                     populatePublicCharacters();
                 }
                 tg.HapticFeedback.notificationOccurred('success');
@@ -338,7 +359,67 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
+    // --- CHARACTER EDITING ---
+    const editingCharField = document.getElementById('editing-char-id');
+    const editCharNameInput = document.getElementById('edit-char-name');
+    const editCharDescInput = document.getElementById('edit-char-desc');
+    const editCharImageInput = document.getElementById('edit-char-image');
+    const saveEditedCharBtn = document.getElementById('save-edited-character-btn');
+
+    function loadCharacterForEditing(charId) {
+        const character = userCreatedCharacters.find(c => c.id === charId);
+        if (character) {
+            editingCharField.value = charId;
+            editCharNameInput.value = character.name;
+            editCharDescInput.value = character.description;
+            editCharImageInput.value = character.image_url || '';
+            setSegmentedControlValue('edit-char-visibility-segment', character.visibility);
+        } else {
+            tg.showAlert("Error: Could not find character to edit.");
+            showView('myCharacters', true); // Go back
+        }
+    }
+
+    if (saveEditedCharBtn) {
+        saveEditedCharBtn.addEventListener('click', () => {
+            const charId = parseInt(editingCharField.value);
+            const charName = editCharNameInput.value.trim();
+            const charDesc = editCharDescInput.value.trim();
+            const charImage = editCharImageInput.value.trim();
+            const charVisibility = getSegmentedControlValue('edit-char-visibility-segment');
+
+            if (!charName || !charDesc) {
+                tg.showAlert("Name and Description cannot be empty.");
+                return;
+            }
+
+            const charIndex = userCreatedCharacters.findIndex(c => c.id === charId);
+            if (charIndex > -1) {
+                userCreatedCharacters[charIndex] = {
+                    ...userCreatedCharacters[charIndex],
+                    name: charName,
+                    description: charDesc,
+                    image_url: charImage || null,
+                    visibility: charVisibility
+                };
+                tg.HapticFeedback.notificationOccurred('success');
+                tg.showAlert(`Character "${charName}" updated!`);
+                populateMyCharacters(); // Refresh list
+                if (userCreatedCharacters[charIndex].visibility === 'public' || charVisibility === 'public') { // if visibility changed or was public
+                    populatePublicCharacters();
+                }
+                if (tg.BackButton.isVisible) tg.BackButton.onClick(); // Go back from edit screen
+                else showView('myCharacters', true);
+
+
+            } else {
+                tg.showAlert("Error: Could not save changes. Character not found.");
+            }
+        });
+    }
+
     // --- EVENT LISTENERS ---
+    // ... (existing event listeners like my-characters-btn, create-first-character-link, settings, plan, payment, language, store, energy etc.)
     document.getElementById('my-characters-btn').addEventListener('click', () => showView('myCharacters'));
     if (document.getElementById('create-first-character-link')) {
         document.getElementById('create-first-character-link').addEventListener('click', (e) => {
@@ -346,8 +427,6 @@ document.addEventListener('DOMContentLoaded', function () {
             showView('createCharacter');
         });
     }
-
-
     document.getElementById('settings-upgrade-plan-btn').addEventListener('click', () => showView('plan'));
     document.getElementById('settings-language-btn').addEventListener('click', () => showView('language'));
 
@@ -445,8 +524,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
-
-    document.getElementById('payment-item-confirm-btn').addEventListener('click', () => {
+     document.getElementById('payment-item-confirm-btn').addEventListener('click', () => {
         const itemDetails = document.getElementById('payment-item-details').textContent;
         tg.showAlert(`Payment for "${itemDetails}" initiated (simulated)!`);
         if (viewHistory.includes('store')) {
@@ -455,7 +533,7 @@ document.addEventListener('DOMContentLoaded', function () {
             else showView('store', true);
         } else {
             viewHistory = [];
-            showView('characters');
+            showView('characters'); // Or the most relevant previous screen.
         }
     });
 
@@ -465,50 +543,44 @@ document.addEventListener('DOMContentLoaded', function () {
             const charNameInput = document.getElementById('char-name');
             const charDescInput = document.getElementById('char-desc');
             const charImageInput = document.getElementById('char-image');
-            const charVisibilityInput = document.querySelector('input[name="char-visibility"]:checked');
 
             const charName = charNameInput.value.trim();
             const charDesc = charDescInput.value.trim();
             const charImage = charImageInput.value.trim();
-            const charVisibility = charVisibilityInput ? charVisibilityInput.value : 'public'; // Default to public
-            const creationCost = 15;
+            const charVisibility = getSegmentedControlValue('char-visibility-segment'); // Use new function
 
             if (charName === "" || charDesc === "") { tg.showAlert("Please enter a name and description."); return; }
 
-            tg.showConfirm(`Create character "${charName}" (${charVisibility}) for ${creationCost} Stars?`, (ok) => {
+            tg.showConfirm(`Create character "${charName}" (${charVisibility}) for ${CHARACTER_CREATION_COST_GEMS} 💎?`, (ok) => {
                if (ok) {
                     const newChar = {
                         id: nextUserCharacterId++,
                         name: charName,
                         description: charDesc,
-                        image_url: charImage || null, // Store null if empty, or a default placeholder
+                        image_url: charImage || null,
                         visibility: charVisibility
                     };
                     userCreatedCharacters.push(newChar);
                     console.log("Creating character:", newChar);
                     tg.HapticFeedback.notificationOccurred('success');
-                    tg.showAlert(`Character "${charName}" created as ${charVisibility} for ${creationCost} Stars (simulated)!`);
+                    tg.showAlert(`Character "${charName}" created as ${charVisibility} for ${CHARACTER_CREATION_COST_GEMS} 💎 (simulated)!`);
 
-                    // Clear form
                     charNameInput.value = '';
                     charDescInput.value = '';
                     charImageInput.value = '';
-                    // Reset visibility radio to public
-                    document.querySelector('input[name="char-visibility"][value="public"]').checked = true;
+                    setSegmentedControlValue('char-visibility-segment', 'public'); // Reset to public
 
 
-                    // Smart navigation back: try to go to 'myCharacters' or 'usersCharacters' if it was the recent direct parent
                     let navigated = false;
                     if (viewHistory.length > 0) {
                         const previousView = viewHistory[viewHistory.length - 1];
-                        if (previousView === 'myCharacters' || previousView === 'usersCharacters' || previousView === 'characters') {
-                            if (tg.BackButton.isVisible) tg.BackButton.onClick(); // Will pop createCharacter from history
+                         if (previousView === 'myCharacters' || previousView === 'usersCharacters' || previousView === 'characters') {
+                            if(tg.BackButton.isVisible) tg.BackButton.onClick();
                             navigated = true;
                         }
                     }
-                    if (!navigated) {
-                         // Fallback: If no relevant parent or history is empty, go to My Characters, then remove createChar from history.
-                        showView('myCharacters', true); // 'true' removes current (createChar) from history stack effectively
+                     if (!navigated) {
+                        showView('myCharacters', true);
                     }
                }
             });
@@ -517,26 +589,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const bottomNavItems = document.querySelectorAll('.bottom-nav-item');
     bottomNavItems.forEach(item => {
-        item.addEventListener('click', () => {
+        // ... (same as before)
+         item.addEventListener('click', () => {
             const targetViewHtmlId = item.dataset.view;
             let targetInternalViewId = '';
 
             if (targetViewHtmlId === 'characters-view') targetInternalViewId = 'characters';
-            else if (targetViewHtmlId === 'users-characters-view') targetInternalViewId = 'usersCharacters'; // New
+            else if (targetViewHtmlId === 'users-characters-view') targetInternalViewId = 'usersCharacters';
             else if (targetViewHtmlId === 'settings-view') targetInternalViewId = 'settings';
             else if (targetViewHtmlId === 'create-character-view') targetInternalViewId = 'createCharacter';
             else { console.warn("Unknown bottom nav item:", targetViewHtmlId); return; }
 
 
             if (views[targetInternalViewId] && currentViewId !== targetInternalViewId) {
-                viewHistory = []; // Reset history for main tab navigation
+                viewHistory = [];
                 showView(targetInternalViewId);
             }
         });
     });
 
     // --- INITIAL APP STARTUP ---
-    populateCharacters(); // Predefined characters
+    populateCharacters();
     showView('characters');
-
 });
