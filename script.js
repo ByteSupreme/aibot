@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
         tg.setBackgroundColor('#0E0F1A');
     } catch (e) { console.warn("Error setting Telegram theme colors:", e); }
 
-    const API_BASE_URL = 'https://cp7ghdz8-8000.inc1.devtunnels.ms/api/v1'; 
+    const API_BASE_URL = 'https://bd3263315d8523ce1d0439895715e14c.serveo.net/api/v1'; 
     const TELEGRAM_BOT_USERNAME = "floratestobot"; // Renamed bot for payment details
     const ADMIN_PANEL_URL = 'admin_panel.html'; // Path to your admin panel
 
