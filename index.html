@@ -2,13 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Lucid Dreams AI</title> <!-- Changed title slightly for branding -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title data-translate-key="app_title">Lusty Chat Bot</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Telegram Web App script -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
-<body class="dark"> <!-- Body class will be set by JS based on tg.colorScheme -->
+<body class="dark">
 
     <div class="app-container">
 
@@ -17,230 +16,226 @@
                 <div class="gem-bar-container-outer" id="gem-bar-container-outer">
                      <!-- Gem bar will be injected here by script.js -->
                 </div>
+                 <!-- Admin Panel Link Placeholder - Populated by script.js if user is admin -->
+                <div id="admin-panel-link-container" style="margin-left: 10px;"></div>
             </div>
         </header>
 
         <!-- === View Containers === -->
         <div id="characters-view" class="view-container active-view">
-            <h1 class="screen-main-title">Characters</h1>
+            <h1 class="screen-main-title" data-translate-key="characters_view_title">Characters</h1>
             <div class="character-grid" id="character-grid">
-                <!-- Predefined character cards will be injected here by script.js -->
+                <!-- Character cards will be injected here by script.js -->
             </div>
         </div>
 
         <div id="users-characters-view" class="view-container">
             <div class="users-characters-header">
-                <h1 class="screen-main-title">Community</h1>
-                <button class="action-button stylish-button" id="my-characters-btn">My Creations</button>
+                <h1 class="screen-main-title" data-translate-key="community_view_title">Community</h1>
+                <button class="action-button stylish-button" id="my-characters-btn" data-translate-key="my_creations_btn">My Creations</button>
             </div>
             <div class="search-bar-container">
-                <input type="search" id="users-character-search-input" placeholder="Search characters...">
+                <input type="search" id="users-character-search-input" data-translate-key-placeholder="search_characters_placeholder" placeholder="Search characters...">
             </div>
             <div class="tabs-container">
-                <button class="tab-button active" data-tab="featured">Featured</button>
-                <button class="tab-button" data-tab="recent">Recent</button>
-                <!-- Add more tabs here if needed e.g. data-tab="popular" -->
+                <button class="tab-button active" data-tab="featured" data-translate-key="featured_tab">Featured</button>
+                <button class="tab-button" data-tab="recent" data-translate-key="recent_tab">Recent</button>
             </div>
             <div class="character-grid" id="public-character-grid">
-                <!-- Public user-created character cards will be injected here by script.js -->
+                <!-- Public user-created character cards will be injected here -->
             </div>
-            <p class="empty-state-message" id="no-public-characters-message" style="display:none;">No characters found. Try a different tab or search, or check back later!</p>
+            <p class="empty-state-message" id="no-public-characters-message" style="display:none;" data-translate-key="no_public_characters_message">No characters found. Try a different tab or search.</p>
         </div>
 
         <div id="my-characters-view" class="view-container">
-            <h1 class="screen-main-title">My Creations</h1>
-            <p class="view-description">Manage and refine your own unique characters.</p>
+            <h1 class="screen-main-title" data-translate-key="my_creations_view_title">My Creations</h1>
+            <p class="view-description" data-translate-key="my_creations_description">Manage and refine your own unique characters.</p>
             <div class="my-character-list" id="my-character-list">
-                <!-- User's own character cards will be injected here by script.js -->
+                <!-- User's own character cards will be injected here -->
             </div>
-             <p class="empty-state-message" id="no-my-characters-message" style="display:none;">You haven't created any characters yet. <a href="#" id="create-first-character-link">Bring your first character to life!</a></p>
+             <p class="empty-state-message" id="no-my-characters-message" style="display:none;" data-translate-key-html="no_my_characters_message_html">You haven't created any characters yet. <a href="#" id="create-first-character-link" data-translate-key="create_first_character_link">Bring your first character to life!</a></p>
         </div>
 
         <div id="character-detail-view" class="view-container">
             <div class="character-detail-image-container">
-                <img id="char-detail-image" src="https://placehold.co/600x800/222533/444?text=Loading..." alt="Character Image"> <!-- Placeholder -->
+                <img id="char-detail-image" src="https://placehold.co/600x800/333/fff?text=Character" alt="Character Image">
             </div>
             <h1 id="char-detail-name" class="screen-main-title char-detail-title">Character Name</h1>
             <div class="char-detail-content">
-                <p class="char-detail-section-title">Summary</p>
+                <p class="char-detail-section-title" data-translate-key="character_detail_summary">Summary</p>
                 <p id="char-detail-desc" class="char-detail-text">Short description goes here.</p>
                 <div id="char-detail-full-details-section" style="display:none;">
-                    <p class="char-detail-section-title">Full Details</p>
+                    <p class="char-detail-section-title" data-translate-key="character_detail_full_details">Full Details</p>
                     <p id="char-detail-full-details" class="char-detail-text full-details-text"></p>
                 </div>
-                 <!-- Add more sections here like Tags, Creator Info for public chars etc. -->
             </div>
-            <button class="upgrade-button-large stylish-button" id="start-character-btn">Start Character</button>
+             <!-- Creator Info Section Placeholder -->
+            <div id="char-detail-creator-info-section" class="char-detail-content" style="display:none;">
+                <p class="char-detail-section-title" data-translate-key="char_detail_creator_label">Creator Information</p>
+                <div class="creator-info-item">
+                    <span class="creator-info-label" data-translate-key="char_detail_creator_label">Creator:</span>
+                    <span class="creator-info-value" id="char-detail-creator-username">N/A</span>
+                </div>
+                <div class="creator-info-item">
+                     <span class="creator-info-label" data-translate-key="char_detail_created_date_label">Character Created:</span>
+                    <span class="creator-info-value" id="char-detail-creator-char-created-date">N/A</span>
+                </div>
+                 <div class="creator-info-item">
+                    <span class="creator-info-label">User Joined:</span> <!-- Example, add to translations.json if needed -->
+                    <span class="creator-info-value" id="char-detail-creator-user-joined-date">N/A</span>
+                </div>
+            </div>
+            <button class="upgrade-button-large stylish-button" id="start-character-btn" data-translate-key="start_character_btn">Start Character</button>
         </div>
 
 
         <div id="settings-view" class="view-container">
-            <h1 class="screen-main-title">Settings</h1>
+            <h1 class="screen-main-title" data-translate-key="settings_view_title">Settings</h1>
             <div class="settings-section">
-                <div class="settings-item-header">Your plan</div>
+                <div class="settings-item-header" data-translate-key="settings_plan_header">Your plan</div>
                 <div class="settings-plan-card">
-                    <span id="settings-current-plan-name">Free</span> <!-- Dynamic content -->
-                    <button class="upgrade-button small-button" id="settings-upgrade-plan-btn">Upgrade</button>
+                    <span data-translate-key="settings_free_user_plan">Free</span> <!-- Default, updated by script.js -->
+                    <button class="upgrade-button small-button" id="settings-upgrade-plan-btn" data-translate-key="settings_upgrade_btn">Upgrade</button>
                 </div>
             </div>
             <div class="settings-section">
-                 <div class="settings-item-header">Style</div>
+                 <div class="settings-item-header" data-translate-key="settings_style_header">Style</div>
                  <div class="style-toggle-container">
-                    <!-- Images will be updated by JS based on active style -->
                     <img src="https://placehold.co/350x180/2A203C/E0E0E0/png?text=Realistic+Style&font=roboto" alt="Style Realistic" id="style-realistic" class="style-image active">
                     <img src="https://placehold.co/350x180/3A2F4B/E0E0E0/png?text=Anime+Style&font=roboto" alt="Style Anime" id="style-anime" class="style-image">
                     <div class="style-toggle-labels">
-                        <div class="style-label realistic active" data-style="realistic">
-                            <span class="checkbox-custom checked"></span>Realistic
+                        <div class="style-label realistic active">
+                            <span class="checkbox-custom checked"></span><span data-translate-key="settings_style_realistic">Realistic</span>
                         </div>
-                        <div class="style-label anime" data-style="anime">
-                            <span class="checkbox-custom"></span>Anime
+                        <div class="style-label anime">
+                            <span class="checkbox-custom"></span><span data-translate-key="settings_style_anime">Anime</span>
                         </div>
                     </div>
                  </div>
             </div>
             <div class="settings-section">
-                <div class="settings-item-header">Language</div>
+                <div class="settings-item-header" data-translate-key="settings_language_header">Language</div>
                 <div class="settings-item-action" id="settings-language-btn">
-                    <span id="current-language-display">English</span>
-                    <span>></span> <!-- Chevron -->
+                    <span id="current-language-display">English</span> <!-- Updated by script.js -->
+                    <span>></span>
                 </div>
             </div>
-            <div class="settings-spacer"></div> <!-- For pushing content up if needed -->
+            <div class="settings-spacer"></div> <!-- Used for layout if needed -->
         </div>
 
         <div id="create-character-view" class="view-container">
-            <h1 class="screen-main-title">Create Character</h1>
+            <h1 class="screen-main-title" data-translate-key="create_character_view_title">Create Character</h1>
             <div class="form-section">
-                <label for="char-name">Name:</label>
-                <input type="text" id="char-name" name="char-name" placeholder="E.g., Alex Ryder, the Star Navigator">
+                <label for="char-name" data-translate-key="char_form_name_label">Name:</label>
+                <input type="text" id="char-name" name="char-name" data-translate-key-placeholder="char_form_name_placeholder" placeholder="E.g., Alex Ryder">
             </div>
             <div class="form-section">
-                <label for="char-desc">Short Description (appears on card, max 150 chars):</label>
-                <textarea id="char-desc" name="char-desc" rows="3" placeholder="A curious adventurer seeking ancient relics..." maxlength="150"></textarea>
+                <label for="char-desc" data-translate-key="char_form_desc_label">Short Description (appears on card):</label>
+                <textarea id="char-desc" name="char-desc" rows="3" data-translate-key-placeholder="char_form_desc_placeholder" placeholder="E.g., A curious adventurer..."></textarea>
             </div>
             <div class="form-section">
-                <label for="char-details">Full Character Details (background, personality, system prompt for AI):</label>
-                <textarea id="char-details" name="char-details" rows="6" placeholder="Elaborate on your character's story, traits, motivations, how they should speak and act. This will be used as their core instructions for the AI."></textarea>
+                <label for="char-details" data-translate-key="char_form_details_label">Full Character Details (background, personality, etc.):</label>
+                <textarea id="char-details" name="char-details" rows="6" data-translate-key-placeholder="char_form_details_placeholder" placeholder="Elaborate on your character's story, traits, and motivations..."></textarea>
             </div>
             <div class="form-section">
-                <label for="char-image">Image URL (Optional, for character card):</label>
-                <input type="url" id="char-image" name="char-image" placeholder="https://example.com/image.png">
+                <label for="char-image" data-translate-key="char_form_image_label">Image URL (Optional):</label>
+                <input type="url" id="char-image" name="char-image" data-translate-key-placeholder="char_form_image_placeholder" placeholder="https://example.com/image.png">
             </div>
             <div class="form-section">
-                <label>Visibility:</label>
+                <label data-translate-key="char_form_visibility_label">Visibility:</label>
                 <div class="segmented-control" id="char-visibility-segment">
-                    <button class="segment-button active" data-value="public">Public</button>
-                    <button class="segment-button" data-value="private">Private</button>
+                    <button class="segment-button active" data-value="public" data-translate-key="char_form_visibility_public">Public</button>
+                    <button class="segment-button" data-value="private" data-translate-key="char_form_visibility_private">Private</button>
                 </div>
             </div>
-            <p class="creation-cost-note">Cost: <span id="char-creation-cost-display">15</span> <span class="gem-currency-icon">💎</span> per character</p>
-            <button class="upgrade-button-large stylish-button" id="save-character-btn">Create Character (<span id="char-creation-cost-btn-display">15</span> <span class="gem-currency-icon">💎</span>)</button>
+            <p class="creation-cost-note" id="creation-cost-note-text" data-translate-key-html="char_form_creation_cost_note" data-translate-var-cost="15">Cost: <span id="create-char-cost-gems">15</span> <span class="gem-currency-icon">💎</span> per character</p>
+            <button class="upgrade-button-large stylish-button" id="save-character-btn" data-translate-key-html="char_form_create_character_btn" data-translate-var-cost="15">Create Character (<span id="create-char-cost-btn-gems">15</span> <span class="gem-currency-icon">💎</span>)</button>
         </div>
 
         <div id="edit-character-view" class="view-container">
-            <h1 class="screen-main-title">Edit Character</h1>
-            <input type="hidden" id="editing-char-id"> <!-- Store the ID of char being edited -->
+            <h1 class="screen-main-title" data-translate-key="edit_character_view_title">Edit Character</h1>
+            <input type="hidden" id="editing-char-id">
             <div class="form-section">
-                <label for="edit-char-name">Name:</label>
-                <input type="text" id="edit-char-name" name="edit-char-name">
+                <label for="edit-char-name" data-translate-key="char_form_name_label">Name:</label>
+                <input type="text" id="edit-char-name" name="edit-char-name" data-translate-key-placeholder="char_form_name_placeholder" placeholder="E.g., Alex Ryder">
             </div>
             <div class="form-section">
-                <label for="edit-char-desc">Short Description (max 150 chars):</label>
-                <textarea id="edit-char-desc" name="edit-char-desc" rows="3" maxlength="150"></textarea>
+                <label for="edit-char-desc" data-translate-key="char_form_desc_label">Short Description (appears on card):</label>
+                <textarea id="edit-char-desc" name="edit-char-desc" rows="3" data-translate-key-placeholder="char_form_desc_placeholder" placeholder="E.g., A curious adventurer..."></textarea>
             </div>
             <div class="form-section">
-                <label for="edit-char-details">Full Character Details:</label>
-                <textarea id="edit-char-details" name="edit-char-details" rows="6"></textarea>
+                <label for="edit-char-details" data-translate-key="char_form_details_label">Full Character Details (background, personality, etc.):</label>
+                <textarea id="edit-char-details" name="edit-char-details" rows="6" data-translate-key-placeholder="char_form_details_placeholder" placeholder="Elaborate on your character's story, traits, and motivations..."></textarea>
             </div>
             <div class="form-section">
-                <label for="edit-char-image">Image URL (Optional):</label>
-                <input type="url" id="edit-char-image" name="edit-char-image">
+                <label for="edit-char-image" data-translate-key="char_form_image_label">Image URL (Optional):</label>
+                <input type="url" id="edit-char-image" name="edit-char-image" data-translate-key-placeholder="char_form_image_placeholder" placeholder="https://example.com/image.png">
             </div>
             <div class="form-section">
-                <label>Visibility:</label>
+                <label data-translate-key="char_form_visibility_label">Visibility:</label>
                 <div class="segmented-control" id="edit-char-visibility-segment">
-                    <button class="segment-button" data-value="public">Public</button>
-                    <button class="segment-button" data-value="private">Private</button>
+                    <button class="segment-button active" data-value="public" data-translate-key="char_form_visibility_public">Public</button>
+                    <button class="segment-button" data-value="private" data-translate-key="char_form_visibility_private">Private</button>
                 </div>
             </div>
-            <button class="upgrade-button-large stylish-button" id="save-edited-character-btn">Save Changes</button>
+            <button class="upgrade-button-large stylish-button" id="save-edited-character-btn" data-translate-key="char_form_save_changes_btn">Save Changes</button>
         </div>
 
         <div id="recharge-energy-view" class="view-container">
-            <h1 class="screen-main-title">Recharge Energy</h1>
+            <h1 class="screen-main-title" data-translate-key="recharge_energy_view_title">Recharge Energy</h1>
             <div class="form-section">
-                <label for="energy-amount">Amount of Energy:</label>
-                <input type="number" id="energy-amount" name="energy-amount" placeholder="e.g., 50" min="1" value="50">
+                <label for="energy-amount" data-translate-key="recharge_energy_desired_amount_label">Desired Energy Amount:</label>
+                <input type="number" id="energy-amount" name="energy-amount" data-translate-key-placeholder="recharge_energy_amount_placeholder" placeholder="e.g., 100" min="1" value="100">
             </div>
             <div class="form-section">
-                <p>Estimated cost: <span id="estimated-energy-stars">100</span> <span class="telegram-star">⭐</span> (<span id="energy-recharge-rate-display">2</span> ⭐ per energy point)</p>
+                <p id="estimated-energy-stars-text" data-translate-key-html="recharge_energy_cost_in_stars" data-translate-var-cost="?">Cost in Stars: <span id="estimated-energy-stars">?</span> <span class="telegram-star">⭐</span></p>
             </div>
-            <button class="upgrade-button-large stylish-button" id="confirm-recharge-btn">Recharge Energy</button>
+            <button class="upgrade-button-large stylish-button" id="confirm-recharge-btn" data-translate-key="recharge_energy_proceed_btn">Proceed to Recharge with Stars</button>
         </div>
 
         <div id="plan-view" class="view-container">
-            <h1 class="screen-main-title">Subscription Plans</h1> <!-- Changed Title -->
-            <!-- Plan options will be populated by script.js if they need to be dynamic based on config -->
-            <!-- For static plans as in example: -->
-            <div class="plan-option selected" data-plan-id="webapp_sub_1m" data-gems-bonus="30" data-stars-cost="375"> <!-- Used data-plan-id for bot payload -->
-                <div>
-                    <div class="plan-title">1 Month <span class="plan-gems">+30 💎</span></div>
-                    <div class="plan-price">$7.50 <span class="plan-period">/ month</span></div>
+            <h1 class="screen-main-title" data-translate-key="plan_view_title">Subscription Plans</h1>
+            <div id="plan-options-container">
+                <div class="plan-option selected" data-plan-id="placeholder_1m" data-gems-bonus="0" data-stars-cost="0">
+                    <div>
+                        <div class="plan-title" data-translate-key="plan_loading_text">Loading Plan...</div>
+                        <div class="plan-price"> <span class="plan-period"></span></div>
+                    </div>
+                    <span class="radio-custom checked"></span>
                 </div>
-                <span class="radio-custom checked"></span>
             </div>
-            <div class="plan-option" data-plan-id="webapp_sub_3m" data-gems-bonus="70" data-stars-cost="750">
-                <div>
-                    <div class="plan-title">3 Months <span class="plan-gems">+70 💎</span></div>
-                    <div class="plan-price">$15.00 <span class="plan-period">/ 3 months</span></div>
-                </div>
-                <span class="radio-custom"></span>
-            </div>
-            <div class="plan-option" data-plan-id="webapp_sub_1y" data-gems-bonus="210" data-stars-cost="2250">
-                <div>
-                    <div class="plan-title">1 Year <span class="plan-gems">+210 💎</span></div>
-                    <div class="plan-price">$45.00 <span class="plan-period">/ year</span></div>
-                </div>
-                <span class="radio-custom"></span>
-            </div>
-            <ul class="plan-features">
-                <li>⚡ Infinite WebApp energy</li> <!-- Clarified WebApp energy -->
-                <li id="plan-feature-gems">💎 <span id="plan-feature-gems-amount">30</span> gems for shopping</li>
-                <li>🧠 Access to our most advanced AI engines</li>
-                <li>📸 Unlimited AI photo generation (if feature exists)</li>
-                <li>💬 Enhanced bot message limits & near instant replies</li> <!-- Reflects "also_grants_bot_premium" -->
+            <ul class="plan-features" id="plan-features-list">
+                <li data-translate-key="plan_features_loading_text">Loading features...</li>
             </ul>
-            <button class="upgrade-button-large stylish-button" id="plan-upgrade-btn">Upgrade Plan 💎</button>
+            <button class="upgrade-button-large stylish-button" id="plan-upgrade-btn" data-translate-key="plan_upgrade_btn_text">Upgrade 💎</button>
         </div>
 
         <div id="payment-subscription-view" class="view-container">
-            <h1 class="screen-main-title">Payment Method</h1>
+            <h1 class="screen-main-title" data-translate-key="payment_view_title">Payment Method</h1>
             <div class="payment-summary-card">
-                <img src="https://placehold.co/80x80/7E57C2/FFFFFF/png?text=LD&font=roboto" alt="Lucid Dreams AI Bot" class="payment-avatar">
+                <img src="https://placehold.co/80x80/7E57C2/FFFFFF/png?text=LCB&font=roboto" alt="Lusty Chat Bot" class="payment-avatar">
                 <div class="payment-description">
-                    <div>Purchasing a subscription</div>
-                    <div class="payment-plan-details" id="payment-sub-plan-details">1 Year + 210 💎</div>
-                    <div class="payment-bot-name" id="payment-bot-name-display">Lucid Dreams AI Bot</div>
+                    <div data-translate-key="payment_sub_purchasing_text">Purchasing a subscription</div>
+                    <div class="payment-plan-details" id="payment-sub-plan-details" data-translate-key="payment_sub_default_plan_details">Plan Details</div>
+                    <div class="payment-bot-name" data-translate-key="payment_bot_name_default">Lusty Chat Bot</div>
                 </div>
                 <div class="payment-total" id="payment-sub-total-stars">
-                    2250 <span class="telegram-star">⭐</span>
+                     0 <span class="telegram-star">⭐</span>
                 </div>
             </div>
-            <div class="payment-method-option selected"> <!-- Only Stars shown -->
-                <span><span class="telegram-star blue">⭐</span> Telegram Stars</span>
+            <div class="payment-method-option selected">
+                <span><span class="telegram-star blue">⭐</span> <span data-translate-key="payment_stars_method_text">Telegram Stars</span></span>
                 <span class="radio-custom checked purple"></span>
             </div>
             <div class="payment-secure-note">
-                <span class="info-icon">ⓘ</span> All payments via Telegram Stars are anonymous and secure.
+                <span class="info-icon">ⓘ</span> <span data-translate-key="payment_secure_note">All payments are anonymous and secure</span>
             </div>
-            <button class="upgrade-button-large stylish-button" id="payment-sub-confirm-btn">Confirm & Pay with Stars</button>
+            <button class="upgrade-button-large stylish-button" id="payment-sub-confirm-btn" data-translate-key="plan_upgrade_btn_text">Upgrade 💎</button>
         </div>
 
         <div id="language-view" class="view-container">
-            <h1 class="screen-main-title">Language</h1>
-            <!-- Language options populated by script.js based on supported languages -->
-             <div class="language-option" data-lang="en" data-lang-name="English">
+            <h1 class="screen-main-title" data-translate-key="language_view_title">Language</h1>
+            <div class="language-option" data-lang="en" data-lang-name="English">
                 English <span class="language-native">English</span>
                 <span class="radio-custom"></span>
             </div>
@@ -248,111 +243,77 @@
                 Русский <span class="language-native">Русский</span>
                 <span class="radio-custom"></span>
             </div>
-             <div class="language-option" data-lang="fr" data-lang-name="Français"> <!-- Corrected -->
-                French <span class="language-native">Français</span>
+             <div class="language-option" data-lang="fr" data-lang-name="Français">
+                Français <span class="language-native">Français</span>
                 <span class="radio-custom"></span>
             </div>
-            <div class="language-option" data-lang="it" data-lang-name="Italiano"> <!-- Corrected -->
-                Italian <span class="language-native">Italiano</span>
+            <div class="language-option" data-lang="it" data-lang-name="Italiano">
+                Italiano <span class="language-native">Italiano</span>
                 <span class="radio-custom"></span>
             </div>
-            <div class="language-option" data-lang="de" data-lang-name="Deutsch"> <!-- Corrected -->
-                German <span class="language-native">Deutsch</span>
+            <div class="language-option" data-lang="de" data-lang-name="Deutsch">
+                Deutsch <span class="language-native">Deutsch</span>
                 <span class="radio-custom"></span>
             </div>
-             <div class="language-option" data-lang="es" data-lang-name="Español"> <!-- Corrected -->
-                Spanish <span class="language-native">Español</span>
+             <div class="language-option" data-lang="es" data-lang-name="Español">
+                Español <span class="language-native">Español</span>
                 <span class="radio-custom"></span>
             </div>
-            <!-- Add more language options here if needed -->
         </div>
 
         <div id="store-view" class="view-container">
-            <h1 class="screen-main-title">Store</h1>
-            <div class="store-unlimited-energy"> <!-- This is for recharging energy, not "unlimited energy" plan -->
-                <img src="https://placehold.co/100x100/FFC107/333333/png?text=⚡&font=roboto" alt="Recharge Energy Icon" class="store-energy-chest">
+            <h1 class="screen-main-title" data-translate-key="store_view_title">Store</h1>
+            <div class="store-unlimited-energy">
+                <img src="https://placehold.co/100x100/FFC107/333333/png?text=Chest&font=roboto" alt="Unlimited Energy Chest" class="store-energy-chest">
                 <div class="store-energy-info">
-                    <h3>Recharge WebApp Energy</h3>
-                    <p>Get more Energy ⚡️ to continue your adventures!</p>
+                    <h3 data-translate-key="store_unlimited_energy_title">Unlimited Energy</h3>
+                    <p data-translate-key="store_unlimited_energy_desc">Remove the barriers. Gain endless energy!</p>
                 </div>
-                <button class="recharge-button stylish-button" id="recharge-energy-btn">Recharge</button>
+                <button class="recharge-button stylish-button" id="recharge-energy-btn" data-translate-key="store_view_options_btn">View Options</button>
             </div>
-            <h2 class="store-section-title">Gem Packs 💎</h2> <!-- Added title for gem packs -->
-            <div class="store-gem-grid">
-                <!-- Gem packs populated by script.js based on config -->
-                 <div class="store-gem-pack" data-package-id="webapp_gems_85" data-gems="85" data-stars="150">
-                    <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsXS&font=roboto" alt="85 Gems">
-                    <h4>85 Gems</h4>
-                    <p>$6.00 (150 ⭐)</p> <!-- Display stars cost too -->
-                </div>
-                <div class="store-gem-pack" data-package-id="webapp_gems_210" data-gems="210" data-stars="370">
-                    <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsXXS&font=roboto" alt="210 Gems">
-                    <h4>210 Gems</h4>
-                    <p>$15.00 (370 ⭐)</p>
-                </div>
-                <div class="store-gem-pack" data-package-id="webapp_gems_540" data-gems="540" data-stars="950">
-                    <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsS&font=roboto" alt="540 Gems">
-                    <h4>540 Gems</h4>
-                    <p>$30.00 (950 ⭐)</p>
-                </div>
-                <div class="store-gem-pack" data-package-id="webapp_gems_1360" data-gems="1360" data-stars="2380">
-                    <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsM&font=roboto" alt="1360 Gems">
-                    <h4>1360 Gems</h4>
-                    <p>$65.00 (2380 ⭐)</p>
-                </div>
-                 <div class="store-gem-pack" data-package-id="webapp_gems_2720" data-gems="2720" data-stars="4760">
-                    <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsXL&font=roboto" alt="2720 Gems">
-                    <h4>2720 Gems</h4>
-                    <p>$120.00 (4760 ⭐)</p>
-                </div>
-                 <div class="store-gem-pack" data-package-id="webapp_gems_5000" data-gems="5000" data-stars="8750">
-                    <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=GemsL&font=roboto" alt="5000 Gems">
-                    <h4>5000 Gems</h4>
-                    <p>$175.00 (8750 ⭐)</p>
-                </div>
+            <div class="store-gem-grid" id="store-gem-grid-container">
             </div>
         </div>
 
         <div id="payment-item-view" class="view-container">
-            <h1 class="screen-main-title">Payment Method</h1>
+            <h1 class="screen-main-title" data-translate-key="payment_view_title">Payment Method</h1>
             <div class="payment-summary-card">
                  <img src="https://placehold.co/80x80/4FC3F7/FFFFFF/png?text=Item&font=roboto" alt="Item Pack" id="payment-item-avatar" class="payment-avatar">
                 <div class="payment-description">
-                    <div id="payment-item-purchase-title">Purchasing an item</div>
-                    <div class="payment-item-details">Item Details</div> <!-- Populated by JS -->
-                    <div class="payment-bot-name" id="payment-item-bot-name-display">Lucid Dreams AI Bot</div>  <!-- Populated by JS -->
+                    <div id="payment-item-purchase-title" data-translate-key="payment_item_purchasing_text">Purchasing an item</div>
+                    <div class="payment-plan-details" id="payment-item-details" data-translate-key="payment_item_default_details">Item Details</div>
+                    <div class="payment-bot-name" data-translate-key="payment_bot_name_default">Lusty Chat Bot</div>
                 </div>
                 <div class="payment-total" id="payment-item-total-stars">
-                     <!-- Populated by JS --> <span class="telegram-star">⭐</span>
+                     0 <span class="telegram-star">⭐</span>
                 </div>
             </div>
             <div class="payment-method-option selected">
-                <span><span class="telegram-star blue">⭐</span> Telegram Stars</span>
+                 <span><span class="telegram-star blue">⭐</span> <span data-translate-key="payment_stars_method_text">Telegram Stars</span></span>
                 <span class="radio-custom checked purple"></span>
             </div>
             <div class="payment-secure-note">
-                <span class="info-icon">ⓘ</span> All payments via Telegram Stars are anonymous and secure.
+                <span class="info-icon">ⓘ</span> <span data-translate-key="payment_secure_note">All payments are anonymous and secure</span>
             </div>
-            <button class="upgrade-button-large stylish-button" id="payment-item-confirm-btn">Pay with Stars</button>
+            <button class="upgrade-button-large stylish-button" id="payment-item-confirm-btn" data-translate-key="payment_pay_with_stars_btn">Pay with Stars</button>
         </div>
 
-        <!-- Bottom Navigation Bar, shown/hidden by script.js -->
         <nav class="bottom-nav" id="bottom-nav-bar" style="display: none;">
-            <button class="bottom-nav-item active" data-view="characters-view" aria-label="Featured Characters">
+            <button class="bottom-nav-item active" data-view="characters-view" data-translate-key-aria-label="nav_featured_characters" aria-label="Featured Characters">
                 <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
             </button>
-            <button class="bottom-nav-item" data-view="users-characters-view" aria-label="Community Characters">
+            <button class="bottom-nav-item" data-view="users-characters-view" data-translate-key-aria-label="nav_community_characters" aria-label="Community Characters">
                 <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"></path></svg>
             </button>
-            <button class="bottom-nav-item" data-view="create-character-view" aria-label="Create Character">
+            <button class="bottom-nav-item" data-view="create-character-view" data-translate-key-aria-label="nav_create_character" aria-label="Create Character">
                 <svg viewBox="0 0 24 24" fill="currentColor" width="30" height="30"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>
             </button>
-            <button class="bottom-nav-item" data-view="settings-view" aria-label="Settings">
-                <svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l-.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l-.38-2.65c.61-.25 1.17-.59 1.69.98l2.49 1c.23.09.49 0 .61.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"></path></svg>
+            <button class="bottom-nav-item" data-view="settings-view" data-translate-key-aria-label="nav_settings" aria-label="Settings">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l-.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l-.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"></path></svg>
             </button>
         </nav>
     </div>
 
-    <script src="script.js"></script> <!-- Your main JS file -->
+    <script src="script.js"></script>
 </body>
 </html>
