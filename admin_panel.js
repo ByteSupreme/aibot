@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     tg.expand();
 
     // --- IMPORTANT: Configure API_BASE_URL to match script.js ---
-    const API_BASE_URL = 'https://cp7ghdz8-8000.inc1.devtunnels.ms/api/v1'; // From your main script.js
+    const API_BASE_URL = 'https://bd3263315d8523ce1d0439895715e14c.serveo.net/api/v1'; // From your main script.js
     // --- End Configuration ---
 
     if (API_BASE_URL === 'YOUR_HOSTED_FASTAPI_BACKEND_URL/api/v1' || API_BASE_URL.includes('YOUR_HOSTED_FASTAPI_BACKEND_URL')) {
