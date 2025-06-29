@@ -1,0 +1,28 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Telegram Mini App</title>
+  <meta charset="utf-8">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <h2>Telegram Mini App</h2>
+  <p>User ID: <span id="user-id">Loading...</span></p>
+  <p>Message from bot: <span id="bot-message">Waiting...</span></p>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    const user = tg.initDataUnsafe.user;
+
+    document.getElementById("user-id").innerText = user?.id || "Unknown";
+
+    // Listen for data sent from the bot
+    tg.onEvent("web_app_data", (event) => {
+      document.getElementById("bot-message").innerText = event.data;
+    });
+
+    tg.ready();
+  </script>
+</body>
+</html>
